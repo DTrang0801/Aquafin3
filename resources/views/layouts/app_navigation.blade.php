@@ -19,6 +19,7 @@
             </div>
 
             <!-- Settings Dropdown -->
+            @auth
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-breeze.dropdown align="right" width="48">
                     <x-slot name="trigger">
@@ -51,6 +52,21 @@
                     </x-slot>
                 </x-breeze.dropdown>
             </div>
+            @endauth
+
+            @guest
+            <div class="hidden sm:flex sm:items-center sm:ms-6">
+                <x-breeze.nav-link :href="route('login')" :active="request()->routeIs('login')">
+                    {{ __('Log in') }}
+                </x-breeze.nav-link>
+
+                @if (Route::has('register'))
+                    <x-breeze.nav-link :href="route('register')" :active="request()->routeIs('register')">
+                        {{ __('Register') }}
+                    </x-breeze.nav-link>
+                @endif
+            </div>
+            @endguest
 
             <!-- Hamburger -->
             <div class="-me-2 flex items-center sm:hidden">
@@ -74,10 +90,25 @@
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-            </div>
+            @auth
+                <div class="px-4">
+                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
+                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                </div>
+            @endauth
+
+            @guest
+                <div class="px-4">
+                    <x-breeze.responsive-nav-link :href="route('login')">
+                        {{ __('Log in') }}
+                    </x-breeze.responsive-nav-link>
+                    @if (Route::has('register'))
+                        <x-breeze.responsive-nav-link :href="route('register')">
+                            {{ __('Register') }}
+                        </x-breeze.responsive-nav-link>
+                    @endif
+                </div>
+            @endguest
 
             <div class="mt-3 space-y-1">
                 <x-breeze.responsive-nav-link :href="route('profile.edit')">
