@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/hello', function () {
-    return '<html><body style="background:pink; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif; font-size:3rem;">Hello World</body></html>';
+    return '<html><body style="background:pink; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif; font-size:3rem;">Hello World 🤏🏼🤏🏼</body></html>';
 });
 
 Route::permanentRedirect('/', '/hello');
