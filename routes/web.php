@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/hello', function () {
-    return '<html><body style="background:pink; display:flex; align-items:center; justify-content:center; height:100vh; margin:0; font-family:sans-serif; font-size:3rem;">Hello World 🤏🏼🤏🏼 <br></br>Assia, Niels, Trang, Y, Yassine</body></html>';
-});
+    return view('hello');
+})->name('hello');
 
 Route::permanentRedirect('/', '/hello');
 
