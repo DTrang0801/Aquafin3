@@ -16,9 +16,15 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Materiaalcategorie extends Model
 {
-    protected $table = 'materiaal_categorieen';
+protected $table = 'materiaal_categorieen';
 
     protected $fillable = [
         'naam',
     ];
+
+    // subcategorieen ophalen van de hoofdcategorie.
+    public function subcategorieen()
+    {
+        return $this->hasMany(MateriaalSubcategorie::class, 'materiaal_categorie_id');
+    }
 }

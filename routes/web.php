@@ -1,10 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MateriaalController;
 
 Route::get('/hello', function () {
     return view('hello');
 })->name('hello');
+
+Route::get('/materiaallijst', [MateriaalController::class, 'index'])->name('materialen.index');
 
 Route::permanentRedirect('/', '/hello');
 
