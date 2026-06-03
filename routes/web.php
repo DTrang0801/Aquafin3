@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\MateriaalController;
 
 Route::get('/', function () {
     return view('hello');
@@ -9,7 +10,7 @@ Route::get('/', function () {
 Route::permanentRedirect('/hello', '/');
 
 Route::middleware('auth')->group(function () {
-    Route::view('/materialen', 'pages.materialen')->name('materialen');
+    Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
