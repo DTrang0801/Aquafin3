@@ -13,7 +13,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
     Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
-    Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
+    Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers');
 
     Route::get('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'update'])->name('profile.update');

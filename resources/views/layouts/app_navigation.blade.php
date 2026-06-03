@@ -7,11 +7,7 @@
             <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
             <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
             <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
-            @auth
-                @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
-                @endif
-            @endauth
+            <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
         </div>
 
         <div class="nav-right">
