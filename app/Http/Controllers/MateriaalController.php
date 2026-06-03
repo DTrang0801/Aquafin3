@@ -15,7 +15,7 @@ class MateriaalController extends Controller
 
     //Materiaal in een tabel tonen
 
-    public function index()
+    public function index(Request $request)
     {
         // Haal de belangrijke materialen op
         $belangrijkeMaterialen = Materiaal::where('belangrijk', true)
@@ -23,9 +23,18 @@ class MateriaalController extends Controller
                                           ->get();
 
         // Haal de hoofdstructuur op voor de lijst
-        $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
+        // $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
+        
+        // Zoekbalk toevoegen
+        $search = $request->input('search');
 
-        //Stuur beide collecties naar de view
+        $categorieen = Materiaalcategorie::with(['subcategorieen.materialen' => function($query) use ($search) {
+        if ($search) {
+        $query->where('naam', 'like', '%' . $search . '%');
+        }
+        }])->get();
+
+        // Stuur beide collecties naar de view
         return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen'));
     }
 }
