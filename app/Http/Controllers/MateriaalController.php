@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MateriaalSubcategorie;
 use App\Models\Materiaal;
 use App\Models\Bestelling;
 use App\Models\Mandje;
@@ -28,4 +29,24 @@ class MateriaalController extends Controller
         //Stuur beide collecties naar de view
         return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen'));
     }
+
+        public function create()
+    {
+        $subcategorieen = MateriaalSubcategorie::all();
+
+        return view('pages.materialen-create', compact('subcategorieen'));
+    }
+        
+        public function store(Request $request)
+    {
+        Materiaal::create([
+            'naam' => $request->naam,
+            'beschrijving' => $request->beschrijving,
+            'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
+            'belangrijk' => $request->has('belangrijk'),
+        ]);
+
+        return redirect('/materialen');
+        
+}
 }
