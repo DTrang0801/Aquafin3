@@ -1,5 +1,5 @@
-<x-app-layout>
-    <div class="min-h-screen flex items-center justify-center bg-pink-100">
-      <div class="text-3xl">Hello World! 🤏🏼🤏🏼<br>Assia, Niels, Trang, Y, Yassine</div>
+<x-site-layout>
+    <div class="min-h-screen flex items-center justify-center bg-blue-100">
+      <div class="text-3xl">AQUAFIN<br>Assia, Niels, Trang, Y, Yassine</div>
     </div>
-</x-app-layout>
+</x-site-layout>
