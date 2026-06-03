@@ -2,17 +2,20 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/hello', function () {
+Route::get('/', function () {
     return view('hello');
-})->name('hello');
+})->name('home');
 
-Route::permanentRedirect('/', '/hello');
-
-Route::get('/dashboard', function () {
-    return view('userzone.dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::permanentRedirect('/hello', '/');
 
 Route::middleware('auth')->group(function () {
+    Route::view('/materialen', 'pages.materialen')->name('materialen');
+    Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
+    Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
+    Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
+    Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
+    Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers');
+
     Route::get('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'destroy'])->name('profile.destroy');
