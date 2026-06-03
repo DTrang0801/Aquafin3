@@ -4,10 +4,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MateriaalController;
 
 Route::get('/', function () {
-    return view('hello');
+    return view('home');
 })->name('home');
-
-Route::permanentRedirect('/hello', '/');
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
