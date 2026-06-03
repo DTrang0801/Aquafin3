@@ -9,6 +9,8 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
+    Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
+    Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
