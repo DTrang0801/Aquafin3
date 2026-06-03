@@ -124,7 +124,6 @@ class MateriaalSeeder extends Seeder
 
                 foreach ($items as $item) {
                     $rows[] = [
-                        'materiaal_categorie_id' => $catId,
                         'materiaal_subcategorie_id' => $subId,
                         'naam' => $item,
                         'beschrijving' => '',

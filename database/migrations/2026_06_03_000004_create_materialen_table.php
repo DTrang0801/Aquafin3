@@ -13,7 +13,6 @@ class CreateMaterialenTable extends Migration
     {
         Schema::create('materialen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('materiaal_categorie_id')->constrained('materiaal_categorieen');
             $table->foreignId('materiaal_subcategorie_id')->nullable()->constrained('materiaal_subcategorieen');
             $table->string('naam');
             $table->text('beschrijving')->nullable();
