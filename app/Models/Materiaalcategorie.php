@@ -21,4 +21,9 @@ class Materiaalcategorie extends Model
     protected $fillable = [
         'naam',
     ];
+
+    public function subcategorieen()
+    {
+        return $this->hasMany(MateriaalSubcategorie::class, 'materiaal_categorie_id');
+    }
 }
