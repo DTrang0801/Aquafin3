@@ -1,5 +1,6 @@
 <x-site-layout>
-    <div class="min-h-screen flex items-center justify-center bg-blue-100">
-      <div class="text-3xl">AQUAFIN<br>Assia, Niels, Trang, Y, Yassine</div>
+    <div class="container text-center">
+        <h1 class="page-title" style="font-size:3rem; margin-bottom:0.5rem;">Aquafin Groep 3</h1>
+        <p class="page-subtitle" style="font-size:1.25rem;">Assia · Niels · Trang · Y · Yassine</p>
     </div>
 </x-site-layout>
