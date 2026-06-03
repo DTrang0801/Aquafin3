@@ -25,10 +25,10 @@ body::before {
     width: 100%;
     height: 100%;
     background: rgba(255,255,255,0.4);
-    z-index: -1;
+    
 }
 
-/* Navigation */
+/* de navigation */
 .nav {
     background: #2563eb;
     padding: 0 1rem;
@@ -124,7 +124,7 @@ body::before {
     background: #1d4ed8;
 }
 
-/* Content */
+/* de content */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -224,7 +224,21 @@ body::before {
     margin-top: 0.25rem;
 }
 
-/* Hero box */
+.inline-form {
+    display: inline;
+}
+
+.hero-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.hero-team {
+    font-size: 1.25rem;
+    color: #6b7280;
+}
+
+/* de hero box */
 .hero-box {
     background: rgba(255,255,255,0.85);
     border-radius: 16px;
@@ -233,7 +247,7 @@ body::before {
     margin-top: 4rem;
 }
 
-/* Page titles */
+/* de pagina titels */
 .page-title {
     font-size: 1.5rem;
     font-weight: 700;
