@@ -5,14 +5,13 @@
 
         <div class="winkelmandje-layout">
             <div class="producten-lijst">
+
                 <div class="product-kaart">
                     <div class="product-info">
                         <h2>Bouten M6</h2>
                     </div>
                     <div class="product-details">
-                        <span>€12,50</span>
                         <span>Aantal: 2</span>
-                        <span>Subtotaal: €25,00</span>
                     </div>
                 </div>
 
@@ -21,9 +20,7 @@
                         <h2>Borgmoeren</h2>
                     </div>
                     <div class="product-details">
-                        <span>€18,00</span>
                         <span>Aantal: 1</span>
-                        <span>Subtotaal: €18,00</span>
                     </div>
                 </div>
 
@@ -32,9 +29,7 @@
                         <h2>Helmen</h2>
                     </div>
                     <div class="product-details">
-                        <span>€7,25</span>
                         <span>Aantal: 3</span>
-                        <span>Subtotaal: €21,75</span>
                     </div>
                 </div>
             </div>
@@ -47,11 +42,8 @@
                 </div>
                 <div class="samenvatting-regel">
                     <span>Verzendkosten</span>
-                    <span>€0,00</span>
                 </div>
                 <div class="samenvatting-regel totaal">
-                    <span>Totaal</span>
-                    <span>€64,75</span>
                 </div>
 
                 <button class="bestel-btn">Ga verder met bestellen</button>
