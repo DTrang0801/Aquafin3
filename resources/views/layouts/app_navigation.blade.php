@@ -13,7 +13,7 @@
         <div class="nav-right">
             @auth
                 <span class="nav-user">{{ Auth::user()->name }}</span>
-                <form method="POST" action="{{ route('logout') }}" style="display:inline">
+                <form method="POST" action="{{ route('logout') }}" class="inline-form">
                     @csrf
                     <button class="btn btn-logout">Uitloggen</button>
                 </form>
