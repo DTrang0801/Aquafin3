@@ -20,6 +20,6 @@ class MateriaalController extends Controller
         // Categorieen ophalen met hun subcategorieën en materialen die in de subcategorieën zitten.
         $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
 
-        return view('materiaallijst', compact('categorieen'));
+        return view('pages.materialen', compact('categorieen'));
     }
 }
