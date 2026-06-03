@@ -9,7 +9,7 @@
                 <div class="info-kaart">
                     <h2>Klantgegevens</h2>
                     <p><strong>Naam:</strong>Technieker1</p>
-                    <p><strong>E-mail:</strong> technieker@aquafin.test</p>
+                    <p><strong>E-mail:</strong> technieker1@aquafin.test</p>
                     <p><strong>Telefoon:</strong> +32 470 00 00 00</p>
                 </div>
 
@@ -25,21 +25,21 @@
 
                     <div class="bestel-item">
                         <div>
-                            <h3>PVC Buis 50mm</h3>
+                            <h3>Draadstangen M6</h3>
                             <p>Aantal: 2</p>
                         </div>
                     </div>
 
                     <div class="bestel-item">
                         <div>
-                            <h3>Afsluitklep</h3>
+                            <h3>Inslagmoeren</h3>
                             <p>Aantal: 1</p>
                         </div>
                     </div>
 
                     <div class="bestel-item">
                         <div>
-                            <h3>Koppeling 32mm</h3>
+                            <h3>Bouten M6</h3>
                             <p>Aantal: 3</p>
                         </div>
                     </div>
