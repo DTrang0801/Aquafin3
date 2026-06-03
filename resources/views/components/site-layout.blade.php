@@ -14,9 +14,5 @@
         {{ $slot }}
     </main>
 
-    <footer style="text-align:center; padding:1rem; color:#6b7280; font-size:0.875rem; border-top:1px solid #e5e7eb; margin-top:2rem;">
-        Assia · Niels · Thien Trang · Thien Y · Yassine
-    </footer>
-
 </body>
 </html>
