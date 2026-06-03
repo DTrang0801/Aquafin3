@@ -2,6 +2,16 @@
     <div class="container">
         <h1 class="page-title">Materialen</h1>
 
+            <form action="{{ route('materialen') }}" method="GET">
+                <div class="search-filter">
+                <input type="text" name="search" class="search-input" placeholder="Zoek materialen..." value="{{ request('search') }}">
+                <button type="submit" class="search-button">Zoeken</button>
+                    @if(request('search'))
+                        <a href="{{ route('materialen') }}">X</a>
+                     @endif
+                </div>
+            </form>
+
         @if($belangrijkeMaterialen->isNotEmpty())
             <div class="alert-box important-box">
                 <div class="alert-header">
