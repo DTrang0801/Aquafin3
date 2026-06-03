@@ -19,18 +19,21 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@aquafin.test',
             'password' => bcrypt('password'),
+            'role' => 'admin',
         ]);
 
         User::factory()->create([
             'name' => 'Stockbeheerder',
             'email' => 'stock@aquafin.test',
             'password' => bcrypt('password'),
+            'role' => 'stockbeheerder',
         ]);
 
         User::factory()->create([
             'name' => 'Technieker',
             'email' => 'technieker@aquafin.test',
             'password' => bcrypt('password'),
+            'role' => 'technieker',
         ]);
 
         $this->call(NeerslagSeeder::class);
