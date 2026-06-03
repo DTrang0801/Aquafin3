@@ -7,9 +7,6 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #fff;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' fill='%232563eb' opacity='0.04'%3E%3Cpath d='M50 2C35 30 20 50 20 68c0 16.6 13.4 30 30 30s30-13.4 30-30C80 50 65 30 50 2z'/%3E%3C/svg%3E");
-    background-size: 300px 300px;
-    background-repeat: repeat;
     color: #333;
     min-height: 100vh;
 }
@@ -108,6 +105,14 @@ body {
 
 .btn-primary:hover {
     background: #1d4ed8;
+}
+
+/* Wave */
+.wave {
+    display: block;
+    width: 100%;
+    height: 80px;
+    margin-top: -1px;
 }
 
 /* Content */
