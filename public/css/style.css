@@ -7,8 +7,24 @@
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #fff;
+    background-image: url('/images/water-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     color: #333;
     min-height: 100vh;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.7);
+    z-index: -1;
 }
 
 /* Navigation */
@@ -105,14 +121,6 @@ body {
 
 .btn-primary:hover {
     background: #1d4ed8;
-}
-
-/* Wave */
-.wave {
-    display: block;
-    width: 100%;
-    height: 80px;
-    margin-top: -1px;
 }
 
 /* Content */
