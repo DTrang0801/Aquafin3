@@ -1,5 +1,6 @@
-<x-app-layout>
-    <div class="min-h-screen flex items-center justify-center bg-pink-100">
-      <div class="text-3xl">Hello World! 🤏🏼🤏🏼<br>Assia, Niels, Trang, Y, Yassine</div>
+<x-site-layout>
+    <div class="container text-center">
+        <h1 class="page-title" style="font-size:3rem; margin-bottom:0.5rem;">Aquafin Groep 3</h1>
+        <p class="page-subtitle" style="font-size:1.25rem;">Assia · Niels · Trang · Y · Yassine</p>
     </div>
-</x-app-layout>
+</x-site-layout>
