@@ -3,10 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('hello');
+    return view('home');
 })->name('home');
-
-Route::permanentRedirect('/hello', '/');
 
 Route::middleware('auth')->group(function () {
     Route::view('/materialen', 'pages.materialen')->name('materialen');
