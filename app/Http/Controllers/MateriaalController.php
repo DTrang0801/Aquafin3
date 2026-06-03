@@ -17,9 +17,15 @@ class MateriaalController extends Controller
 
     public function index()
     {
-        // Categorieen ophalen met hun subcategorieën en materialen die in de subcategorieën zitten.
+        // Haal de belangrijke materialen op
+        $belangrijkeMaterialen = Materiaal::where('belangrijk', true)
+                                          ->with('subcategorie')
+                                          ->get();
+
+        // Haal de hoofdstructuur op voor de lijst
         $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
 
-        return view('pages.materialen', compact('categorieen'));
+        //Stuur beide collecties naar de view
+        return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen'));
     }
 }
