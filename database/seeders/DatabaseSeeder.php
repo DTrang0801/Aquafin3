@@ -15,12 +15,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@aquafin.test',
+            'password' => bcrypt('password'),
+        ]);
 
         User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            'name' => 'Stockbeheerder',
+            'email' => 'stock@aquafin.test',
+            'password' => bcrypt('password'),
         ]);
+
+        User::factory()->create([
+            'name' => 'Technieker',
+            'email' => 'technieker@aquafin.test',
+            'password' => bcrypt('password'),
+        ]);
+
         $this->call(NeerslagSeeder::class);
         $this->call(MateriaalcategorieSeeder::class);
         $this->call(MateriaalSubcategorieSeeder::class);
