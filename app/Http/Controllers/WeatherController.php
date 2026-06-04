@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon; // Added Missing Import
+use App\Services\FloodRiskService; // Added Missing Import (Adjust path if your namespace differs)
 
 class WeatherController extends Controller
 {
@@ -64,36 +67,32 @@ class WeatherController extends Controller
         $dailyRainForecast = [];
         $currentRain = 0;
         $error = null;
-            $data = $response->json();
-            $current = $data['current'] ?? null;
-            $daily = $data['daily'] ?? null;
-            $currentRain = $current['precipitation'] ?? 0;
 
-            $detectedTimezone = $data['timezone'] ?? 'Europe/Berlin';
+        $data = $response->json();
+        $current = $data['current'] ?? null;
+        $daily = $data['daily'] ?? null;
+        $currentRain = $current['precipitation'] ?? 0;
 
-            if ($daily && isset($daily['time'])) {
-                $today = Carbon::today($detectedTimezone);
+        $detectedTimezone = $data['timezone'] ?? 'Europe/Berlin';
 
-                foreach ($daily['time'] as $index => $dateString) {
-                    $date = Carbon::parse($dateString);
-                    $amount = $daily['rain_sum'][$index] ?? 0;
+        if ($daily && isset($daily['time'])) {
+            $today = Carbon::today($detectedTimezone);
 
-                    if ($date->isBefore($today)) {
-                        $pastMonthTotal += $amount;
-                    } else {
-                        $dailyRainForecast[] = [
-                            'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
-                            'amount' => $amount,
-                        ];
-                    }
+            foreach ($daily['time'] as $index => $dateString) {
+                $date = Carbon::parse($dateString);
+                $amount = $daily['rain_sum'][$index] ?? 0;
+
+                if ($date->isBefore($today)) {
+                    $pastMonthTotal += $amount;
+                } else {
+                    $dailyRainForecast[] = [
+                        'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
+                        'amount' => $amount,
+                    ];
                 }
             }
         }
 
-<<<<<<< Updated upstream
-        // 3. Process Flood Calculation Alerts (Runs even if API drops out)
-=======
->>>>>>> Stashed changes
         if ($isSimulated) {
             $floodAlarmTriggered = true;
 
@@ -121,7 +120,7 @@ class WeatherController extends Controller
             'floodAlarm' => $floodAlarmTriggered,
             'alleMaterialen' => $alleMaterialen,
             'gekoppeldeIds' => $gekoppeldeIds,
-            'floodAlarmTriggered' => $floodAlarmTriggered, // Now guaranteed to exist!
+            'floodAlarmTriggered' => $floodAlarmTriggered, 
             'isSimulated' => $isSimulated,
             'error' => $error,
         ]);
@@ -137,7 +136,6 @@ class WeatherController extends Controller
 
         // Re-insert new pairs safely
         $rows = [];
-        $now = now();
         foreach ($geselecteerdeIds as $id) {
             $rows[] = [
                 'materiaal_id' => (int) $id,
