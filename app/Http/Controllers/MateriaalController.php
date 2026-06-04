@@ -103,4 +103,23 @@ class MateriaalController extends Controller
         return redirect()->route('materialen.beheer');
     }
 
+        public function edit(Materiaal $materiaal)
+    {
+        $subcategorieen = MateriaalSubcategorie::all();
+
+        return view('pages.materialen-edit', compact('materiaal', 'subcategorieen'));
+    }
+
+    public function update(Request $request, Materiaal $materiaal)
+    {
+        $materiaal->update([
+            'naam' => $request->naam,
+            'beschrijving' => $request->beschrijving,
+            'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
+            'belangrijk' => $request->has('belangrijk'),
+        ]);
+
+        return redirect()->route('materialen.beheer');
+    }
+
 }
