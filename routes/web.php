@@ -12,6 +12,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
     Route::get('/materialen/beheer', [MateriaalController::class, 'beheer'])->name('materialen.beheer');
     Route::delete('/materialen/{materiaal}', [MateriaalController::class, 'destroy'])->name('materialen.destroy');
+    Route::get('/materialen/{materiaal}/edit', [MateriaalController::class, 'edit'])->name('materialen.edit');
+    Route::put('/materialen/{materiaal}', [MateriaalController::class, 'update'])->name('materialen.update');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
