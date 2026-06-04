@@ -33,6 +33,14 @@
                                 <td class="font-bold text-important">{{ $materiaal->naam }}</td>
                                 <td class="text-italic">{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
                                 <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
+                                <td>
+                                    <form action="{{ route('winkelmandje.add') }}" method="POST" class="add-to-cart-form" style="display: flex; gap: 5px;">
+                                        @csrf
+                                        <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
+                                        <input type="number" name="aantal" value="1" min="1" style="width: 60px; padding: 4px; text-align: center;">
+                                        <button type="submit" class="btn-primary" style="padding: 4px 10px; cursor: pointer;">🛒 Voeg toe</button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -72,6 +80,19 @@
                                                 <tr>
                                                     <td class="font-bold">{{ $materiaal->naam }}</td>
                                                     <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
+                                                    <td>
+                                                        <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
+                                                            {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
+                                                        </span>
+                                                    </td>
+                                                    <td>
+                                                        <form action="{{ route('winkelmandje.add') }}" method="POST" style="display: flex; gap: 5px; align-items: center;">
+                                                            @csrf
+                                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
+                                                            <input type="number" name="aantal" value="1" min="1" style="width: 60px; padding: 4px; text-align: center;">
+                                                            <button type="submit" class="btn-primary" style="padding: 4px 10px; cursor: pointer;">🛒 Voeg toe</button>
+                                                        </form>
+                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>

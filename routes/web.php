@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\MateriaalController;
 
@@ -21,6 +22,12 @@ Route::middleware('role:admin')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
+    
+    Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
+    Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
+    Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
+    Route::delete('/winkelmandje/verwijder/{id}', [CartController::class, 'destroy'])->name('winkelmandje.destroy');
+  
     Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
     Route::get('/materialen/beheer', [MateriaalController::class, 'beheer'])->name('materialen.beheer');
     Route::delete('/materialen/{materiaal}', [MateriaalController::class, 'destroy'])->name('materialen.destroy');
