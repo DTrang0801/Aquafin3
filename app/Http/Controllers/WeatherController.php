@@ -2,155 +2,163 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
+use App\Http\Requests\CreateAndLinkMaterialRequest;
+use App\Http\Requests\StoreBelangrijkeItemsRequest;
+use App\Models\Materiaal;
 use App\Services\FloodRiskService;
+use App\Services\OpenMeteoService;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class WeatherController extends Controller
 {
-    protected $floodService;
+    public function __construct(
+        private FloodRiskService $floodRisk,
+        private OpenMeteoService $openMeteo,
+    ) {}
 
-    public function __construct(FloodRiskService $floodService)
+    public function index(Request $request): View
     {
-        $this->floodService = $floodService;
-    }
+        $coordinates = $this->openMeteo->resolveCoordinates(
+            $request->filled('lat') ? $request->float('lat') : null,
+            $request->filled('lon') ? $request->float('lon') : null,
+        );
 
-    public function index(Request $request)
-    {
-        $lastMonth = Carbon::now('Europe/Berlin')->subMonth();
-        $this->floodService->archiveHistoricalMonth($lastMonth->year, $lastMonth->month);
+        $latitude = $coordinates['lat'];
+        $longitude = $coordinates['lon'];
 
-        // Read coordinates from the request, default belgie
-        $lat = $request->input('lat', 50.8503);
-        $lon = $request->input('lon', 4.3517);
-
-        $floodAlarmTriggered = $this->floodService->checkAndFlagItems($lat, $lon);
-
-
-
-        // Pass coordinates into Open-Meteo
-        $response = Http::get("https://api.open-meteo.com/v1/forecast", [
-            'latitude' => $lat,
-            'longitude' => $lon,
-            'daily' => 'rain_sum',
-            'current' => 'rain,precipitation',
-            'timezone' => 'auto',
-            'past_days' => 30,
-            'forecast_days' => 14
+        session([
+            'weather_latitude' => $latitude,
+            'weather_longitude' => $longitude,
         ]);
 
-        if ($response->failed()) {
-            return view('pages.weersvoorspelling', [
-                'error' => 'Kon de neerslaggegevens niet ophalen.',
-                'dailyRainForecast' => [],
-                'pastMonthTotal' => 0,
-                'lat' => $lat,
-                'lon' => $lon
-            ]);
+        $forecast = $this->openMeteo->fetchForecast($latitude, $longitude);
+        $isSimulated = (bool) session('simulate_flood', false);
+        $linkedIds = $this->floodRisk->linkedMaterialIds();
+
+        if ($forecast === null) {
+            return view('pages.weersvoorspelling', $this->baseViewData(
+                latitude: $latitude,
+                longitude: $longitude,
+                linkedIds: $linkedIds,
+                isSimulated: $isSimulated,
+                extra: [
+                    'error' => 'Kon de neerslaggegevens niet ophalen.',
+                    'currentRain' => 0,
+                    'pastMonthTotal' => 0,
+                    'dailyRainForecast' => [],
+                    'floodAlarmTriggered' => false,
+                ],
+            ));
         }
 
-        $data = $response->json();
-        $current = $data['current'] ?? null;
-        $daily = $data['daily'] ?? null;
+        $parsed = $this->openMeteo->parseForecastForDisplay($forecast);
 
-        $pastMonthTotal = 0;
-        $dailyRainForecast = [];
+        $floodAlarmTriggered = $isSimulated
+            ? $this->floodRisk->applySimulation()
+            : $this->floodRisk->checkAndFlagItems($latitude, $longitude, $parsed['daily'], $parsed['timezone']);
 
-        $detectedTimezone = $data['timezone'] ?? 'Europe/Berlin';
+        return view('pages.weersvoorspelling', $this->baseViewData(
+            latitude: $latitude,
+            longitude: $longitude,
+            linkedIds: $linkedIds,
+            isSimulated: $isSimulated,
+            extra: [
+                'currentRain' => $parsed['currentRain'],
+                'pastMonthTotal' => $parsed['pastMonthTotal'],
+                'dailyRainForecast' => $parsed['dailyRainForecast'],
+                'floodAlarmTriggered' => $floodAlarmTriggered,
+            ],
+        ));
+    }
 
-        if ($daily && isset($daily['time'])) {
-            $today = Carbon::today($detectedTimezone);
+    public function storeBelangrijk(StoreBelangrijkeItemsRequest $request): RedirectResponse
+    {
+        $this->floodRisk->syncLinkedMaterials($request->materiaalIds());
 
-            foreach ($daily['time'] as $index => $dateString) {
-                $date = Carbon::parse($dateString);
-                $amount = $daily['rain_sum'][$index] ?? 0;
+        $this->recalculateFloodRiskFromSession();
 
-                if ($date->isBefore($today)) {
-                    $pastMonthTotal += $amount;
-                } else {
-                    $dailyRainForecast[] = [
-                        'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
-                        'amount' => $amount
-                    ];
-                }
-            }
-        }
+        return redirect()
+            ->back()
+            ->with('success', 'Kritieke materialen succesvol bijgewerkt!');
+    }
 
-        $isSimulated = session('simulate_flood', false);
+    public function toggleSimulation(): RedirectResponse
+    {
+        $wasSimulated = (bool) session('simulate_flood', false);
 
-        if ($isSimulated) {
-            // Force code to act as if flood risk threshold is breached
-            $floodAlarmTriggered = true;
-            
-            // Re-apply the database updates using forced TRUE state
-            $floodMaterialIds = DB::table('belangrijkeItems')->pluck('materiaal_id')->toArray();
-            if (!empty($floodMaterialIds)) {
-                DB::table('materialen')->whereIn('id', $floodMaterialIds)->update(['belangrijk' => true]);
-            }
-            DB::table('materialen')->whereNotIn('id', $floodMaterialIds)->update(['belangrijk' => false]);
-        } else {
-            // Run normal calculation logic based on live Open-Meteo metrics
-            $floodAlarmTriggered = $this->floodService->checkAndFlagItems($lat, $lon);
-        }
+        session(['simulate_flood' => ! $wasSimulated]);
 
-        $alleMaterialen = DB::table('materialen')->select('id', 'naam')->get();        
-        $gekoppeldeIds = DB::table('belangrijkeItems')->pluck('materiaal_id')->toArray();
+        $this->recalculateFloodRiskFromSession();
 
-        return view('pages.weersvoorspelling', [
-            'currentRain' => $current['precipitation'] ?? 0,
-            'pastMonthTotal' => round($pastMonthTotal, 1),
-            'dailyRainForecast' => $dailyRainForecast,
-            'lat' => round($lat, 2),
-            'lon' => round($lon, 2),
-            'floodAlarm' => $floodAlarmTriggered,
-            'alleMaterialen' => $alleMaterialen,
-            'gekoppeldeIds' => $gekoppeldeIds,
-            'floodAlarmTriggered' => $floodAlarmTriggered,
-            'isSimulated' => $isSimulated
+        return redirect()
+            ->back()
+            ->with('success', 'Simulatiemodus gewijzigd!');
+    }
+
+    public function addMaterial(CreateAndLinkMaterialRequest $request): RedirectResponse
+    {
+        $materiaal = Materiaal::query()->create([
+            'naam' => $request->string('naam'),
+            'beschrijving' => $request->string('beschrijving'),
+            'materiaal_subcategorie_id' => $request->integer('materiaal_subcategorie_id'),
+            'belangrijk' => false,
         ]);
+
+        if ($request->boolean('link_as_critical')) {
+            $this->floodRisk->syncLinkedMaterials(
+                array_merge(
+                    $this->floodRisk->linkedMaterialIds(),
+                    [$materiaal->id],
+                ),
+            );
+        }
+
+        return redirect()
+            ->back()
+            ->with('success', "Materiaal '{$materiaal->naam}' succesvol toegevoegd!");
     }
 
-    public function storeBelangrijk(Request $request)
-    {
-        // Get checked IDs from the form checkboxes
-        $geselecteerdeIds = $request->input('materiaal_ids', []);
+    /**
+     * @param  list<int>  $linkedIds
+     * @param  array<string, mixed>  $extra
+     * @return array<string, mixed>
+     */
+    private function baseViewData(
+        float $latitude,
+        float $longitude,
+        array $linkedIds,
+        bool $isSimulated,
+        array $extra = [],
+    ): array {
+        $materialenByCategory = Materiaal::query()
+            ->with('subcategorie.categorie')
+            ->orderBy('naam')
+            ->get()
+            ->groupBy(fn ($m) => $m->subcategorie?->categorie?->naam ?? 'Overig');
 
-        // Clear out old relationships to prevent duplicates
-        DB::table('belangrijkeItems')->truncate();
-
-        // Re-insert new pairs safely
-        $rows = [];
-        $now = now();
-        foreach ($geselecteerdeIds as $id) {
-            $rows[] = [
-                'materiaal_id' => (int) $id,
-            ];
-        }
-
-        if (!empty($rows)) {
-            DB::table('belangrijkeItems')->insert($rows);
-        }
-
-        // Run calculations immediately so the database syncs with current weather status
-        $this->floodService->checkAndFlagItems(50.75, 4.5);
-
-        return redirect()->back()->with('success', 'Kritieke materialen succesvol bijgewerkt!');
+        return array_merge([
+            'lat' => round($latitude, 2),
+            'lon' => round($longitude, 2),
+            'alleMaterialen' => $materialenByCategory,
+            'gekoppeldeIds' => $linkedIds,
+            'isSimulated' => $isSimulated,
+            'canManageStock' => auth()->user()?->role === 'stockbeheerder',
+        ], $extra);
     }
 
-    public function toggleSimulation()
+    private function recalculateFloodRiskFromSession(): void
     {
-        $currentState = session('simulate_flood', false);
-        
-        // Invert the state
-        session(['simulate_flood' => !$currentState]);
+        if (session('simulate_flood', false)) {
+            $this->floodRisk->applySimulation();
 
-        // If turning simulation off, force a recalculation immediately to restore live data state
-        if ($currentState === true) {
-            $this->floodService->checkAndFlagItems(50.75, 4.5);
+            return;
         }
 
-        return redirect()->back()->with('success', 'Simulatiemodus gewijzigd!');
+        $this->floodRisk->checkAndFlagItems(
+            (float) session('weather_latitude', OpenMeteoService::DEFAULT_LATITUDE),
+            (float) session('weather_longitude', OpenMeteoService::DEFAULT_LONGITUDE),
+        );
     }
 }
