@@ -46,7 +46,25 @@ class MateriaalController extends Controller
             'belangrijk' => $request->has('belangrijk'),
         ]);
 
-        return redirect('/materialen');
-        
-}
+        return redirect('/materialen');  
+    } 
+        // Toon beheerpagina met alle materialen voor de stockbeheerder
+        public function beheer()
+    {
+        $materialen = Materiaal::with('subcategorie')->get();
+
+        return view('pages.materialen-beheer', compact('materialen'));
+    } 
+
+        public function destroy(Materiaal $materiaal)
+    {
+        if (Auth::user()->role !== 'stockbeheerder') {
+            abort(403);
+        }
+
+        $materiaal->delete();
+
+        return redirect()->route('materialen.beheer');
+    }
+
 }
