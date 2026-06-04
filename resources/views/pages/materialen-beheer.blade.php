@@ -7,13 +7,6 @@
         <div style="margin-bottom: 20px;">
             <a href="{{ route('materialen.create') }}" class="btn" style="background:#2563eb;color:#fff;padding:10px 24px;border-radius:8px;font-size:15px;">
                 + Nieuw materiaal
-             
-            </a>
-        </div>
-
-        <div style="margin-bottom: 20px;">
-            <a href="{{ route('materialen.create') }}" class="btn" style="background:#2563eb;color:#fff;padding:10px 24px;border-radius:8px;font-size:15px;">
-            + Nieuw materiaal
             </a>
         </div>
 
