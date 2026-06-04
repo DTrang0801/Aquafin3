@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\MateriaalController;
 
 Route::get('/', function () {
@@ -11,9 +12,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
     Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
+
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
+
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
-    Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
+
+    Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');   
+    Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
+    Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
+
     Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
     Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
 
