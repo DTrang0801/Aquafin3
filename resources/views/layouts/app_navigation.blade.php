@@ -3,30 +3,31 @@
         <div class="nav-left">
             <a href="{{ route('home') }}" class="nav-brand">Aquafin</a>
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
+
+            @guest
+                <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
+            @endguest
+
             @auth
                 @if (Auth::user()->role !== 'stockbeheerder')
                     <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
                 @endif
-            @endauth
-            <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
-            @auth
+
+                <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
+
                 @if (Auth::user()->role !== 'stockbeheerder')
                     <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
                 @endif
-            @endauth
-            @auth
+
                 @if (Auth::user()->role === 'stockbeheerder' || Auth::user()->role === 'admin')
                     <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
                 @endif
-            @endauth
 
-            @auth
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
                 @endif
-            @endauth
 
-            @auth
                 @if (Auth::user()->role === 'stockbeheerder')
                     <a href="{{ route('materialen.create') }}" class="nav-link">Nieuw Materiaal</a>
                 @endif
