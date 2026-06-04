@@ -1,75 +1,83 @@
 <x-site-layout>
     <div class="weather-page">
-        <div class="weather-card">
-            <h1 class="card-title weather-card-title">Neerslag</h1>
-            <p id="location-subtitle" class="card-subtitle">
-                @if(request()->has('lat') && request()->has('lon'))
-                    Locatie: {{ $lat }}, {{ $lon }}
-                @else
-                    Standaard locatie (Brussel)
-                @endif
-            </p>
-
-            @if($floodAlarmTriggered ?? false)
-                <div class="weather-alert weather-alert--danger">
-                    ALARM: Overstromingsgevaar gedetecteerd! Gekoppelde voorraad is gemarkeerd als BELANGRIJK.
-                    @if($isSimulated)
-                        <span class="weather-alert__note">(GESIMULEERDE MODUS)</span>
+        <div class="content-grid-three">
+            <div class="weather-card">
+                <h1 class="card-title weather-card-title">Neerslag</h1>
+                <p id="location-subtitle" class="card-subtitle">
+                    @if(request()->has('lat') && request()->has('lon'))
+                        Locatie: {{ $lat }}, {{ $lon }}
+                    @else
+                        Standaard locatie (Brussel)
                     @endif
-                </div>
-            @else
-                <div class="weather-alert weather-alert--ok">
-                    Status stabiel: geen verhoogd overstromingsrisico op basis van neerslagdrempels.
-                </div>
-            @endif
+                </p>
 
-            @if(isset($error))
-                <div class="error-alert">{{ $error }}</div>
-            @else
-                <div class="stats-grid">
-                    <div class="stat-box">
-                        <span class="stat-label">Actuele neerslag</span>
-                        <span class="stat-value value-current">
-                            {{ $currentRain }} <span class="unit">mm</span>
-                        </span>
+                @if($floodAlarmTriggered ?? false)
+                    <div class="weather-alert weather-alert--danger">
+                        ALARM: Overstromingsgevaar gedetecteerd! Gekoppelde voorraad is gemarkeerd als BELANGRIJK.
+                        @if($isSimulated)
+                            <span class="weather-alert__note">(GESIMULEERDE MODUS)</span>
+                        @endif
                     </div>
-
-                    <div class="stat-box highlighted">
-                        <span class="stat-label">Totaal afgelopen maand</span>
-                        <span class="stat-value value-history">
-                            {{ $pastMonthTotal }} <span class="unit">mm</span>
-                        </span>
+                @else
+                    <div class="weather-alert weather-alert--ok">
+                        Status stabiel: geen verhoogd overstromingsrisico op basis van neerslagdrempels.
                     </div>
-                </div>
+                @endif
 
-                <h3 class="section-title">14-daagse verwachting</h3>
-
-                <div class="forecast-container">
-                    @forelse($dailyRainForecast as $forecast)
-                        <div class="forecast-item">
-                            <span class="day-name">{{ $forecast['day_name'] }}</span>
-
-                            <div class="badge-wrapper">
-                                @if($forecast['amount'] > 0)
-                                    <span class="badge rain">Regen</span>
-                                    <span class="rain-amount wet">
-                                        {{ number_format($forecast['amount'], 1) }} mm
-                                    </span>
-                                @else
-                                    <span class="badge dry">Droog</span>
-                                    <span class="rain-amount dry">0.0 mm</span>
-                                @endif
-                            </div>
+                @if(isset($error))
+                    <div class="error-alert">{{ $error }}</div>
+                @else
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-label">Actuele neerslag</span>
+                            <span class="stat-value value-current">
+                                {{ $currentRain }} <span class="unit">mm</span>
+                            </span>
                         </div>
-                    @empty
-                        <p class="forecast-empty">Geen voorspelling beschikbaar.</p>
-                    @endforelse
-                </div>
-            @endif
-        </div>
 
-        @if($canManageStock)
-            <div class="weather-card management-panel">
+                        <div class="stat-box highlighted">
+                            <span class="stat-label">Totaal afgelopen maand</span>
+                            <span class="stat-value value-history">
+                                {{ $pastMonthTotal }} <span class="unit">mm</span>
+                            </span>
+                        </div>
+                    </div>
+
+                    <h3 class="section-title">14-daagse verwachting</h3>
+
+                    <div class="forecast-container">
+                        @forelse($dailyRainForecast as $forecast)
+                            <div class="forecast-item">
+                                <span class="day-name">{{ $forecast['day_name'] }}</span>
+
+                                <div class="badge-wrapper">
+                                    @if($forecast['amount'] > 0)
+                                        <span class="badge rain">Regen</span>
+                                        <span class="rain-amount wet">
+                                            {{ number_format($forecast['amount'], 1) }} mm
+                                        </span>
+                                    @else
+                                        <span class="badge dry">Droog</span>
+                                        <span class="rain-amount dry">0.0 mm</span>
+                                    @endif
+                                </div>
+                            </div>
+                        @empty
+                            <p class="forecast-empty">Geen voorspelling beschikbaar.</p>
+                        @endforelse
+                    </div>
+                @endif
+            </div>
+
+            <div>
+                @if(isset($fiveYearForecast) && !empty($fiveYearForecast))
+                    <x-flood-forecast-card :fiveYearForecast="$fiveYearForecast" :currentYearAnalysis="$currentYearAnalysis ?? []" />
+                @endif
+            </div>
+
+            <div>
+                @if($canManageStock)
+                    <div class="weather-card management-panel">
                 <div class="simulation-panel">
                     <div>
                         <h4 class="simulation-panel__title">Systeem testen</h4>
@@ -154,9 +162,10 @@
 
                     <button type="submit" class="submit-btn">Wijzigingen opslaan</button>
                 </form>
-                
+                    </div>
+                @endif
             </div>
-        @endif
+        </div>
     </div>
 
     <script>
@@ -249,4 +258,25 @@
         }
     </script>
     @endunless
+
+    <style>
+        .content-grid-three {
+            display: grid;
+            gap: 24px;
+            grid-template-columns: 1fr 1fr 1fr;
+            width: 100%;
+        }
+
+        @media (max-width: 1400px) {
+            .content-grid-three {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .content-grid-three {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </x-site-layout>
