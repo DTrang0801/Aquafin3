@@ -3,71 +3,33 @@
         <h1 class="winkelmandje-title">Winkelmandje</h1>
         <p class="winkelmandje-subtitle">Hier zie je een klein overzicht van de gekozen materialen.</p>
 
-       <!-- <div class="winkelmandje-layout">
+       <div class="winkelmandje-layout">
             <div class="producten-lijst">
 
-                <div class="product-kaart">
-                    <div class="product-info">
-                        <h2>Bouten M6</h2>
-                    </div>
-                    <div class="product-details">
-                        <span>Aantal: 2</span>
-                    </div>
-                </div>
-
-                <div class="product-kaart">
-                    <div class="product-info">
-                        <h2>Borgmoeren</h2>
-                    </div>
-                    <div class="product-details">
-                        <span>Aantal: 1</span>
-                    </div>
-                </div>
-
-                <div class="product-kaart">
-                    <div class="product-info">
-                        <h2>Helmen</h2>
-                    </div>
-                    <div class="product-details">
-                        <span>Aantal: 3</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="samenvatting-kaart">
-                <h2>Overzicht</h2>
-                <div class="samenvatting-regel">
-                    <span>Aantal producten</span>
-                    <span>6</span>
-                </div>
-                <div class="samenvatting-regel">
-                    <span>Verzendkosten</span>
-                </div>
-                <div class="samenvatting-regel totaal">
-                </div>
-
-                <button class="bestel-btn">Ga verder met bestellen</button>
-            </div>
-        </div>
-    </div> -->
-
-    @if($materialen->isEmpty())
-        <p>Je mandje is leeg.</p>
+        @if($materialen->isEmpty())
+            <p>Je mandje is leeg.</p>
         @else
 
-        @foreach($materialen as $materiaal)
-            <div class="product-kaart">
-                <div class="product-info">
-                <h2>{{ $materiaal->naam }}</h2>
-            </div>
-
-            <div class="product-details">
-                <span>Aantal: {{ $materiaal->pivot->aantal }}</span>
+            @foreach($materialen as $materiaal)
+                <div class="product-kaart">
+                    <div class="product-info">
+                    <h2>{{ $materiaal->naam }}</h2>
                 </div>
+
+                <div class="product-details">
+
+                    <span>Aantal: {{ $materiaal->pivot->aantal }}</span>
+                    <form action="{{ route('mandje.verwijderen', $materiaal->id) }}" method="POST">
+                        @csrf
+                        @method('DELETE')
+                        <button style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                    </form>
+                </div>
+
             </div>
-        @endforeach
-    @endif
-    
+            @endforeach
+        @endif
+
     <style>
         .winkelmandje-container {
             max-width: 1100px;
@@ -81,7 +43,7 @@
             margin-bottom: 10px;
         }
 
-        .winkelmandje-subtitle {
+       .winkelmandje-subtitle {
             margin-bottom: 30px;
             color: #4b5563;
         }
