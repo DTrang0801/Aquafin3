@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
 
-    Route::get('/weersvoorspelling', [WeatherController::class, 'index']);
+    Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
     Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
 
