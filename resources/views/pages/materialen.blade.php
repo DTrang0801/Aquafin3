@@ -1,6 +1,11 @@
 <x-site-layout>
     <div class="container">
         <h1 class="page-title">Materialen</h1>
+        <div style="margin-bottom: 20px;">
+            <a href="{{ route('materialen.create') }}" class="btn-toevoegen">
+                + Nieuw materiaal
+            </a>
+        </div>
 
             <form action="{{ route('materialen') }}" method="GET">
                 <div class="search-filter">
