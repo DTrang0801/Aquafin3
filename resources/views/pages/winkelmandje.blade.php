@@ -1,148 +1,115 @@
 <x-site-layout>
-   <div class="winkelmandje-container">
+    <div class="winkelmandje-container">
         <h1 class="winkelmandje-title">Winkelmandje</h1>
         <p class="winkelmandje-subtitle">Hier zie je een klein overzicht van de gekozen materialen.</p>
 
-       <div class="winkelmandje-layout">
-            <div class="producten-lijst">
+        <div class="producten-lijst">
 
-        @if($materialen->isEmpty())
-            <p>Je mandje is leeg.</p>
-        @else
+            @if($materialen->isEmpty())
+                <p>Je mandje is leeg.</p>
+            @else
+                @foreach($materialen as $materiaal)
+                    <div class="product-kaart">
 
-            @foreach($materialen as $materiaal)
-                <div class="product-kaart">
-                    <div class="product-info">
-                    <h2>{{ $materiaal->naam }}</h2>
-                </div>
+                        <div class="product-info">
+                            <h2>{{ $materiaal->naam }}</h2>
+                            <p>{{ $materiaal->omschrijving }}</p>
+                        </div>
 
-                <div class="product-details">
+                        <div class="product-details">
+                            <form action="{{ route('mandje.verlagen', $materiaal->id) }}" method="POST" style="display:inline">
+                                @csrf
+                                <button type="submit">-</button>
+                            </form>
 
-                    <span>Aantal: {{ $materiaal->pivot->aantal }}</span>
-                    <form action="{{ route('mandje.verwijderen', $materiaal->id) }}" method="POST">
-                        @csrf
-                        @method('DELETE')
-                        <button style="color: red; border: none; background: none; cursor: pointer;">X</button>
-                    </form>
-                </div>
+                            <span>Aantal: {{ $materiaal->pivot->aantal }}</span>
 
-            </div>
-            @endforeach
-        @endif
+                            <form action="{{ route('mandje.verhogen', $materiaal->id) }}" method="POST" style="display:inline">
+                                @csrf
+                                <button type="submit">+</button>
+                            </form>
 
-    <style>
-        .winkelmandje-container {
-            max-width: 1100px;
-            margin: 0 auto;
-            padding: 40px 20px 60px;
-            color: #1f2937;
-        }
+                            <form action="{{ route('mandje.verwijderen', $materiaal->id) }}" method="POST" style="display:inline">
+                                @csrf
+                                @method('DELETE')
+                                <button style="color: red; border: none; background: none; cursor: pointer;">X</button>
+                            </form>
+                        </div>
 
-        .winkelmandje-title {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
+                    </div>
+                @endforeach
+            @endif
 
-       .winkelmandje-subtitle {
-            margin-bottom: 30px;
-            color: #4b5563;
-        }
+        </div>
+    </div>
 
-        .winkelmandje-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 24px;
-            align-items: start;
-        }
+<style>
+    .winkelmandje-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 40px 20px;
+        color: #1f2937;
+    }
 
-        .producten-lijst {
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
+    .winkelmandje-title {
+        font-size: 2rem;
+        margin-bottom: 10px;
+    }
 
-        .product-kaart,
-        .samenvatting-kaart {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 14px;
-            padding: 20px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-        }
+    .winkelmandje-subtitle {
+        margin-bottom: 30px;
+        color: #4b5563;
+    }
 
-        .product-kaart {
-            display: flex;
-            justify-content: space-between;
-            gap: 20px;
-        }
+    .producten-lijst {
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+    }
 
-        .product-info h2 {
-            font-size: 1.2rem;
-            margin-bottom: 8px;
-        }
+    .product-kaart {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    }
 
-        .product-info p {
-            color: #6b7280;
-            margin: 0;
-        }
+    .product-info h2 {
+        font-size: 1.2rem;
+        color: #111827;
+        margin: 0;
+    }
 
-        .product-details {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            text-align: right;
-            font-weight: 600;
-            color: #111827;
-        }
+    .product-details {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 10px;
+    }
 
-        .samenvatting-kaart h2 {
-            margin-bottom: 20px;
-            font-size: 1.3rem;
-        }
+    .product-details span {
+        font-weight: 600;
+        color: #111827;
+        min-width: 80px;
+        text-align: center;
+    }
 
-        .samenvatting-regel {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            color: #374151;
-        }
+    .product-details button {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        border: 1px solid #ccc;
+        background: white;
+        cursor: pointer;
+        font-size: 1rem;
+        font-weight: bold;
+    }
 
-        .samenvatting-regel.totaal {
-            margin-top: 20px;
-            padding-top: 16px;
-            border-top: 1px solid #d1d5db;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: #111827;
-        }
-
-        .bestel-btn {
-            width: 100%;
-            margin-top: 20px;
-            padding: 12px 16px;
-            background-color: #2563eb;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .bestel-btn:hover {
-            background-color: #1d4ed8;
-        }
-
-        @media (max-width: 768px) {
-            .winkelmandje-layout {
-                grid-template-columns: 1fr;
-            }
-
-            .product-kaart {
-                flex-direction: column;
-            }
-
-            .product-details {
-                text-align: left;
-            }
-        }
-    </style>
+    .product-details button:hover {
+        background: #f3f4f6;
+    }
+</style>
 </x-site-layout>

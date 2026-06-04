@@ -37,6 +37,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/winkelmandje/toevoegen/{materiaalId}', [MandjeController::class, 'toevoegen'])->name('mandje.toevoegen');
     Route::delete('/winkelmandje/verwijderen/{materiaalId}', [MandjeController::class, 'verwijderen'])->name('mandje.verwijderen');
 
+    Route::post('/winkelmandje/verhogen/{materiaalId}', [MandjeController::class, 'verhogen'])->name('mandje.verhogen');
+Route::post('/winkelmandje/verlagen/{materiaalId}', [MandjeController::class, 'verlagen'])->name('mandje.verlagen');
+
     Route::get('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'destroy'])->name('profile.destroy');
