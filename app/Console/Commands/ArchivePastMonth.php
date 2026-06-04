@@ -20,7 +20,7 @@ class ArchivePastMonth extends Command
         $month = $lastMonth->month;
 
         $this->info("Controleren of neerslagdata voor {$year}-{$month} gearchiveerd moet worden...");
-        
+
         // Run the archiver (Defaults to coordinates 50.75, 4.5)
         $service->archiveHistoricalMonth($year, $month, 50.75, 4.5);
 

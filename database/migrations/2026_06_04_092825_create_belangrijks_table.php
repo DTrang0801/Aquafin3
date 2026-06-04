@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-public function up(): void
+    public function up(): void
     {
         Schema::create('belangrijkeItems', function (Blueprint $blueprint) {
             $blueprint->id();
 
             $blueprint->foreignId('materiaal_id')->constrained('materialen')->onDelete('cascade');
-                        
+
             $blueprint->timestamps();
         });
     }
