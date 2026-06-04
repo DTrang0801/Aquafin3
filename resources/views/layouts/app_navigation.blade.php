@@ -14,13 +14,16 @@
                     <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
                 @endif
 
-                <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
+                @if (Auth::user()->role !== 'admin')
+                    <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
+                @endif
+
 
                 @if (Auth::user()->role !== 'stockbeheerder')
                     <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
                 @endif
 
-                    <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
+                <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
 
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>

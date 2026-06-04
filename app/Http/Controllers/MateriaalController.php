@@ -18,25 +18,52 @@ class MateriaalController extends Controller
 
     public function index(Request $request)
     {
-        // Haal de belangrijke materialen op
         $belangrijkeMaterialen = Materiaal::where('belangrijk', true)
                                           ->with('subcategorie')
                                           ->get();
 
-        // Haal de hoofdstructuur op voor de lijst
-        // $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
-        
-        // Zoekbalk toevoegen
         $search = $request->input('search');
 
-        $categorieen = Materiaalcategorie::with(['subcategorieen.materialen' => function($query) use ($search) {
-        if ($search) {
-        $query->where('naam', 'like', '%' . $search . '%');
-        }
-        }])->get();
+        $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
 
-        // Stuur beide collecties naar de view
-        return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen'));
+        $openCategoryIds = collect();
+        $openSubcategoryIds = collect();
+
+        if ($search) {
+            foreach ($categorieen as $cat) {
+                $catMatch = mb_stripos($cat->naam, $search) !== false;
+
+                foreach ($cat->subcategorieen as $sub) {
+                    $subMatch = mb_stripos($sub->naam, $search) !== false;
+
+                    if ($subMatch) {
+                        $openSubcategoryIds->push($sub->id);
+                    } else {
+                        $sub->setRelation('materialen', $sub->materialen->filter(function ($m) use ($search) {
+                            return mb_stripos($m->naam, $search) !== false;
+                        }));
+
+                        if ($sub->materialen->isNotEmpty()) {
+                            $openSubcategoryIds->push($sub->id);
+                        }
+                    }
+                }
+
+                $catSubIds = $cat->subcategorieen->pluck('id');
+                if ($catMatch || $openSubcategoryIds->intersect($catSubIds)->isNotEmpty()) {
+                    $openCategoryIds->push($cat->id);
+                }
+            }
+        } else {
+            $openCategoryIds = $categorieen->pluck('id');
+            foreach ($categorieen as $cat) {
+                foreach ($cat->subcategorieen as $sub) {
+                    $openSubcategoryIds->push($sub->id);
+                }
+            }
+        }
+
+        return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen', 'openCategoryIds', 'openSubcategoryIds'));
     }
 
         public function create()
