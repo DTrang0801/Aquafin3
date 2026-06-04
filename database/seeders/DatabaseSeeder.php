@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Bestelling;
 use App\Models\Materiaal;
+use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -47,11 +47,11 @@ class DatabaseSeeder extends Seeder
         $materialen = Materiaal::take(3)->get();
 
         $bestelling = Bestelling::create([
-            'gebruiker_id'   => $technieker->id,
+            'gebruiker_id' => $technieker->id,
             'gevraagde_datum' => '2026-06-10',
-            'gevraagde_tijd'  => '09:00',
-            'locatie'         => 'Brussel - Site A',
-            'opmerking'       => 'Dringend nodig voor onderhoud.',
+            'gevraagde_tijd' => '09:00',
+            'locatie' => 'Brussel - Site A',
+            'opmerking' => 'Dringend nodig voor onderhoud.',
         ]);
 
         $bestelling->materialen()->attach([
@@ -60,11 +60,11 @@ class DatabaseSeeder extends Seeder
         ]);
 
         $bestelling2 = Bestelling::create([
-            'gebruiker_id'   => $technieker->id,
+            'gebruiker_id' => $technieker->id,
             'gevraagde_datum' => '2026-06-15',
-            'gevraagde_tijd'  => '14:00',
-            'locatie'         => 'Gent - Site B',
-            'opmerking'       => null,
+            'gevraagde_tijd' => '14:00',
+            'locatie' => 'Gent - Site B',
+            'opmerking' => null,
         ]);
 
         $bestelling2->materialen()->attach([
