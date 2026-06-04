@@ -21,7 +21,7 @@ class CartController extends Controller
     {
         // Haal het mandje op van de ingelogde gebruiker inclusief de materialen
         $cart = Mandje::where('gebruiker_id', Auth::id())->with('materialen.subcategorie')->first();
-        
+
         // Als de gebruiker nog geen mandje heeft, maken we een lege collectie aan
         $materialen = $cart ? $cart->materialen : collect();
 
@@ -59,7 +59,7 @@ class CartController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate(['aantal' => 'required|integer|min:1']);
-        
+
         $cart = $this->getOrCreateCart();
         $cart->materialen()->updateExistingPivot($id, ['aantal' => $request->aantal]);
 
