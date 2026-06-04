@@ -460,6 +460,14 @@ body::before {
 .text-italic { font-style: italic; }
 .no-data { color: #718096; font-size: 14px; margin-left: 15px; }
 
+.row-important {
+    background-color: #fff8e1;
+}
+
+.row-important:hover {
+    background-color: #ffecb3 !important;
+}
+
 .weather-card {
             background-color: #012e76; /* slate-800 */
             padding: 32px;

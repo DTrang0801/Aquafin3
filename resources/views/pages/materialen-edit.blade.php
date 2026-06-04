@@ -2,41 +2,47 @@
     <div class="container">
         <h1 class="page-title">Materiaal wijzigen</h1>
 
-        <form method="POST" action="{{ route('materialen.update', $materiaal) }}">
-            @csrf
-            @method('PUT')
+        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;max-width:600px;">
+            <form method="POST" action="{{ route('materialen.update', $materiaal) }}">
+                @csrf
+                @method('PUT')
 
-            <label>Naam:</label>
-            <input type="text" name="naam" value="{{ $materiaal->naam }}" required>
+                <div class="form-group">
+                    <label class="form-label">Naam:</label>
+                    <input type="text" name="naam" value="{{ $materiaal->naam }}" required class="form-input">
+                </div>
 
-            <br><br>
+                <div class="form-group">
+                    <label class="form-label">Beschrijving:</label>
+                    <textarea name="beschrijving" class="form-input" rows="4">{{ $materiaal->beschrijving }}</textarea>
+                </div>
 
-            <label>Beschrijving:</label>
-            <textarea name="beschrijving">{{ $materiaal->beschrijving }}</textarea>
+                <div class="form-group">
+                    <label class="form-label">Subcategorie:</label>
+                    <select name="materiaal_subcategorie_id" class="form-input">
+                        @foreach($subcategorieen as $subcategorie)
+                            <option value="{{ $subcategorie->id }}"
+                                {{ $materiaal->materiaal_subcategorie_id == $subcategorie->id ? 'selected' : '' }}>
+                                {{ $subcategorie->naam }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
 
-            <br><br>
+                <div class="form-group">
+                    <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;">
+                        <input type="checkbox" name="belangrijk"
+                            {{ $materiaal->belangrijk ? 'checked' : '' }}
+                            style="width:18px;height:18px;">
+                        Belangrijk materiaal
+                    </label>
+                </div>
 
-            <label>Subcategorie:</label>
-            <select name="materiaal_subcategorie_id">
-                @foreach($subcategorieen as $subcategorie)
-                    <option value="{{ $subcategorie->id }}"
-                        {{ $materiaal->materiaal_subcategorie_id == $subcategorie->id ? 'selected' : '' }}>
-                        {{ $subcategorie->naam }}
-                    </option>
-                @endforeach
-            </select>
-
-            <br><br>
-
-            <label>
-                <input type="checkbox" name="belangrijk"
-                    {{ $materiaal->belangrijk ? 'checked' : '' }}>
-                Belangrijk materiaal
-            </label>
-
-            <br><br>
-
-            <button type="submit">Opslaan</button>
-        </form>
+                <div style="display:flex;gap:8px;margin-top:24px;">
+                    <button type="submit" class="search-button">Opslaan</button>
+                    <a href="{{ route('materialen.beheer') }}" style="height:42px;display:inline-flex;align-items:center;background:#475569;color:#fff;text-decoration:none;padding:0 16px;border-radius:6px;font-weight:600;font-size:13px;">Annuleren</a>
+                </div>
+            </form>
+        </div>
     </div>
 </x-site-layout>
