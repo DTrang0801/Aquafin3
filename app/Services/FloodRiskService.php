@@ -2,14 +2,13 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Log;
 
 class FloodRiskService
 {
-
     public function archiveHistoricalMonth($year, $month, $lat = 50.75, $lon = 4.5): void
     {
         // Check if this month is already archived to prevent duplicate rows
@@ -27,18 +26,18 @@ class FloodRiskService
         $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
 
         // Open-Meteo requires the 'archive' endpoint for historical dates older than a few weeks
-        $response = Http::get("https://archive-api.open-meteo.com/v1/archive", [
+        $response = Http::get('https://archive-api.open-meteo.com/v1/archive', [
             'latitude' => $lat,
             'longitude' => $lon,
             'start_date' => $startDate,
             'end_date' => $endDate,
             'daily' => 'rain_sum',
-            'timezone' => 'Europe/Berlin'
+            'timezone' => 'Europe/Berlin',
         ]);
 
         if ($response->successful()) {
             $dailyRain = $response->json()['daily']['rain_sum'] ?? [];
-            
+
             // Sum up every day of that month
             $monthlyTotal = array_sum($dailyRain);
 
@@ -59,16 +58,16 @@ class FloodRiskService
 
     private array $thresholds = [
         'Winter' => 300,
-        'Lente'  => 250,
-        'Zomer'  => 260,
-        'Herfst' => 280
+        'Lente' => 250,
+        'Zomer' => 260,
+        'Herfst' => 280,
     ];
 
     private array $seasonMonths = [
         'Winter' => [12, 1, 2],
-        'Lente'  => [3, 4, 5],
-        'Zomer'  => [6, 7, 8],
-        'Herfst' => [9, 10, 11]
+        'Lente' => [3, 4, 5],
+        'Zomer' => [6, 7, 8],
+        'Herfst' => [9, 10, 11],
     ];
 
     public function checkAndFlagItems($lat = 50.75, $lon = 4.5): bool
@@ -77,7 +76,7 @@ class FloodRiskService
         $currentMonth = $now->month;
         $currentYear = $now->year;
 
-        //Huidige seizoen bepalen op basis van maand
+        // Huidige seizoen bepalen op basis van maand
         $currentSeason = null;
         foreach ($this->seasonMonths as $season => $months) {
             if (in_array($currentMonth, $months)) {
@@ -106,18 +105,18 @@ class FloodRiskService
         }
 
         $response = Http::withOptions([
-        'curl' => [
-            CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2, // Force TLS 1.2 negotiation explicitly
-            // If it still gives an error, you can also add a timeout constraint:
-            CURLOPT_CONNECTTIMEOUT => 10,
-        ]
-        ])->get("https://api.open-meteo.com/v1/forecast", [
+            'curl' => [
+                CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2, // Force TLS 1.2 negotiation explicitly
+                // If it still gives an error, you can also add a timeout constraint:
+                CURLOPT_CONNECTTIMEOUT => 10,
+            ],
+        ])->get('https://api.open-meteo.com/v1/forecast', [
             'latitude' => $lat,
             'longitude' => $lon,
             'daily' => 'rain_sum',
             'timezone' => 'Europe/Berlin',
             'past_days' => 30,
-            'forecast_days' => 14
+            'forecast_days' => 14,
         ]);
 
         if ($response->successful()) {
@@ -125,7 +124,7 @@ class FloodRiskService
             if (isset($daily['time'])) {
                 foreach ($daily['time'] as $index => $dateString) {
                     $date = Carbon::parse($dateString);
-                    
+
                     if ($date->month === $currentMonth) {
                         $totalRainfallAccumulated += ($daily['rain_sum'][$index] ?? 0);
                     }
@@ -140,7 +139,7 @@ class FloodRiskService
 
         if ($isFloodRiskActive) {
             // Zet all important items to true
-           if (!empty($floodMaterialIds)) {
+            if (! empty($floodMaterialIds)) {
                 DB::table('materialen')
                     ->whereIn('id', $floodMaterialIds)
                     ->update(['belangrijk' => true]);
@@ -150,10 +149,10 @@ class FloodRiskService
             DB::table('materialen')
                 ->whereNotIn('id', $floodMaterialIds)
                 ->update(['belangrijk' => false]);
-                
+
         } else {
             // Zet alles op niet belangrijk
-            if (!empty($floodMaterialIds)) {
+            if (! empty($floodMaterialIds)) {
                 DB::table('materialen')
                     ->whereIn('id', $floodMaterialIds)
                     ->update(['belangrijk' => false]);

@@ -4,9 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
-use App\Services\FloodRiskService;
 
 class WeatherController extends Controller
 {
@@ -35,15 +32,15 @@ class WeatherController extends Controller
             ->withOptions([
                 'curl' => [
                     CURLOPT_CONNECTTIMEOUT => 10,
-                ]
-            ])->get("https://api.open-meteo.com/v1/forecast", [
+                ],
+            ])->get('https://api.open-meteo.com/v1/forecast', [
                 'latitude' => $lat,
                 'longitude' => $lon,
                 'daily' => 'rain_sum',
                 'current' => 'rain,precipitation',
                 'timezone' => 'Europe/Berlin',
                 'past_days' => 30,
-                'forecast_days' => 14
+                'forecast_days' => 14,
             ]);
 
         if ($response->failed()) {
@@ -86,7 +83,7 @@ class WeatherController extends Controller
                     } else {
                         $dailyRainForecast[] = [
                             'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
-                            'amount' => $amount
+                            'amount' => $amount,
                         ];
                     }
                 }
@@ -99,10 +96,10 @@ class WeatherController extends Controller
 >>>>>>> Stashed changes
         if ($isSimulated) {
             $floodAlarmTriggered = true;
-            
+
             // Re-apply the database updates using forced TRUE state
             $floodMaterialIds = DB::table('belangrijkeItems')->pluck('materiaal_id')->toArray();
-            if (!empty($floodMaterialIds)) {
+            if (! empty($floodMaterialIds)) {
                 DB::table('materialen')->whereIn('id', $floodMaterialIds)->update(['belangrijk' => true]);
             }
             DB::table('materialen')->whereNotIn('id', $floodMaterialIds)->update(['belangrijk' => false]);
@@ -111,7 +108,7 @@ class WeatherController extends Controller
             $floodAlarmTriggered = $this->floodService->checkAndFlagItems($lat, $lon);
         }
 
-        $alleMaterialen = DB::table('materialen')->select('id', 'naam')->get();        
+        $alleMaterialen = DB::table('materialen')->select('id', 'naam')->get();
         $gekoppeldeIds = DB::table('belangrijkeItems')->pluck('materiaal_id')->toArray();
 
         // 4. Return a clean unified response payload configuration
@@ -126,7 +123,7 @@ class WeatherController extends Controller
             'gekoppeldeIds' => $gekoppeldeIds,
             'floodAlarmTriggered' => $floodAlarmTriggered, // Now guaranteed to exist!
             'isSimulated' => $isSimulated,
-            'error' => $error
+            'error' => $error,
         ]);
     }
 
@@ -147,7 +144,7 @@ class WeatherController extends Controller
             ];
         }
 
-        if (!empty($rows)) {
+        if (! empty($rows)) {
             DB::table('belangrijkeItems')->insert($rows);
         }
 
@@ -160,9 +157,9 @@ class WeatherController extends Controller
     public function toggleSimulation()
     {
         $currentState = session('simulate_flood', false);
-        
+
         // Invert the state
-        session(['simulate_flood' => !$currentState]);
+        session(['simulate_flood' => ! $currentState]);
 
         // If turning simulation off, force a recalculation immediately to restore live data state
         if ($currentState === true) {

@@ -32,8 +32,8 @@ class Mandje extends Model
     public function materialen()
     {
         return $this->belongsToMany(Materiaal::class, 'mandje_materialen', 'mandje_id', 'materiaal_id')
-                    ->withPivot('id', 'aantal')
-                    ->withTimestamps()
-                    ->using(MandjeMateriaal::class);
+            ->withPivot('id', 'aantal')
+            ->withTimestamps()
+            ->using(MandjeMateriaal::class);
     }
 }
