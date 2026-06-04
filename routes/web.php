@@ -14,7 +14,7 @@ Route::middleware('auth')->group(function () {
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
-    Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
+    Route::view('/favorieten', 'pages.favorieten')->name('favorieten')->middleware('role:stockbeheerder,admin');
     Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
 
     Route::get('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'edit'])->name('profile.edit');
