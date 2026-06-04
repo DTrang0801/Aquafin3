@@ -5,13 +5,13 @@
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
 
             @guest
-                <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
             @endguest
 
             @auth
                 @if (Auth::user()->role !== 'stockbeheerder')
-                    <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                    <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 @endif
 
                 @if (Auth::user()->role !== 'admin')
@@ -20,8 +20,6 @@
 
 
                 <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
-
-                <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
 
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MateriaalController;
 use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WeatherController;
@@ -22,14 +23,23 @@ Route::middleware('role:admin')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
+    Route::get('/materialen/suggesties', [MateriaalController::class, 'suggesties'])->name('materialen.suggesties');
+
+    Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
+    Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
+    Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
+    Route::delete('/winkelmandje/verwijder/{id}', [CartController::class, 'destroy'])->name('winkelmandje.destroy');
+    Route::get('/winkelmandje/bestellen', [CartController::class, 'checkout'])->name('winkelmandje.checkout');
+    Route::post('/winkelmandje/bevestigen', [CartController::class, 'confirmOrder'])->name('winkelmandje.confirm');
+
     Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
     Route::get('/materialen/beheer', [MateriaalController::class, 'beheer'])->name('materialen.beheer');
     Route::delete('/materialen/{materiaal}', [MateriaalController::class, 'destroy'])->name('materialen.destroy');
+    Route::get('/materialen/{materiaal}/edit', [MateriaalController::class, 'edit'])->name('materialen.edit');
+    Route::put('/materialen/{materiaal}', [MateriaalController::class, 'update'])->name('materialen.update');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
 
-    Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
-
-    Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
+    Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::middleware('role:stockbeheerder')->group(function () {
@@ -37,8 +47,6 @@ Route::middleware('auth')->group(function () {
         Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
         Route::post('/weersvoorspelling/materiaal', [WeatherController::class, 'addMaterial'])->name('weersvoorspelling.addMaterial');
     });
-
-    Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
 
     // Mag ik deze lijn verwijderen??? - Titi
     // Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');

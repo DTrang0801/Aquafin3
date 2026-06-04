@@ -20,7 +20,7 @@ class BelangrijkeItemsSeeder extends Seeder
             5,
         ];
 
-        $rows = array_map(function ($materiaal_id){
+        $rows = array_map(function ($materiaal_id) {
             return [
                 'materiaal_id' => $materiaal_id,
             ];
