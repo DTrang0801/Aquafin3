@@ -24,7 +24,9 @@
                         <td>{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
                         <td>{{ $materiaal->beschrijving }}</td>
                         <td>
-                            <button>Wijzigen</button>
+                            <a href="{{ route('materialen.edit', $materiaal) }}">
+                                Wijzigen
+                            </a>
                             <form method="POST" action="{{ route('materialen.destroy', $materiaal) }}" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
