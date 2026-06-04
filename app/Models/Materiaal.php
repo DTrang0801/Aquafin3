@@ -28,7 +28,6 @@ class Materiaal extends Model
         'materiaal_subcategorie_id',
         'naam',
         'beschrijving',
-        'foto',
         'belangrijk',
     ];
 
@@ -45,7 +44,7 @@ class Materiaal extends Model
     public function bestellingen()
     {
         return $this->belongsToMany(Bestelling::class, 'bestelling_materialen', 'materiaal_id', 'bestelling_id')
-            ->withPivot('aantal')
-            ->withTimestamps();
+                    ->withPivot('aantal')
+                    ->withTimestamps();
     }
 }
