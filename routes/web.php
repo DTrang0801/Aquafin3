@@ -29,6 +29,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
     Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
     Route::delete('/winkelmandje/verwijder/{id}', [CartController::class, 'destroy'])->name('winkelmandje.destroy');
+    Route::get('/winkelmandje/bestellen', [CartController::class, 'checkout'])->name('winkelmandje.checkout');
+    Route::post('/winkelmandje/bevestigen', [CartController::class, 'confirmOrder'])->name('winkelmandje.confirm');
 
     Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
     Route::get('/materialen/beheer', [MateriaalController::class, 'beheer'])->name('materialen.beheer');
@@ -37,11 +39,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/materialen/{materiaal}', [MateriaalController::class, 'update'])->name('materialen.update');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
 
-    // Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
+    Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
 
-    Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
-
-    Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
+    Route::get('/weersvoorspelling', [WeatherController::class, 'index']);
     Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
     Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
 
