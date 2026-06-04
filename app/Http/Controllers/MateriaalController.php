@@ -16,54 +16,132 @@ class MateriaalController extends Controller
 
     //Materiaal in een tabel tonen
 
-    public function index(Request $request)
-    {
-        $belangrijkeMaterialen = Materiaal::where('belangrijk', true)
-                                          ->with('subcategorie')
-                                          ->get();
+public function index(Request $request)
+{
+    // Always display global important highlights at the top
+    $belangrijkeMaterialen = Materiaal::where('belangrijk', true)->with('subcategorie')->get();
 
-        $search = $request->input('search');
+    // 1. Fetch search inputs & parameters
+    $search = $request->input('search');
+    $selectedCatId = $request->input('category_id');
+    $selectedSubcatId = $request->input('subcategory_id');
 
-        $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
+    // Fetch master sets for dropdown selectors
+    $filterCategories = Materiaalcategorie::orderBy('naam', 'asc')->get();
+    $filterSubcategories = collect();
+    if ($selectedCatId) {
+        $filterSubcategories = MateriaalSubcategorie::where('materiaal_categorie_id', $selectedCatId)
+            ->orderBy('naam', 'asc')
+            ->get();
+    }
 
-        $openCategoryIds = collect();
-        $openSubcategoryIds = collect();
+    // 2. Build the basic relational query
+    $query = Materiaalcategorie::with(['subcategorieen' => function($q) use ($selectedSubcatId) {
+        if ($selectedSubcatId) {
+            $q->where('id', $selectedSubcatId);
+        }
+    }, 'subcategorieen.materialen']);
 
-        if ($search) {
-            foreach ($categorieen as $cat) {
-                $catMatch = mb_stripos($cat->naam, $search) !== false;
+    if ($selectedCatId) {
+        $query->where('id', $selectedCatId);
+    }
 
-                foreach ($cat->subcategorieen as $sub) {
-                    $subMatch = mb_stripos($sub->naam, $search) !== false;
+    $rawCategories = $query->get();
 
-                    if ($subMatch) {
-                        $openSubcategoryIds->push($sub->id);
-                    } else {
-                        $sub->setRelation('materialen', $sub->materialen->filter(function ($m) use ($search) {
-                            return mb_stripos($m->naam, $search) !== false;
-                        }));
+    // Collections to track which accordions should be expanded ('open')
+    $openCategoryIds = collect();
+    $openSubcategoryIds = collect();
 
-                        if ($sub->materialen->isNotEmpty()) {
-                            $openSubcategoryIds->push($sub->id);
-                        }
-                    }
-                }
+    // 3. Filter down the data structure and determine visibility
+    $categorieen = $rawCategories->filter(function ($cat) use ($search, $openCategoryIds, $openSubcategoryIds) {
+        $catMatch = $search ? $this->isTypoTolerantMatch($cat->naam, $search) : true;
 
-                $catSubIds = $cat->subcategorieen->pluck('id');
-                if ($catMatch || $openSubcategoryIds->intersect($catSubIds)->isNotEmpty()) {
-                    $openCategoryIds->push($cat->id);
-                }
+        // Filter the subcategories inside this category
+        $cat->setRelation('subcategorieen', $cat->subcategorieen->filter(function ($sub) use ($search, $catMatch, $openSubcategoryIds) {
+            $subMatch = $search ? $this->isTypoTolerantMatch($sub->naam, $search) : true;
+
+            // Filter down materials array inside this subcategory if neither category nor subcategory matched the query text
+            if (!$subMatch && !$catMatch && $search) {
+                $sub->setRelation('materialen', $sub->materialen->filter(function ($m) use ($search) {
+                    return $this->isTypoTolerantMatch($m->naam, $search) || 
+                           $this->isTypoTolerantMatch($m->beschrijving, $search);
+                }));
             }
-        } else {
-            $openCategoryIds = $categorieen->pluck('id');
-            foreach ($categorieen as $cat) {
-                foreach ($cat->subcategorieen as $sub) {
-                    $openSubcategoryIds->push($sub->id);
-                }
+
+            // Hide this subcategory completely if it contains no matching items
+            if ($sub->materialen->isEmpty()) {
+                return false;
+            }
+
+            // If we are searching and there are items, force this subcategory to expand
+            if ($search) {
+                $openSubcategoryIds->push($sub->id);
+            }
+
+            return true;
+        }));
+
+        // Hide this entire main category if it has no visible subcategories left
+        if ($cat->subcategorieen->isEmpty()) {
+            return false;
+        }
+
+        // If we are actively searching and it passed the checks, force this category to expand
+        if ($search || request('category_id') || request('subcategory_id')) {
+            $openCategoryIds->push($cat->id);
+        }
+
+        return true;
+    });
+
+    // 4. Fallback default context: if NO search is active, keep everything visible and open
+    if (!$search && !$selectedCatId && !$selectedSubcatId) {
+        $openCategoryIds = $categorieen->pluck('id');
+        foreach ($categorieen as $cat) {
+            $openSubcategoryIds = $openSubcategoryIds->merge($cat->subcategorieen->pluck('id'));
+        }
+    }
+
+    return view('pages.materialen', compact(
+        'belangrijkeMaterialen', 
+        'categorieen', 
+        'openCategoryIds', 
+        'openSubcategoryIds',
+        'filterCategories',
+        'filterSubcategories'
+    ));
+}
+
+    /**
+     * Typo-tolerant matching mechanism using Levenshtein distance computations.
+     */
+    private function isTypoTolerantMatch(?string $haystack, string $needle): bool
+    {
+        if (empty($haystack)) return false;
+
+        $haystack = mb_strtolower(trim($haystack));
+        $needle = mb_strtolower(trim($needle));
+
+        // Exact substring match check
+        if (str_contains($haystack, $needle)) {
+            return true;
+        }
+
+        // Typo tolerance evaluation for multi-word configurations
+        $words = explode(' ', $haystack);
+        foreach ($words as $word) {
+            // Calculate structural character distance deviations
+            $distance = levenshtein($word, $needle);
+            
+            // Define allowable typo allowances based on length of input query
+            $maxAllowedTypos = strlen($needle) > 4 ? 2 : 1;
+
+            if ($distance <= $maxAllowedTypos) {
+                return true;
             }
         }
 
-        return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen', 'openCategoryIds', 'openSubcategoryIds'));
+        return false;
     }
 
         public function create()
