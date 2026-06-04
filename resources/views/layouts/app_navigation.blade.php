@@ -7,9 +7,16 @@
             <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
             <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
             <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
+
             @auth
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
+                @endif
+            @endauth
+
+            @auth
+                @if (Auth::user()->role === 'stockbeheerder')
+                    <a href="{{ route('materialen.create') }}" class="nav-link">Nieuw Materiaal</a>
                 @endif
             @endauth
         </div>
