@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\MateriaalController;
 
 Route::get('/', function () {
@@ -9,7 +10,12 @@ Route::get('/', function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
-    Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
+    
+    Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
+    Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
+    Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
+    Route::delete('/winkelmandje/verwijder/{id}', [CartController::class, 'destroy'])->name('winkelmandje.destroy');
+
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
     Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
