@@ -5,21 +5,13 @@
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
 
             @guest
-<<<<<<< Updated upstream
                 <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
-=======
-                <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
->>>>>>> Stashed changes
                 <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
             @endguest
 
             @auth
                 @if (Auth::user()->role !== 'stockbeheerder')
-<<<<<<< Updated upstream
                     <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
-=======
-                    <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
->>>>>>> Stashed changes
                 @endif
 
                 @if (Auth::user()->role !== 'admin')
