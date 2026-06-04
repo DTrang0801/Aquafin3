@@ -101,6 +101,45 @@
                 </div>
             </form>
 
+        <div class="favorieten-preview">
+            <div class="fp-header">
+                <span class="fp-title">⭐ Populaire materialen dit seizoen</span>
+                <a href="{{ route('favorieten') }}" class="fp-link">Bekijk alle favorieten →</a>
+            </div>
+            <div class="fp-grid">
+                <div class="fp-card">
+                    <h4>PVC Buis 50mm</h4>
+                    <p>Geschikt voor waterafvoer bij nat en koud weer.</p>
+                    <form action="{{ route('winkelmandje.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="materiaal_id" value="118">
+                        <input type="number" name="aantal" value="1" min="1">
+                        <button type="submit">Voeg toe</button>
+                    </form>
+                </div>
+                <div class="fp-card">
+                    <h4>Waterdichte koppeling</h4>
+                    <p>Populair voor lekvrije aansluitingen in regenachtige periodes.</p>
+                    <form action="{{ route('winkelmandje.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="materiaal_id" value="119">
+                        <input type="number" name="aantal" value="1" min="1">
+                        <button type="submit">Voeg toe</button>
+                    </form>
+                </div>
+                <div class="fp-card">
+                    <h4>Afsluitklep</h4>
+                    <p>Handig bij onderhoud en tijdelijke afsluiting van leidingen.</p>
+                    <form action="{{ route('winkelmandje.add') }}" method="POST">
+                        @csrf
+                        <input type="hidden" name="materiaal_id" value="127">
+                        <input type="number" name="aantal" value="1" min="1">
+                        <button type="submit">Voeg toe</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         @if($belangrijkeMaterialen->isNotEmpty())
             <details open class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
                 
@@ -278,6 +317,27 @@
         }
         
         .search-clear-btn:hover { color: #f8fafc; }
+
+        .favorieten-preview {
+            background: linear-gradient(135deg, #fff9f0, #fff3e6);
+            border: 1px solid #fde4c8;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 25px;
+        }
+        .fp-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 8px; }
+        .fp-title { font-weight: 700; font-size: 1.1rem; color: #b45309; }
+        .fp-link { color: #2563eb; font-size: 0.9rem; font-weight: 600; text-decoration: none; }
+        .fp-link:hover { text-decoration: underline; }
+        .fp-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+        .fp-card { background: #fff; border-radius: 10px; padding: 14px 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+        .fp-card h4 { margin: 0 0 6px; font-size: 1rem; color: #1f2937; }
+        .fp-card p { margin: 0 0 10px; font-size: 0.85rem; color: #6b7280; }
+        .fp-card form { display: flex; gap: 6px; align-items: center; }
+        .fp-card input[type="number"] { width: 50px; height: 32px; padding: 4px; text-align: center; border: 1px solid #d1d5db; border-radius: 6px; font-size: 0.85rem; }
+        .fp-card button { padding: 6px 14px; cursor: pointer; background-color: #2563eb; color: white; border: none; border-radius: 6px; font-weight: 600; font-size: 0.85rem; white-space: nowrap; }
+        .fp-card button:hover { background-color: #1d4ed8; }
+        @media (max-width: 700px) { .fp-grid { grid-template-columns: 1fr; } }
 
         @media (max-width: 900px) {
             .search-filter-grid {
