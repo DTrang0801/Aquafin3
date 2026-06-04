@@ -1,35 +1,41 @@
-<h1>Materiaal toevoegen</h1>
+<x-site-layout>
+    <div class="container">
+        <h1 class="page-title">Materiaal toevoegen</h1>
 
-<form method="POST" action="/materialen">
-    @csrf
+        <div class="alert-box">
+            <form method="POST" action="/materialen">
+                @csrf
 
-    <label>Naam:</label>
-    <input type="text" name="naam">
+                <label>Naam:</label>
+                <input type="text" name="naam" required>
 
-    <br><br>
+                <br><br>
 
-    <label>Beschrijving:</label>
-    <textarea name="beschrijving"></textarea>
+                <label>Beschrijving:</label>
+                <textarea name="beschrijving"></textarea>
 
-    <br><br>
+                <br><br>
 
-    <label>Subcategorie:</label>
-    <select name="materiaal_subcategorie_id">
-        @foreach($subcategorieen as $subcategorie)
-            <option value="{{ $subcategorie->id }}">
-                {{ $subcategorie->naam }}
-            </option>
-        @endforeach
-    </select>
+                <label>Subcategorie:</label>
+                <select name="materiaal_subcategorie_id" required>
+                    @foreach($subcategorieen as $subcategorie)
+                        <option value="{{ $subcategorie->id }}">
+                            {{ $subcategorie->naam }}
+                        </option>
+                    @endforeach
+                </select>
 
-    <br><br>
+                <br><br>
 
-    <label>
-        <input type="checkbox" name="belangrijk">
-        Belangrijk materiaal
-    </label>
+                <label>
+                    <input type="checkbox" name="belangrijk">
+                    Belangrijk materiaal
+                </label>
 
-    <br><br>
+                <br><br>
 
-    <button type="submit">Opslaan</button>
-</form>
+                <button type="submit">Opslaan</button>
+            </form>
+        </div>
+    </div>
+</x-site-layout>
