@@ -41,9 +41,12 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
 
-    Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');   
-    Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
-    Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
+    Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
+    Route::middleware('role:stockbeheerder')->group(function () {
+        Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
+        Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
+        Route::post('/weersvoorspelling/materiaal', [WeatherController::class, 'addMaterial'])->name('weersvoorspelling.addMaterial');
+    });
 
     // Mag ik deze lijn verwijderen??? - Titi
     // Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
