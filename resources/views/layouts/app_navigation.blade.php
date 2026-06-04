@@ -3,7 +3,7 @@
         <div class="nav-left">
             <a href="{{ route('home') }}" class="nav-brand">Aquafin</a>
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
-            <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+            <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
             <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
             <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
             <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
