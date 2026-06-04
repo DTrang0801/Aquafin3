@@ -59,7 +59,7 @@
                             <details {{ $openSubcategoryIds->contains($subcategorie->id) ? 'open' : '' }} class="subcategory-block" style="margin-bottom: 15px;">
                             
                             <summary class="subcategory-title" style="cursor: pointer; user-select: none; list-style: none;">
-                                <strong>→ {{ $subcategorie->naam }}</strong> <small style="color: #3182ce; margin-left: 10px;">(Klik om te tonen/verbergen)</small>
+                                <strong>{{ $subcategorie->naam }}</strong>
                             </summary>
 
                             <div style="margin-top: 10px;">
@@ -67,13 +67,6 @@
                                     <p class="no-data">Geen materialen in deze subcategorie.</p>
                                 @else
                                     <table class="custom-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Naam</th>
-                                                <th>Beschrijving</th>
-                                                <th style="width: 120px;">Belangrijk?</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             @foreach ($subcategorie->materialen as $materiaal)
                                                 <tr>
