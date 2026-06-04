@@ -19,32 +19,24 @@
                     <h2 class="alert-title">Belangrijke Aandachtspunten / Materialen</h2>
                 </div>
                 
-                    <table class="custom-table table-important">
-                        <thead>
+                <table class="custom-table table-important">
+                    <thead>
+                        <tr>
+                            <th>Naam</th>
+                            <th>Subcategorie</th>
+                            <th>Beschrijving</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($belangrijkeMaterialen as $materiaal)
                             <tr>
-                                <th>Foto</th>
-                                <th>Naam</th>
-                                <th>Subcategorie</th>
-                                <th>Beschrijving</th>
+                                <td class="font-bold text-important">{{ $materiaal->naam }}</td>
+                                <td class="text-italic">{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
+                                <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($belangrijkeMaterialen as $materiaal)
-                                <tr>
-                                    <td>
-                                        @if($materiaal->foto)
-                                            <img src="{{ asset('storage/' . $materiaal->foto) }}" alt="{{ $materiaal->naam }}" class="material-photo">
-                                        @else
-                                            <span class="no-photo">-</span>
-                                        @endif
-                                    </td>
-                                    <td class="font-bold text-important">{{ $materiaal->naam }}</td>
-                                    <td class="text-italic">{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
-                                    <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+                        @endforeach
+                    </tbody>
+                </table>
             </div>
         @endif
         
@@ -72,7 +64,6 @@
                                     <table class="custom-table">
                                         <thead>
                                             <tr>
-                                                <th>Foto</th>
                                                 <th>Naam</th>
                                                 <th>Beschrijving</th>
                                                 <th style="width: 120px;">Belangrijk?</th>
@@ -81,13 +72,6 @@
                                         <tbody>
                                             @foreach ($subcategorie->materialen as $materiaal)
                                                 <tr>
-                                                    <td>
-                                                        @if($materiaal->foto)
-                                                            <img src="{{ asset('storage/' . $materiaal->foto) }}" alt="{{ $materiaal->naam }}" class="material-photo">
-                                                        @else
-                                                            <span class="no-photo">-</span>
-                                                        @endif
-                                                    </td>
                                                     <td class="font-bold">{{ $materiaal->naam }}</td>
                                                     <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
                                                     <td>
