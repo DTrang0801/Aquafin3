@@ -23,8 +23,6 @@
                     <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
                 @endif
 
-                <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
-
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
                 @endif
