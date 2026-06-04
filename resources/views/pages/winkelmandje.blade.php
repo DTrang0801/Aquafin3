@@ -55,7 +55,7 @@
 
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
                 <a href="{{ route('materialen') }}" style="color: #3182ce; text-decoration: none;">← Verder Winkelen</a>
-                <a href="#" class="btn-checkout" style="background-color: #3182ce; color: white; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 4px;">Bestelling Afronden →</a>
+                <a href="{{ route('winkelmandje.checkout') }}" class="btn-checkout" style="background-color: #3182ce; color: white; padding: 10px 20px; text-decoration: none; font-weight: bold; border-radius: 4px;">Bestelling Afronden →</a>
             </div>
         @endif
     </div>
