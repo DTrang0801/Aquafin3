@@ -3,7 +3,7 @@
         <h1 class="page-title">Materiaal toevoegen</h1>
 
         <div class="alert-box">
-            <form method="POST" action="/materialen">
+            <form method="POST" action="/materialen" enctype="multipart/form-data">
                 @csrf
 
                 <label>Naam:</label>
@@ -13,6 +13,11 @@
 
                 <label>Beschrijving:</label>
                 <textarea name="beschrijving"></textarea>
+
+                <br><br>
+
+                <label>Foto:</label>
+                <input type="file" name="foto" accept="image/*">
 
                 <br><br>
 
