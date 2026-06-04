@@ -44,7 +44,7 @@ class Materiaal extends Model
     public function bestellingen()
     {
         return $this->belongsToMany(Bestelling::class, 'bestelling_materialen', 'materiaal_id', 'bestelling_id')
-                    ->withPivot('aantal')
-                    ->withTimestamps();
+            ->withPivot('aantal')
+            ->withTimestamps();
     }
 }
