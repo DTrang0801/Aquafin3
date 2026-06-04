@@ -2,18 +2,37 @@
 
 namespace App\Services;
 
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
+use App\Models\Belangrijk;
+use App\Models\Materiaal;
+use App\Models\Neerslag;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Log;
 
 class FloodRiskService
 {
+    private const SEASON_THRESHOLDS_MM = [
+        'Winter' => 300,
+        'Lente' => 250,
+        'Zomer' => 260,
+        'Herfst' => 280,
+    ];
 
-    public function archiveHistoricalMonth($year, $month, $lat = 50.75, $lon = 4.5): void
-    {
-        // Check if this month is already archived to prevent duplicate rows
-        $exists = DB::table('neerslags')
+    /** @var array<string, list<int>> */
+    private const SEASON_MONTHS = [
+        'Winter' => [12, 1, 2],
+        'Lente' => [3, 4, 5],
+        'Zomer' => [6, 7, 8],
+        'Herfst' => [9, 10, 11],
+    ];
+
+    public function __construct(private OpenMeteoService $openMeteo) {}
+
+    public function archiveHistoricalMonth(
+        int $year,
+        int $month,
+        float $latitude = OpenMeteoService::DEFAULT_LATITUDE,
+        float $longitude = OpenMeteoService::DEFAULT_LONGITUDE,
+    ): void {
+        $exists = Neerslag::query()
             ->where('jaar', $year)
             ->where('maand', $month)
             ->exists();
@@ -22,143 +41,164 @@ class FloodRiskService
             return;
         }
 
-        // Determine the start and end dates of the target month
-        $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->format('Y-m-d');
-        $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
+        $monthlyTotal = $this->openMeteo->fetchArchivedMonthlyRain($latitude, $longitude, $year, $month);
 
-        // Open-Meteo requires the 'archive' endpoint for historical dates older than a few weeks
-        $response = Http::get("https://archive-api.open-meteo.com/v1/archive", [
-            'latitude' => $lat,
-            'longitude' => $lon,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'daily' => 'rain_sum',
-            'timezone' => 'Europe/Berlin'
-        ]);
-
-        if ($response->successful()) {
-            $dailyRain = $response->json()['daily']['rain_sum'] ?? [];
-            
-            // Sum up every day of that month
-            $monthlyTotal = array_sum($dailyRain);
-
-            // Insert into your database table matching your Seeder structure
-            DB::table('neerslags')->insert([
-                'jaar' => $year,
-                'maand' => $month,
-                'mm' => (int) round($monthlyTotal),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-
-            // Log::info("Neerslag succesvol gearchiveerd voor {$year}-{$month}: {$monthlyTotal} mm");
-        } else {
-            // Log::error("Fout bij het ophalen van historische neerslag voor {$year}-{$month}");
+        if ($monthlyTotal === null) {
+            return;
         }
+
+        Neerslag::query()->create([
+            'jaar' => $year,
+            'maand' => $month,
+            'mm' => (int) round($monthlyTotal),
+        ]);
     }
 
-    private array $thresholds = [
-        'Winter' => 300,
-        'Lente'  => 250,
-        'Zomer'  => 260,
-        'Herfst' => 280
-    ];
+    /**
+     * @param  array<string, mixed>|null  $forecastDaily  Re-use daily payload from an existing forecast call.
+     */
+    public function checkAndFlagItems(
+        float $latitude = OpenMeteoService::DEFAULT_LATITUDE,
+        float $longitude = OpenMeteoService::DEFAULT_LONGITUDE,
+        ?array $forecastDaily = null,
+        string $timezone = 'Europe/Berlin',
+    ): bool {
+        $isFloodRiskActive = $this->evaluateFloodRisk($latitude, $longitude, $forecastDaily, $timezone);
+        $this->applyMaterialFlags($isFloodRiskActive);
 
-    private array $seasonMonths = [
-        'Winter' => [12, 1, 2],
-        'Lente'  => [3, 4, 5],
-        'Zomer'  => [6, 7, 8],
-        'Herfst' => [9, 10, 11]
-    ];
+        return $isFloodRiskActive;
+    }
 
-    public function checkAndFlagItems($lat = 50.75, $lon = 4.5): bool
+    public function applySimulation(): bool
     {
+        $this->applyMaterialFlags(true);
+
+        return true;
+    }
+
+    /**
+     * @param  list<int>  $materiaalIds
+     */
+    public function syncLinkedMaterials(array $materiaalIds): void
+    {
+        Belangrijk::query()->delete();
+
+        if ($materiaalIds === []) {
+            return;
+        }
+
+        $now = now();
+
+        Belangrijk::query()->insert(
+            collect($materiaalIds)
+                ->map(fn (int $id): array => [
+                    'materiaal_id' => $id,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ])
+                ->all()
+        );
+    }
+
+    /**
+     * @return list<int>
+     */
+    public function linkedMaterialIds(): array
+    {
+        return Belangrijk::query()
+            ->pluck('materiaal_id')
+            ->map(fn ($id): int => (int) $id)
+            ->all();
+    }
+
+    /**
+     * @param  array<string, mixed>|null  $forecastDaily
+     */
+    private function evaluateFloodRisk(
+        float $latitude,
+        float $longitude,
+        ?array $forecastDaily = null,
+        string $timezone = 'Europe/Berlin',
+    ): bool {
         $now = Carbon::now('Europe/Berlin');
         $currentMonth = $now->month;
         $currentYear = $now->year;
+        $currentSeason = $this->seasonForMonth($currentMonth);
 
-        //Huidige seizoen bepalen op basis van maand
-        $currentSeason = null;
-        foreach ($this->seasonMonths as $season => $months) {
-            if (in_array($currentMonth, $months)) {
-                $currentSeason = $season;
-                break;
+        if ($currentSeason === null) {
+            return false;
+        }
+
+        $totalRainfall = $this->accumulatedSeasonRainfall(
+            $currentSeason,
+            $currentMonth,
+            $currentYear,
+        );
+
+        if ($forecastDaily === null) {
+            $forecast = $this->openMeteo->fetchForecast($latitude, $longitude);
+            $forecastDaily = $forecast['daily'] ?? null;
+            $timezone = $forecast['timezone'] ?? $timezone;
+        }
+
+        $totalRainfall += $this->openMeteo->sumRainfallForMonth($forecastDaily, $currentMonth, $timezone);
+
+        return $totalRainfall >= self::SEASON_THRESHOLDS_MM[$currentSeason];
+    }
+
+    private function accumulatedSeasonRainfall(string $season, int $currentMonth, int $currentYear): float
+    {
+        $total = 0.0;
+
+        foreach (self::SEASON_MONTHS[$season] as $month) {
+            if ($month === $currentMonth) {
+                continue;
+            }
+
+            $queryYear = ($season === 'Winter' && $month === 12)
+                ? $currentYear - 1
+                : $currentYear;
+
+            $record = Neerslag::query()
+                ->where('jaar', $queryYear)
+                ->where('maand', $month)
+                ->first();
+
+            if ($record) {
+                $total += $record->mm;
             }
         }
 
-        $targetMonths = $this->seasonMonths[$currentSeason];
-        $totalRainfallAccumulated = 0;
+        return $total;
+    }
 
-        foreach ($targetMonths as $month) {
-            if ($month !== $currentMonth) {
-
-                $queryYear = ($currentSeason === 'Winter' && $month === 12) ? $currentYear - 1 : $currentYear;
-
-                $dbRecord = DB::table('neerslags')
-                    ->where('jaar', $queryYear)
-                    ->where('maand', $month)
-                    ->first();
-
-                if ($dbRecord) {
-                    $totalRainfallAccumulated += $dbRecord->mm;
-                }
+    private function seasonForMonth(int $month): ?string
+    {
+        foreach (self::SEASON_MONTHS as $season => $months) {
+            if (in_array($month, $months, true)) {
+                return $season;
             }
         }
 
-        $response = Http::get("https://api.open-meteo.com/v1/forecast", [
-            'latitude' => $lat,
-            'longitude' => $lon,
-            'daily' => 'rain_sum',
-            'timezone' => 'Europe/Berlin',
-            'past_days' => 30,
-            'forecast_days' => 14
-        ]);
+        return null;
+    }
 
-        if ($response->successful()) {
-            $daily = $response->json()['daily'] ?? [];
-            if (isset($daily['time'])) {
-                foreach ($daily['time'] as $index => $dateString) {
-                    $date = Carbon::parse($dateString);
-                    
-                    if ($date->month === $currentMonth) {
-                        $totalRainfallAccumulated += ($daily['rain_sum'][$index] ?? 0);
-                    }
-                }
-            }
+    private function applyMaterialFlags(bool $isFloodRiskActive): void
+    {
+        $linkedIds = $this->linkedMaterialIds();
+
+        if ($linkedIds === []) {
+            Materiaal::query()->update(['belangrijk' => false]);
+
+            return;
         }
 
-        // Compare
-        $threshold = $this->thresholds[$currentSeason];
-        $isFloodRiskActive = $totalRainfallAccumulated >= $threshold;
-        $floodMaterialIds = DB::table('belangrijkeItems')->pluck('materiaal_id')->toArray();
+        Materiaal::query()
+            ->whereIn('id', $linkedIds)
+            ->update(['belangrijk' => $isFloodRiskActive]);
 
-        if ($isFloodRiskActive) {
-            // Zet all important items to true
-           if (!empty($floodMaterialIds)) {
-                DB::table('materialen')
-                    ->whereIn('id', $floodMaterialIds)
-                    ->update(['belangrijk' => true]);
-            }
-
-            // Set everything else to false
-            DB::table('materialen')
-                ->whereNotIn('id', $floodMaterialIds)
-                ->update(['belangrijk' => false]);
-                
-        } else {
-            // Zet alles op niet belangrijk
-            if (!empty($floodMaterialIds)) {
-                DB::table('materialen')
-                    ->whereIn('id', $floodMaterialIds)
-                    ->update(['belangrijk' => false]);
-            }
-
-            // Set everything else to false
-            DB::table('materialen')
-                ->whereNotIn('id', $floodMaterialIds)
-                ->update(['belangrijk' => false]);
-        }
-
-        return $isFloodRiskActive;
+        Materiaal::query()
+            ->whereNotIn('id', $linkedIds)
+            ->update(['belangrijk' => false]);
     }
 }

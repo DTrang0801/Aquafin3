@@ -6,7 +6,7 @@
 
             @guest
                 <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
-                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
             @endguest
 
             @auth
@@ -19,9 +19,7 @@
                 @endif
 
 
-                @if (Auth::user()->role !== 'stockbeheerder')
-                    <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
-                @endif
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
 
                 <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
 

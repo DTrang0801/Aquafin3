@@ -14,7 +14,7 @@
                     </a>
                 @endif
 
-                <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Neerslag</a>
+                <a href="{{ route('weersvoorspelling') }}" class="text-sm text-gray-600 hover:text-gray-900">Neerslag</a>
 
                 <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Mandje</a>
 
