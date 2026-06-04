@@ -1,11 +1,23 @@
 <x-site-layout>
     <div class="container">
         <h1 class="page-title">Materialen</h1>
+        @if(Auth::user()->role === 'stockbeheerder')
         <div style="margin-bottom: 20px;">
             <a href="{{ route('materialen.create') }}" class="btn-toevoegen">
                 + Nieuw materiaal
             </a>
         </div>
+        @endif
+
+            <form action="{{ route('materialen') }}" method="GET">
+                <div class="search-filter">
+                <input type="text" name="search" class="search-input" placeholder="Zoek materialen..." value="{{ request('search') }}">
+                <button type="submit" class="search-button">Zoeken</button>
+                    @if(request('search'))
+                        <a href="{{ route('materialen') }}">X</a>
+                     @endif
+                </div>
+            </form>
 
             <form action="{{ route('materialen') }}" method="GET">
                 <div class="search-filter">
