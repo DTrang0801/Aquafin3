@@ -71,7 +71,6 @@
                                             <tr>
                                                 <th>Naam</th>
                                                 <th>Beschrijving</th>
-                                                <th style="width: 120px;">Belangrijk?</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -79,11 +78,6 @@
                                                 <tr>
                                                     <td class="font-bold">{{ $materiaal->naam }}</td>
                                                     <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
-                                                    <td>
-                                                        <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
-                                                            {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
-                                                        </span>
-                                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
