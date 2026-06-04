@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\CreateAndLinkMaterialRequest;
 use App\Http\Requests\StoreBelangrijkeItemsRequest;
 use App\Models\Materiaal;
+use App\Services\FloodRiskAnalysisService;
 use App\Services\FloodRiskService;
 use App\Services\OpenMeteoService;
 use Illuminate\Http\RedirectResponse;
@@ -16,6 +17,7 @@ class WeatherController extends Controller
     public function __construct(
         private FloodRiskService $floodRisk,
         private OpenMeteoService $openMeteo,
+        private FloodRiskAnalysisService $floodAnalysis,
     ) {}
 
     public function index(Request $request): View
@@ -49,6 +51,8 @@ class WeatherController extends Controller
                     'pastMonthTotal' => 0,
                     'dailyRainForecast' => [],
                     'floodAlarmTriggered' => false,
+                    'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
+                    'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
                 ],
             ));
         }
@@ -69,6 +73,8 @@ class WeatherController extends Controller
                 'pastMonthTotal' => $parsed['pastMonthTotal'],
                 'dailyRainForecast' => $parsed['dailyRainForecast'],
                 'floodAlarmTriggered' => $floodAlarmTriggered,
+                'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
+                'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
             ],
         ));
     }
