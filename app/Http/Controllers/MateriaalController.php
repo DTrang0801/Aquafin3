@@ -2,60 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MateriaalSubcategorie;
 use App\Models\Materiaal;
-use App\Models\Bestelling;
-use App\Models\Mandje;
-use App\Models\Materiaalcategorie;  
+use App\Models\Materiaalcategorie;
+use App\Models\MateriaalSubcategorie;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MateriaalController extends Controller
 {
-
-    //Materiaal in een tabel tonen
+    // Materiaal in een tabel tonen
 
     public function index(Request $request)
     {
         // Haal de belangrijke materialen op
         $belangrijkeMaterialen = Materiaal::where('belangrijk', true)
-                                          ->with('subcategorie')
-                                          ->get();
+            ->with('subcategorie')
+            ->get();
 
         // Haal de hoofdstructuur op voor de lijst
         // $categorieen = Materiaalcategorie::with('subcategorieen.materialen')->get();
-        
+
         // Zoekbalk toevoegen
         $search = $request->input('search');
 
-        $categorieen = Materiaalcategorie::with(['subcategorieen.materialen' => function($query) use ($search) {
-        if ($search) {
-        $query->where('naam', 'like', '%' . $search . '%');
-        }
+        $categorieen = Materiaalcategorie::with(['subcategorieen.materialen' => function ($query) use ($search) {
+            if ($search) {
+                $query->where('naam', 'like', '%'.$search.'%');
+            }
         }])->get();
 
         // Stuur beide collecties naar de view
         return view('pages.materialen', compact('belangrijkeMaterialen', 'categorieen'));
     }
 
-        public function create()
+    public function create()
     {
         $subcategorieen = MateriaalSubcategorie::all();
 
         return view('pages.materialen-create', compact('subcategorieen'));
     }
-        
-        public function store(Request $request)
+
+    public function store(Request $request)
     {
-        Materiaal::create([
+        $data = [
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
             'belangrijk' => $request->has('belangrijk'),
-        ]);
+        ];
+
+        if ($request->hasFile('foto')) {
+            $data['foto'] = $request->file('foto')->store('materialen', 'public');
+        }
+
+        Materiaal::create($data);
 
         return redirect('/materialen');
-        
-}
+    }
 }
