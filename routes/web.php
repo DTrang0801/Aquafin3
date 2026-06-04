@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\MateriaalController;
 
 Route::get('/', function () {
@@ -24,9 +25,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/materialen/beheer', [MateriaalController::class, 'beheer'])->name('materialen.beheer');
     Route::delete('/materialen/{materiaal}', [MateriaalController::class, 'destroy'])->name('materialen.destroy');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
+
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
+
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
-    Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
+
+    Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');   
+    Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
+    Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
+
     Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
 
     // Mag ik deze lijn verwijderen??? - Titi

@@ -1,197 +1,180 @@
 <x-site-layout>
-    <div class="risico-container">
-        <h1 class="risico-title">Overstromingsrisico komende 5 jaar</h1>
-        <p class="risico-subtitle">
-            Overzicht op basis van historische neerslaggegevens sinds 2004 en seizoensdrempels voor overstromingsgevaar.
-        </p>
+    <div style="align-items: center; display: flex; flex-direction: column; gap: 24px; margin-top: 32px;">
+        <div class="weather-card">
+            <h1 class="card-title" style="color: white;">Neerslag</h1>
 
-        <div class="jaar-grid">
-            <div class="jaar-kaart">
-                <h2>2026</h2>
-                <div class="seizoen risico-hoog">
-                    <h3>Winter</h3>
-                    <p>Verwachte seizoensneerslag: 308 mm</p>
-                    <p>Risico: Hoog</p>
+            @if($floodAlarmTriggered)
+                <div style="background-color: rgba(239, 68, 68, 0.15); color: #f87171; padding: 12px; border-radius: 8px; border: 1px solid rgba(239, 68, 68, 0.3); margin-bottom: 20px; text-align: center; font-size: 14px; font-weight: bold;">
+                        ALARM: Overstromingsgevaar gedetecteerd! Gekoppelde voorraad is gemarkeerd als BELANGRIJK.
+                    @if($isSimulated)
+                        <span style="display:block; font-size: 11px; font-weight: normal; color: #fca5a5; margin-top: 2px;">(GESIMULEERDE MODUS)</span>
+                    @endif
                 </div>
-                <div class="seizoen risico-laag">
-                    <h3>Lente</h3>
-                    <p>Verwachte seizoensneerslag: 198 mm</p>
-                    <p>Risico: Laag</p>
+            @else
+                <div style="background-color: rgba(16, 185, 129, 0.1); color: #34d399; padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.2); margin-bottom: 20px; text-align: center; font-size: 14px; font-weight: 500;">
+                       Status stabiel: Geen verhoogd overstromingsrisico op basis van neerslag thresholds.
                 </div>
-                <div class="seizoen risico-matig">
-                    <h3>Zomer</h3>
-                    <p>Verwachte seizoensneerslag: 257 mm</p>
-                    <p>Risico: Matig</p>
+            @endif
+            @if(isset($error))
+                <div class="error-alert">
+                    {{ $error }}
                 </div>
-                <div class="seizoen risico-laag">
-                    <h3>Herfst</h3>
-                    <p>Verwachte seizoensneerslag: 262 mm</p>
-                    <p>Risico: Laag</p>
+            @else
+                <!-- Overview Numbers Grid -->
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <span class="stat-label">Actuele Neerslag</span>
+                        <span class="stat-value value-current">
+                            {{ $currentRain }} <span class="unit">mm</span>
+                        </span>
+                    </div>
+                    
+                    <div class="stat-box highlighted">
+                        <span class="stat-label">Totaal Afgelopen Maand</span>
+                        <span class="stat-value value-history">
+                            {{ $pastMonthTotal }} <span class="unit">mm</span>
+                        </span>
+                    </div>
                 </div>
+
+                <h3 class="section-title">14-Daagse Verwachting</h3>
+                
+                <!-- 14 Day Grid Block -->
+                <div class="forecast-container">
+                    @forelse($dailyRainForecast as $forecast)
+                        <div class="forecast-item">
+                            <span class="day-name">{{ $forecast['day_name'] }}</span>
+                            
+                            <div class="badge-wrapper">
+                                @if($forecast['amount'] > 0)
+                                    <span class="badge rain">Regen</span>
+                                    <span class="rain-amount wet">
+                                        {{ number_format($forecast['amount'], 1) }} mm
+                                    </span>
+                                @else
+                                    <span class="badge dry">Droog</span>
+                                    <span class="rain-amount dry">0.0 mm</span>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <p style="grid-column: span 2; text-align: center; color: #64748b; font-size: 14px;">
+                            Geen voorspelling beschikbaar.
+                        </p>
+                    @endforelse
+                </div>
+            @endif
+        </div>
+        <div class="weather-card management-panel" style="margin-top: 24px;">
+
+            <hr style="border: 0; border-top: 1px solid #334155; margin: 20px 0;">
+
+            <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(245, 158, 11, 0.05); border: 1px dashed rgba(245, 158, 11, 0.3); padding: 14px; border-radius: 8px;">
+                <div>
+                    <h4 style="font-size: 13px; font-weight: bold; color: #f59e0b; margin-bottom: 2px;">🧪 Systeem Testen</h4>
+                    <p style="font-size: 11px; color: #94a3b8; max-width: 340px; margin: 0;">Simuleer direct overstromingsgevaar om te controleren of de voorraad correct schakelt.</p>
+                </div>
+                
+                <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" style="margin: 0;">
+                    @csrf
+                    <button type="submit" class="sim-btn {{ $isSimulated ? 'active' : '' }}">
+                        {{ $isSimulated ? 'Stop Simulatie' : 'Start Simulatie' }}
+                    </button>
+                </form>
             </div>
 
-            <div class="jaar-kaart">
-                <h2>2027</h2>
-                <div class="seizoen risico-hoog">
-                    <h3>Winter</h3>
-                    <p>Verwachte seizoensneerslag: 310 mm</p>
-                    <p>Risico: Hoog</p>
-                </div>
-                <div class="seizoen risico-laag">
-                    <h3>Lente</h3>
-                    <p>Verwachte seizoensneerslag: 200 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-                <div class="seizoen risico-matig">
-                    <h3>Zomer</h3>
-                    <p>Verwachte seizoensneerslag: 259 mm</p>
-                    <p>Risico: Matig</p>
-                </div>
-                <div class="seizoen risico-laag">
-                    <h3>Herfst</h3>
-                    <p>Verwachte seizoensneerslag: 264 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-            </div>
+            <style>
+                .sim-btn {
+                    background-color: #d97706; /* amber-600 */
+                    color: white;
+                    font-size: 12px;
+                    font-weight: 700;
+                    padding: 8px 16px;
+                    border: none;
+                    border-radius: 6px;
+                    cursor: pointer;
+                    transition: background 0.2s ease;
+                    white-space: nowrap;
+                }
+                .sim-btn:hover { background-color: #b45309; }
+                .sim-btn.active {
+                    background-color: #dc2626; /* red-600 */
+                }
+                .sim-btn.active:hover { background-color: #b91c1c; }
+            </style>
 
-            <div class="jaar-kaart">
-                <h2>2028</h2>
-                <div class="seizoen risico-hoog">
-                    <h3>Winter</h3>
-                    <p>Verwachte seizoensneerslag: 312 mm</p>
-                    <p>Risico: Hoog</p>
-                </div>
-                <div class="seizoen risico-laag">
-                    <h3>Lente</h3>
-                    <p>Verwachte seizoensneerslag: 202 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-                <div class="seizoen risico-hoog">
-                    <h3>Zomer</h3>
-                    <p>Verwachte seizoensneerslag: 261 mm</p>
-                    <p>Risico: Hoog</p>
-                </div>
-                <div class="seizoen risico-laag">
-                    <h3>Herfst</h3>
-                    <p>Verwachte seizoensneerslag: 266 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-            </div>
+            <h2 class="section-title" style="font-size: 16px; margin-bottom: 8px; color: #f1f5f9;">
+                Beheer Belangrijke Items (Stockbeheerder)
+            </h2>
+            <p class="card-subtitle" style="text-align: left; margin-bottom: 16px;">
+                Vink de materialen aan die kritiek worden (`belangrijk = true`) zodra er overstromingsgevaar dreigt.
+            </p>
 
-            <div class="jaar-kaart">
-                <h2>2029</h2>
-                <div class="seizoen risico-hoog">
-                    <h3>Winter</h3>
-                    <p>Verwachte seizoensneerslag: 314 mm</p>
-                    <p>Risico: Hoog</p>
+            @if(session('success'))
+                <div style="background-color: rgba(16, 185, 129, 0.15); color: #34d399; padding: 12px; border-radius: 8px; border: 1px solid rgba(16, 185, 129, 0.3); margin-bottom: 16px; font-size: 14px; font-weight: 500;">
+                    {{ session('success') }}
                 </div>
-                <div class="seizoen risico-laag">
-                    <h3>Lente</h3>
-                    <p>Verwachte seizoensneerslag: 204 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-                <div class="seizoen risico-hoog">
-                    <h3>Zomer</h3>
-                    <p>Verwachte seizoensneerslag: 263 mm</p>
-                    <p>Risico: Hoog</p>
-                </div>
-                <div class="seizoen risico-laag">
-                    <h3>Herfst</h3>
-                    <p>Verwachte seizoensneerslag: 268 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-            </div>
+            @endif
 
-            <div class="jaar-kaart">
-                <h2>2030</h2>
-                <div class="seizoen risico-hoog">
-                    <h3>Winter</h3>
-                    <p>Verwachte seizoensneerslag: 316 mm</p>
-                    <p>Risico: Hoog</p>
+            <form action="{{ route('weersvoorspelling.store') }}" method="POST">
+                @csrf
+                <div class="stock-list-container">
+                    @forelse($alleMaterialen as $item)
+                        <label class="stock-item-row">
+                            <div class="checkbox-container">
+                                <input type="checkbox" name="materiaal_ids[]" value="{{ $item->id }}"
+                                    {{ in_array($item->id, $gekoppeldeIds) ? 'checked' : '' }}>
+                                <span class="stock-name" style="color: #f1f5f9;">{{ $item->naam }}</span>
+                            </div>
+                            
+                            @if(in_array($item->id, $gekoppeldeIds))
+                                <span class="badge rain" style="font-size: 9px; padding: 1px 5px;">Gekoppeld</span>
+                            @endif
+                        </label>
+                    @empty
+                        <p style="color: #64748b; font-size: 13px; font-style: italic; padding: 8px 0;">
+                            Geen materialen gevonden in de `materialen` database.
+                        </p>
+                    @endforelse
                 </div>
-                <div class="seizoen risico-laag">
-                    <h3>Lente</h3>
-                    <p>Verwachte seizoensneerslag: 206 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-                <div class="seizoen risico-hoog">
-                    <h3>Zomer</h3>
-                    <p>Verwachte seizoensneerslag: 265 mm</p>
-                    <p>Risico: Hoog</p>
-                </div>
-                <div class="seizoen risico-laag">
-                    <h3>Herfst</h3>
-                    <p>Verwachte seizoensneerslag: 270 mm</p>
-                    <p>Risico: Laag</p>
-                </div>
-            </div>
+
+                <button type="submit" class="submit-btn">
+                    Wijzigingen Opslaan
+                </button>
+            </form>
         </div>
     </div>
 
-    <style>
-        .risico-container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px 20px 60px;
-            color: #1f2937;
-        }
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Check if coordinates are already present in the current URL address bar
+            const urlParams = new URLSearchParams(window.location.search);
+            const hasLat = urlParams.has('lat');
+            const hasLon = urlParams.has('lon');
 
-        .risico-title {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
+            // If coordinates are NOT in the URL yet, ask the browser for them
+            if (!hasLat || !hasLon) {
+                if (navigator.geolocation) {
+                    
+                    // Display a temporary status notice to the user
+                    document.getElementById('location-subtitle').innerText = "Locatie ophalen...";
 
-        .risico-subtitle {
-            margin-bottom: 30px;
-            color: #4b5563;
-            max-width: 850px;
-        }
+                    navigator.geolocation.getCurrentPosition(
+                        function(position) {
+                            const latitude = position.coords.latitude;
+                            const longitude = position.coords.longitude;
 
-        .jaar-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 20px;
-        }
-
-        .jaar-kaart {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 16px;
-            padding: 22px;
-            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-        }
-
-        .jaar-kaart h2 {
-            margin-bottom: 16px;
-            color: #111827;
-        }
-
-        .seizoen {
-            border-radius: 12px;
-            padding: 14px;
-            margin-bottom: 14px;
-        }
-
-        .seizoen h3 {
-            margin-bottom: 8px;
-        }
-
-        .seizoen p {
-            margin: 4px 0;
-        }
-
-        .risico-laag {
-            background-color: #dcfce7;
-            color: #166534;
-        }
-
-        .risico-matig {
-            background-color: #fef3c7;
-            color: #92400e;
-        }
-
-        .risico-hoog {
-            background-color: #fee2e2;
-            color: #991b1b;
-        }
-    </style>
+                            // Reload the page passing the exact user coordinates as query strings
+                            window.location.href = window.location.pathname + `?lat=${latitude}&lon=${longitude}`;
+                        },
+                        function(error) {
+                            // If user blocks permission, it falls back to the default coordinates seamlessly
+                            console.warn("Locatiebepaling geweigerd of mislukt. Standaard locatie wordt getoond.");
+                            document.getElementById('location-subtitle').innerText = "Standaard locatie (Brussel)";
+                        }
+                    );
+                }
+            }
+        });
+    </script>
 </x-site-layout>
