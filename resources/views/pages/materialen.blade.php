@@ -74,7 +74,6 @@
                                             <tr>
                                                 <th>Naam</th>
                                                 <th>Beschrijving</th>
-                                                <th style="width: 120px;">Belangrijk?</th>
                                                 <th style="width: 180px;">Bestellen</th> </tr>
                                         </thead>
                                         <tbody>
