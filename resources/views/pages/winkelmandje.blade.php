@@ -1,5 +1,5 @@
 <x-site-layout>
-    <div class="winkelmandje-container">
+   <!-- <div class="winkelmandje-container">
         <h1 class="winkelmandje-title">Winkelmandje</h1>
         <p class="winkelmandje-subtitle">Hier zie je een klein overzicht van de gekozen materialen.</p>
 
@@ -49,7 +49,24 @@
                 <button class="bestel-btn">Ga verder met bestellen</button>
             </div>
         </div>
-    </div>
+    </div> -->
+
+    @if($materialen->isEmpty())
+        <p>Je mandje is leeg.</p>
+        @else
+
+        @foreach($materialen as $materiaal)
+            <div class="product-kaart">
+                <div class="product-info">
+                <h2>{{ $materiaal->naam }}</h2>
+            </div>
+
+            <div class="product-details">
+                <span>Aantal: {{ $materiaal->pivot->aantal }}</span>
+                </div>
+            </div>
+        @endforeach
+    @endif
 
     <style>
         .winkelmandje-container {
