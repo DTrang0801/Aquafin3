@@ -46,15 +46,27 @@ class WeatherController extends Controller
                 'forecast_days' => 14
             ]);
 
+        if ($response->failed()) {
+            return view('pages.weersvoorspelling', [
+                'error' => 'Kon de neerslaggegevens niet ophalen.',
+                'currentRain' => 0,
+                'dailyRainForecast' => [],
+                'pastMonthTotal' => 0,
+                'lat' => $lat,
+                'lon' => $lon,
+                'floodAlarm' => $floodAlarmTriggered,
+                'alleMaterialen' => collect(),
+                'gekoppeldeIds' => [],
+                'floodAlarmTriggered' => $floodAlarmTriggered,
+                'isSimulated' => $isSimulated
+            ]);
+        }
+
         // Data structures initialization
         $pastMonthTotal = 0;
         $dailyRainForecast = [];
         $currentRain = 0;
         $error = null;
-
-        if ($response->failed()) {
-            $error = 'Kon de neerslaggegevens niet ophalen.';
-        } else {
             $data = $response->json();
             $current = $data['current'] ?? null;
             $daily = $data['daily'] ?? null;
@@ -81,9 +93,11 @@ class WeatherController extends Controller
             }
         }
 
+<<<<<<< Updated upstream
         // 3. Process Flood Calculation Alerts (Runs even if API drops out)
+=======
+>>>>>>> Stashed changes
         if ($isSimulated) {
-            // Force code to act as if flood risk threshold is breached
             $floodAlarmTriggered = true;
             
             // Re-apply the database updates using forced TRUE state
