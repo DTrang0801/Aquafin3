@@ -1,18 +1,13 @@
 <x-site-layout>
     <div class="container">
         <h1 class="page-title">Materialen</h1>
-        <div style="margin-bottom: 20px;">
-            <a href="{{ route('materialen.create') }}" class="btn-toevoegen">
-                + Nieuw materiaal
-            </a>
-        </div>
 
             <form action="{{ route('materialen') }}" method="GET">
                 <div class="search-filter">
                 <input type="text" name="search" class="search-input" placeholder="Zoek materialen..." value="{{ request('search') }}">
                 <button type="submit" class="search-button">Zoeken</button>
                     @if(request('search'))
-                        <a href="{{ route('materialen') }}">X</a>
+                        <a href="{{ route('materialen') }}" class="search-clear">×</a>
                      @endif
                 </div>
             </form>
@@ -46,7 +41,10 @@
         @endif
         
         @foreach ($categorieen as $categorie)
-            <details open class="category-block">
+            @if(request('search') && !$openCategoryIds->contains($categorie->id))
+                @continue
+            @endif
+            <details {{ $openCategoryIds->contains($categorie->id) ? 'open' : '' }} class="category-block">
                 
                 <summary class="category-header" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">
                     <span>{{ $categorie->naam }}</span>
@@ -55,11 +53,13 @@
 
                 <div class="category-content">
                     @foreach ($categorie->subcategorieen as $subcategorie)
-                        
-                        <details class="subcategory-block" style="margin-bottom: 15px;">
+                        @if(request('search') && !$openSubcategoryIds->contains($subcategorie->id))
+                            @continue
+                        @endif
+                            <details {{ $openSubcategoryIds->contains($subcategorie->id) ? 'open' : '' }} class="subcategory-block" style="margin-bottom: 15px;">
                             
                             <summary class="subcategory-title" style="cursor: pointer; user-select: none; list-style: none;">
-                                <strong>→ {{ $subcategorie->naam }}</strong> <small style="color: #3182ce; margin-left: 10px;">(Klik om te tonen/verbergen)</small>
+                                <strong>{{ $subcategorie->naam }}</strong>
                             </summary>
 
                             <div style="margin-top: 10px;">
@@ -67,12 +67,6 @@
                                     <p class="no-data">Geen materialen in deze subcategorie.</p>
                                 @else
                                     <table class="custom-table">
-                                        <thead>
-                                            <tr>
-                                                <th>Naam</th>
-                                                <th>Beschrijving</th>
-                                            </tr>
-                                        </thead>
                                         <tbody>
                                             @foreach ($subcategorie->materialen as $materiaal)
                                                 <tr>

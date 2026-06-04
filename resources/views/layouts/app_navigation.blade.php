@@ -3,13 +3,34 @@
         <div class="nav-left">
             <a href="{{ route('home') }}" class="nav-brand">Aquafin</a>
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
-            <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
-            <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
-            <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
-            <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
+
+            @guest
+                <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
+            @endguest
+
             @auth
+                @if (Auth::user()->role !== 'stockbeheerder')
+                    <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                @endif
+
+                @if (Auth::user()->role !== 'admin')
+                    <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
+                @endif
+
+
+                @if (Auth::user()->role !== 'stockbeheerder')
+                    <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
+                @endif
+
+                <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
+
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
+                @endif
+
+                @if (Auth::user()->role === 'stockbeheerder')
+                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
                 @endif
             @endauth
         </div>
