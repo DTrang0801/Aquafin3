@@ -33,7 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/materialen/{materiaal}', [MateriaalController::class, 'destroy'])->name('materialen.destroy');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
 
-    Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
+    // Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
 
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
 

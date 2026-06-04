@@ -5,13 +5,13 @@
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
 
             @guest
-                <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
             @endguest
 
             @auth
                 @if (Auth::user()->role !== 'stockbeheerder')
-                    <a href="{{ route('winkelmandje') }}" class="nav-link">Mandje</a>
+                    <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 @endif
 
                 @if (Auth::user()->role !== 'admin')
