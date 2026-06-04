@@ -15,18 +15,10 @@
         @if($belangrijkeMaterialen->isNotEmpty())
             <div class="alert-box important-box">
                 <div class="alert-header">
-                    <span class="alert-icon">⚠️</span>
-                    <h2 class="alert-title">Belangrijke Aandachtspunten / Materialen</h2>
+                    <h2 class="alert-title">Belangrijke Materialen</h2>
                 </div>
                 
                 <table class="custom-table table-important">
-                    <thead>
-                        <tr>
-                            <th>Naam</th>
-                            <th>Subcategorie</th>
-                            <th>Beschrijving</th>
-                        </tr>
-                    </thead>
                     <tbody>
                         @foreach ($belangrijkeMaterialen as $materiaal)
                             <tr>
