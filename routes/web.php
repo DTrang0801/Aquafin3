@@ -1,9 +1,11 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CartController;
-use App\Http\Controllers\WeatherController;
 use App\Http\Controllers\MateriaalController;
+use App\Http\Controllers\Userzone\ProfileController;
+use App\Http\Controllers\WeatherController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('home');
@@ -11,18 +13,18 @@ Route::get('/', function () {
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
-    Route::get('/gebruikers', [\App\Http\Controllers\Admin\UserController::class, 'index'])->name('gebruikers');
-    Route::get('/gebruikers/create', [\App\Http\Controllers\Admin\UserController::class, 'create'])->name('gebruikers.create');
-    Route::post('/gebruikers', [\App\Http\Controllers\Admin\UserController::class, 'store'])->name('gebruikers.store');
-    Route::get('/gebruikers/{user}/edit', [\App\Http\Controllers\Admin\UserController::class, 'edit'])->name('gebruikers.edit');
-    Route::put('/gebruikers/{user}', [\App\Http\Controllers\Admin\UserController::class, 'update'])->name('gebruikers.update');
-    Route::delete('/gebruikers/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('gebruikers.destroy');
+    Route::get('/gebruikers', [UserController::class, 'index'])->name('gebruikers');
+    Route::get('/gebruikers/create', [UserController::class, 'create'])->name('gebruikers.create');
+    Route::post('/gebruikers', [UserController::class, 'store'])->name('gebruikers.store');
+    Route::get('/gebruikers/{user}/edit', [UserController::class, 'edit'])->name('gebruikers.edit');
+    Route::put('/gebruikers/{user}', [UserController::class, 'update'])->name('gebruikers.update');
+    Route::delete('/gebruikers/{user}', [UserController::class, 'destroy'])->name('gebruikers.destroy');
 });
-
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
-    
+    Route::get('/materialen/suggesties', [MateriaalController::class, 'suggesties'])->name('materialen.suggesties');
+
     Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
     Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
     Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
@@ -37,7 +39,6 @@ Route::middleware('auth')->group(function () {
     Route::put('/materialen/{materiaal}', [MateriaalController::class, 'update'])->name('materialen.update');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
 
-    Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');   
@@ -45,11 +46,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
 
     // Mag ik deze lijn verwijderen??? - Titi
-   // Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
+    // Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
 
-    Route::get('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
 require __DIR__.'/auth.php';
