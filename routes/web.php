@@ -17,13 +17,16 @@ Route::middleware('role:admin')->group(function () {
     Route::delete('/gebruikers/{user}', [\App\Http\Controllers\Admin\UserController::class, 'destroy'])->name('gebruikers.destroy');
 });
 
+Route::get('/bestellingen', [\App\Http\Controllers\BestellingController::class, 'index'])
+    ->name('bestellingen')
+    ->middleware('role:admin,stockbeheerder');
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
     Route::get('/materialen/create', [MateriaalController::class, 'create'])->name('materialen.create');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
     Route::view('/winkelmandje', 'pages.winkelmandje')->name('winkelmandje');
-    Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
+    //Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
     Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
 

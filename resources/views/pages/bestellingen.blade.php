@@ -1,8 +1,7 @@
 <x-site-layout>
     <div class="bestelling-container">
-        <h1 class="bestelling-title">Bestelling</h1>
-        <p class="bestelling-subtitle">Hieronder een overzicht van je bestelling.</p>
-
+        <h1 class="bestelling-title">Bestelling overzicht</h1>
+<!--
         <div class="bestelling-layout">
             <div class="bestelling-links">
 
@@ -45,22 +44,20 @@
                     </div>
                 </div>
             </div>
+                                    <div class="bestelling-rechts">
+                                            <div class="samenvatting-kaart">
+                                                <h2>Samenvatting</h2>
 
-          <!--  <div class="bestelling-rechts">
-                <div class="samenvatting-kaart">
-                    <h2>Samenvatting</h2>
+                                                <div class="samenvatting-regel">
+                                                    <span>Aantal producten</span>
+                                                    <span>6</span>
+                                                </div>
 
-                    <div class="samenvatting-regel">
-                        <span>Aantal producten</span>
-                        <span>6</span>
-                    </div>
-
-                    <button class="bevestig-btn">Bestelling bevestigen</button>
-                </div>
-            </div>
-        </div>
-    </div>
--->
+                                                <button class="bevestig-btn">Bestelling bevestigen</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
     <style>
         .bestelling-container {
             max-width: 1100px;
@@ -171,10 +168,50 @@
             background-color: #1d4ed8;
         }
 
-        @media (max-width: 768px) {
+      @media (max-width: 768px) {
             .bestelling-layout {
                 grid-template-columns: 1fr;
             }
         }
     </style>
+-->
+
+        @if($bestellingen->isEmpty())
+            <p>Geen bestellingen gevonden.</p>
+        @else
+            <table border="1" cellpadding="8" style="width: 100%; margin-top: 16px">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Technieker</th>
+                        <th>Datum</th>
+                        <th>Tijd</th>
+                        <th>Locatie</th>
+                        <th>Materialen</th>
+                        <th>Opmerking</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($bestellingen as $bestelling)
+                        <tr>
+                            <td>{{ $bestelling->id }}</td>
+                            <td>{{ $bestelling->gebruiker->name }}</td>
+                            <td>{{ $bestelling->gevraagde_datum ?? '—' }}</td>
+                            <td>{{ $bestelling->gevraagde_tijd ?? '—' }}</td>
+                            <td>{{ $bestelling->locatie ?? '—' }}</td>
+                            <td>
+                                @forelse($bestelling->materialen as $materiaal)
+                                    {{ $materiaal->naam }} ({{ $materiaal->pivot->aantal }}x)<br>
+                                @empty
+                                    —
+                                @endforelse
+                            </td>
+                            <td>{{ $bestelling->opmerking ?? '—' }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
+    </div>
+
 </x-site-layout>
