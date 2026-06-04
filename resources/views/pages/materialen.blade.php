@@ -5,15 +5,64 @@
             <form action="{{ route('materialen') }}" method="GET" id="search-filter-form" style="margin-bottom: 30px;">
                 <div class="search-filter-grid">
                     
-                    <div class="filter-group keyword-search">
+                    <div class="filter-group keyword-search"
+                         x-data="{
+                             query: '{{ request('search') }}',
+                             suggestions: [],
+                             show: false,
+                             async fetch() {
+                                 if (this.query.length < 2) {
+                                     this.suggestions = [];
+                                     this.show = false;
+                                     return;
+                                 }
+                                 try {
+                                     const res = await fetch('{{ route('materialen.suggesties') }}?q=' + encodeURIComponent(this.query));
+                                     this.suggestions = await res.json();
+                                     this.show = this.suggestions.length > 0;
+                                 } catch {
+                                     this.suggestions = [];
+                                     this.show = false;
+                                 }
+                             },
+                             select(name) {
+                                 this.query = name;
+                                 this.show = false;
+                                 $el.closest('form').submit();
+                             },
+                             hide() { setTimeout(() => this.show = false, 200) }
+                         }">
                         <label for="search" class="filter-label">Zoeken op term</label>
                         <div style="position: relative; display: flex; width: 100%;">
-                            <input type="text" id="search" name="search" class="search-input" 
-                                    placeholder="Zoek materiaalnaam..." 
-                                    value="{{ request('search') }}">
+                            <input type="text" id="search" name="search" class="search-input"
+                                   placeholder="Zoek materiaalnaam..."
+                                   x-model="query"
+                                   x-on:input.debounce.300ms="fetch"
+                                   x-on:blur="hide"
+                                   x-on:focus="fetch"
+                                   value="{{ request('search') }}">
                             @if(request('search'))
                                 <a href="{{ route('materialen', request()->except('search')) }}" class="search-clear-btn">×</a>
                             @endif
+
+                            <div x-show="show" x-cloak
+                                 style="position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+                                        background: #fff; border: 1px solid #475569; border-radius: 6px;
+                                        margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                <template x-for="item in suggestions" :key="item.id">
+                                    <button type="button" @click="select(item.naam)"
+                                            style="display: block; width: 100%; text-align: left; padding: 10px 12px;
+                                                   border: none; background: none; cursor: pointer; font-size: 14px;
+                                                   color: #333; border-bottom: 1px solid #e5e5e5;
+                                                   transition: background 0.15s;"
+                                            @mouseenter="$el.style.background='#f0f0f0'"
+                                            @mouseleave="$el.style.background='none'">
+                                        <span x-text="item.naam" style="font-weight: 600;"></span>
+                                        <span x-text="item.subcategorie?.naam ? ' (' + item.subcategorie.naam + ')' : ''"
+                                              style="color: #888; font-size: 12px;"></span>
+                                    </button>
+                                </template>
+                            </div>
                         </div>
                     </div>
 
@@ -154,6 +203,7 @@
     </div>
 
     <style>
+        [x-cloak] { display: none !important; }
         .search-filter-grid {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto;
