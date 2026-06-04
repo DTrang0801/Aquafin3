@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <div class="bestelling-rechts">
+          <!--  <div class="bestelling-rechts">
                 <div class="samenvatting-kaart">
                     <h2>Samenvatting</h2>
 
@@ -60,7 +60,7 @@
             </div>
         </div>
     </div>
-
+-->
     <style>
         .bestelling-container {
             max-width: 1100px;
