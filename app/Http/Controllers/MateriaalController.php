@@ -159,6 +159,7 @@ class MateriaalController extends Controller
         return response()->json($materialen);
     }
 
+
     public function create()
     {
         $subcategorieen = MateriaalSubcategorie::all();
