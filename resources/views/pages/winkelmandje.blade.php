@@ -1,9 +1,9 @@
 <x-site-layout>
-   <!-- <div class="winkelmandje-container">
+   <div class="winkelmandje-container">
         <h1 class="winkelmandje-title">Winkelmandje</h1>
         <p class="winkelmandje-subtitle">Hier zie je een klein overzicht van de gekozen materialen.</p>
 
-        <div class="winkelmandje-layout">
+       <!-- <div class="winkelmandje-layout">
             <div class="producten-lijst">
 
                 <div class="product-kaart">
@@ -67,7 +67,7 @@
             </div>
         @endforeach
     @endif
-
+    
     <style>
         .winkelmandje-container {
             max-width: 1100px;

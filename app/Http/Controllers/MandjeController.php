@@ -13,4 +13,26 @@ class MandjeController extends Controller
         $materialen = $mandje ? $mandje->materialen : collect();
         return view('pages.winkelmandje', compact('materialen'));
     }
+
+    public function toevoegen($materiaalId)
+{
+    $mandje = Mandje::firstOrCreate(['gebruiker_id' => Auth::id()]);
+
+    if ($mandje->materialen->contains($materiaalId)) {
+        $mandje->materialen()->updateExistingPivot($materiaalId, [
+            'aantal' => $mandje->materialen->find($materiaalId)->pivot->aantal + 1
+        ]);
+    } else {
+        $mandje->materialen()->attach($materiaalId, ['aantal' => 1]);
+    }
+
+    return redirect()->back()->with('success', 'Toegevoegd aan mandje!');
+}
+
+public function verwijderen($materiaalId)
+{
+    $mandje = Mandje::where('gebruiker_id', Auth::id())->first();
+    $mandje->materialen()->detach($materiaalId);
+    return redirect()->back()->with('success', 'Verwijderd uit mandje!');
+}
 }

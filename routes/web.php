@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\FavorietenController;
 use App\Http\Controllers\MandjeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MateriaalController;
@@ -27,10 +28,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/winkelmandje', [MandjeController::class, 'index'])->name('winkelmandje');
     Route::view('/bestellingen', 'pages.bestellingen')->name('bestellingen');
     Route::view('/weersvoorspelling', 'pages.weersvoorspelling')->name('weersvoorspelling');
-    Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
+    //Route::view('/favorieten', 'pages.favorieten')->name('favorieten');
+    Route::get('/favorieten', [FavorietenController::class, 'index'])->name('favorieten');
 
     // Mag ik deze lijn verwijderen??? - Titi
    // Route::view('/gebruikers', 'pages.gebruikers')->name('gebruikers')->middleware('role:admin');
+
+    Route::post('/winkelmandje/toevoegen/{materiaalId}', [MandjeController::class, 'toevoegen'])->name('mandje.toevoegen');
+    Route::delete('/winkelmandje/verwijderen/{materiaalId}', [MandjeController::class, 'verwijderen'])->name('mandje.verwijderen');
 
     Route::get('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [App\Http\Controllers\Userzone\ProfileController::class, 'update'])->name('profile.update');
