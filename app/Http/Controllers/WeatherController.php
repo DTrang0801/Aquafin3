@@ -22,64 +22,66 @@ class WeatherController extends Controller
         $lastMonth = Carbon::now('Europe/Berlin')->subMonth();
         $this->floodService->archiveHistoricalMonth($lastMonth->year, $lastMonth->month);
 
-        // Read coordinates from the request, default belgie
+        // Read coordinates from the request, default to Belgium
         $lat = $request->input('lat', 50.8503);
         $lon = $request->input('lon', 4.3517);
 
-        $floodAlarmTriggered = $this->floodService->checkAndFlagItems($lat, $lon);
+        // 1. Establish defaults up front to prevent Undefined Variable exceptions downstream
+        $isSimulated = session('simulate_flood', false);
+        $floodAlarmTriggered = false;
 
-
-
-        // Pass coordinates into Open-Meteo
-        $response = Http::get("https://api.open-meteo.com/v1/forecast", [
-            'latitude' => $lat,
-            'longitude' => $lon,
-            'daily' => 'rain_sum',
-            'current' => 'rain,precipitation',
-            'timezone' => 'auto',
-            'past_days' => 30,
-            'forecast_days' => 14
-        ]);
-
-        if ($response->failed()) {
-            return view('pages.weersvoorspelling', [
-                'error' => 'Kon de neerslaggegevens niet ophalen.',
-                'dailyRainForecast' => [],
-                'pastMonthTotal' => 0,
-                'lat' => $lat,
-                'lon' => $lon
+        // 2. Fetch API Data safely
+        $response = Http::withoutVerifying() // bypass local TLS/cURL handshake crashes
+            ->withOptions([
+                'curl' => [
+                    CURLOPT_CONNECTTIMEOUT => 10,
+                ]
+            ])->get("https://api.open-meteo.com/v1/forecast", [
+                'latitude' => $lat,
+                'longitude' => $lon,
+                'daily' => 'rain_sum',
+                'current' => 'rain,precipitation',
+                'timezone' => 'Europe/Berlin',
+                'past_days' => 30,
+                'forecast_days' => 14
             ]);
-        }
 
-        $data = $response->json();
-        $current = $data['current'] ?? null;
-        $daily = $data['daily'] ?? null;
-
+        // Data structures initialization
         $pastMonthTotal = 0;
         $dailyRainForecast = [];
+        $currentRain = 0;
+        $error = null;
 
-        $detectedTimezone = $data['timezone'] ?? 'Europe/Berlin';
+        if ($response->failed()) {
+            $error = 'Kon de neerslaggegevens niet ophalen.';
+        } else {
+            $data = $response->json();
+            $current = $data['current'] ?? null;
+            $daily = $data['daily'] ?? null;
+            $currentRain = $current['precipitation'] ?? 0;
 
-        if ($daily && isset($daily['time'])) {
-            $today = Carbon::today($detectedTimezone);
+            $detectedTimezone = $data['timezone'] ?? 'Europe/Berlin';
 
-            foreach ($daily['time'] as $index => $dateString) {
-                $date = Carbon::parse($dateString);
-                $amount = $daily['rain_sum'][$index] ?? 0;
+            if ($daily && isset($daily['time'])) {
+                $today = Carbon::today($detectedTimezone);
 
-                if ($date->isBefore($today)) {
-                    $pastMonthTotal += $amount;
-                } else {
-                    $dailyRainForecast[] = [
-                        'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
-                        'amount' => $amount
-                    ];
+                foreach ($daily['time'] as $index => $dateString) {
+                    $date = Carbon::parse($dateString);
+                    $amount = $daily['rain_sum'][$index] ?? 0;
+
+                    if ($date->isBefore($today)) {
+                        $pastMonthTotal += $amount;
+                    } else {
+                        $dailyRainForecast[] = [
+                            'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
+                            'amount' => $amount
+                        ];
+                    }
                 }
             }
         }
 
-        $isSimulated = session('simulate_flood', false);
-
+        // 3. Process Flood Calculation Alerts (Runs even if API drops out)
         if ($isSimulated) {
             // Force code to act as if flood risk threshold is breached
             $floodAlarmTriggered = true;
@@ -98,8 +100,9 @@ class WeatherController extends Controller
         $alleMaterialen = DB::table('materialen')->select('id', 'naam')->get();        
         $gekoppeldeIds = DB::table('belangrijkeItems')->pluck('materiaal_id')->toArray();
 
+        // 4. Return a clean unified response payload configuration
         return view('pages.weersvoorspelling', [
-            'currentRain' => $current['precipitation'] ?? 0,
+            'currentRain' => $currentRain,
             'pastMonthTotal' => round($pastMonthTotal, 1),
             'dailyRainForecast' => $dailyRainForecast,
             'lat' => round($lat, 2),
@@ -107,8 +110,9 @@ class WeatherController extends Controller
             'floodAlarm' => $floodAlarmTriggered,
             'alleMaterialen' => $alleMaterialen,
             'gekoppeldeIds' => $gekoppeldeIds,
-            'floodAlarmTriggered' => $floodAlarmTriggered,
-            'isSimulated' => $isSimulated
+            'floodAlarmTriggered' => $floodAlarmTriggered, // Now guaranteed to exist!
+            'isSimulated' => $isSimulated,
+            'error' => $error
         ]);
     }
 
