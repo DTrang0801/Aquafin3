@@ -105,7 +105,13 @@ class FloodRiskService
             }
         }
 
-        $response = Http::get("https://api.open-meteo.com/v1/forecast", [
+        $response = Http::withOptions([
+        'curl' => [
+            CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2, // Force TLS 1.2 negotiation explicitly
+            // If it still gives an error, you can also add a timeout constraint:
+            CURLOPT_CONNECTTIMEOUT => 10,
+        ]
+        ])->get("https://api.open-meteo.com/v1/forecast", [
             'latitude' => $lat,
             'longitude' => $lon,
             'daily' => 'rain_sum',
