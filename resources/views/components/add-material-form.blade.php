@@ -1,12 +1,15 @@
-<div class="add-material-section">
-    <h3 class="section-title add-material-section__title">Snel nieuw materiaal toevoegen</h3>
-    <p class="card-subtitle add-material-section__subtitle">
-        Voeg meteen een nieuw materiaal toe en koppel het als kritiek item indien nodig.
-    </p>
+<div class="add-material-section weather-card">
+    <div class="section-header">
+        <h2 class="section-heading">Snel nieuw materiaal toevoegen</h2>
+        <p class="section-description">
+            Voeg meteen een nieuw materiaal toe en koppel het als kritiek item indien nodig.
+        </p>
+    </div>
 
     @if ($errors->has('add_material'))
         <div class="weather-alert weather-alert--danger">
-            {{ $errors->first('add_material') }}
+            <span class="alert-icon">✕</span>
+            <span>{{ $errors->first('add_material') }}</span>
         </div>
     @endif
 
@@ -83,106 +86,3 @@
         <button type="submit" class="btn-add-material">Toevoegen en opslaan</button>
     </form>
 </div>
-
-<style>
-.add-material-section {
-    border-top: 1px solid rgba(51, 65, 85, 0.5);
-    margin-top: 20px;
-    padding-top: 20px;
-}
-
-.add-material-section__title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #cbd5e1;
-}
-
-.add-material-section__subtitle {
-    margin-bottom: 16px;
-    text-align: left;
-}
-
-.add-material-form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-}
-
-.form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-}
-
-.form-label {
-    color: #cbd5e1;
-    font-size: 13px;
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.form-input {
-    background-color: rgba(51, 65, 85, 0.4);
-    border: 1px solid rgba(51, 65, 85, 0.6);
-    border-radius: 6px;
-    color: #f1f5f9;
-    font-size: 14px;
-    padding: 10px 12px;
-    transition: border 0.2s ease;
-}
-
-.form-input:focus {
-    border-color: #0891b2;
-    outline: none;
-}
-
-.form-input--error {
-    border-color: #ef4444;
-}
-
-.form-input--textarea {
-    resize: vertical;
-    font-family: inherit;
-}
-
-.form-error {
-    color: #f87171;
-    font-size: 12px;
-}
-
-.checkbox-label {
-    align-items: center;
-    cursor: pointer;
-    display: flex;
-    gap: 8px;
-}
-
-.checkbox-label input[type="checkbox"] {
-    cursor: pointer;
-}
-
-.checkbox-label__text {
-    color: #cbd5e1;
-    font-size: 14px;
-}
-
-.btn-add-material {
-    background-color: #0891b2;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    padding: 10px 18px;
-    transition: background 0.2s ease;
-}
-
-.btn-add-material:hover {
-    background-color: #0e7490;
-}
-
-.btn-add-material:active {
-    background-color: #155e75;
-}
-</style>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Materiaal;
+use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
@@ -54,6 +55,67 @@ test('authenticated users can view the neerslag page', function () {
         ->assertOk()
         ->assertSee('Neerslag')
         ->assertSee('Actuele neerslag');
+});
+
+test('stockbeheerder can view critical item management page', function () {
+    $user = User::factory()->create(['role' => 'stockbeheerder']);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling.kritieke-items'))
+        ->assertOk()
+        ->assertSee('Beheer Kritieke Items')
+        ->assertSee('Kritieke materialen')
+        ->assertSee('Snel nieuw materiaal toevoegen');
+});
+
+test('critical item management page renders add material subcategory options', function () {
+    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $categorie = Materiaalcategorie::query()->create(['naam' => 'Pompen']);
+
+    MateriaalSubcategorie::query()->create([
+        'materiaal_categorie_id' => $categorie->id,
+        'naam' => 'Dompelpompen',
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling.kritieke-items'))
+        ->assertOk()
+        ->assertSee('Pompen')
+        ->assertSee('Dompelpompen');
+});
+
+test('non stockbeheerder cannot view critical item management page', function () {
+    $user = User::factory()->create(['role' => 'technieker']);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling.kritieke-items'))
+        ->assertForbidden();
+});
+
+test('stockbeheerder neerslag page does not include critical item management form', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role' => 'stockbeheerder']);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling'))
+        ->assertOk()
+        ->assertSee('Actuele neerslag')
+        ->assertSee('Start simulatie')
+        ->assertDontSee('Kritieke materialen')
+        ->assertDontSee('Snel nieuw materiaal toevoegen');
+});
+
+test('non stockbeheerder neerslag page does not include simulation control', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role' => 'technieker']);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling'))
+        ->assertOk()
+        ->assertDontSee('Start simulatie')
+        ->assertDontSee('Stop simulatie');
 });
 
 test('stockbeheerder can update linked critical materials', function () {

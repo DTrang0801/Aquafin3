@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::middleware('role:stockbeheerder')->group(function () {
+        Route::get('/weersvoorspelling/kritieke-items', [WeatherController::class, 'criticalItems'])->name('weersvoorspelling.kritieke-items');
         Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
         Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
         Route::post('/weersvoorspelling/materiaal', [WeatherController::class, 'addMaterial'])->name('weersvoorspelling.addMaterial');
