@@ -6,9 +6,9 @@
             <p style="color:green">{{ session('succes') }}</p>   
         @endif
 
-        <a href="{{ route('gebruikers.create') }}">+ Nieuwe gebruiker</a>
+        <a href="{{ route('gebruikers.create') }}" class="btn-primary" style="display:inline-block;padding:8px 18px;text-decoration:none;">+ Nieuwe gebruiker</a>
 
-        <table border="1" cellpadding="8" style="margin-top: 16px; width: 100%">
+        <table class="custom-table" style="margin-top: 16px;">
             <thead>
                 <tr>
                     <th>Naam</th>
@@ -23,14 +23,13 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role }}</td>
-                        <td>
-                            <a href="{{ route('gebruikers.edit', $user) }}">Bewerken</a>
-                            |
+                        <td style="white-space:nowrap;">
+                            <a href="{{ route('gebruikers.edit', $user) }}" class="btn-primary" style="padding:4px 12px;text-decoration:none;font-size:13px;margin-right:6px;">Bewerken</a>
                             @if(auth()->id() !== $user->id)
-                                <form action="{{ route('gebruikers.destroy', $user) }}" method="post" style="display:inline">
+                                <form action="{{ route('gebruikers.destroy', $user) }}" method="post" style="display:inline;">
                                     @csrf
                                     @method('delete')
-                                    <button type="submit" onclick="return confirm('Zeker weten?')">Verwijderen</button>
+                                    <button type="submit" onclick="return confirm('Zeker weten?')" class="btn-primary" style="padding:4px 12px;font-size:13px;background-color:#dc2626;">Verwijderen</button>
                                 </form>
                             @endif
                         </td>
