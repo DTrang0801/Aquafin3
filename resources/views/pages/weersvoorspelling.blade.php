@@ -1,170 +1,127 @@
 <x-site-layout>
-    <div class="weather-page">
-        <div class="content-grid-three">
-            <div class="weather-card">
-                <h1 class="card-title weather-card-title">Neerslag</h1>
-                <p id="location-subtitle" class="card-subtitle">
+    <div class="weather-page-container">
+        <!-- Page Header -->
+        <div class="weather-page-header">
+            <div class="weather-header-content">
+                <h1 class="weather-page-title">Neerslag & Overstromingsrisico</h1>
+                <p id="location-subtitle" class="weather-page-subtitle">
                     @if(request()->has('lat') && request()->has('lon'))
                         Locatie: {{ $lat }}, {{ $lon }}
                     @else
                         Standaard locatie (Brussel)
                     @endif
                 </p>
+            </div>
+        </div>
 
-                @if($floodAlarmTriggered ?? false)
-                    <div class="weather-alert weather-alert--danger">
-                        ALARM: Overstromingsgevaar gedetecteerd! Gekoppelde voorraad is gemarkeerd als BELANGRIJK.
+        <!-- Status Alert -->
+        <div class="weather-page-alerts">
+            @if($floodAlarmTriggered ?? false)
+                <div class="weather-alert weather-alert--danger weather-alert--large">
+                    <span class="alert-icon">!</span>
+                    <div>
+                        <strong>ALARM: Overstromingsgevaar gedetecteerd!</strong>
+                        <p>Gekoppelde voorraad is gemarkeerd als BELANGRIJK.</p>
                         @if($isSimulated)
                             <span class="weather-alert__note">(GESIMULEERDE MODUS)</span>
                         @endif
                     </div>
-                @else
-                    <div class="weather-alert weather-alert--ok">
-                        Status stabiel: geen verhoogd overstromingsrisico op basis van neerslagdrempels.
+                </div>
+            @else
+                <div class="weather-alert weather-alert--ok weather-alert--large">
+                    <span class="alert-icon">✓</span>
+                    <div>
+                        <strong>Status stabiel</strong>
+                        <p>Geen verhoogd overstromingsrisico op basis van neerslagdrempels.</p>
                     </div>
-                @endif
+                </div>
+            @endif
+        </div>
 
-                @if(isset($error))
-                    <div class="error-alert">{{ $error }}</div>
-                @else
-                    <div class="stats-grid">
-                        <div class="stat-box">
-                            <span class="stat-label">Actuele neerslag</span>
-                            <span class="stat-value value-current">
-                                {{ $currentRain }} <span class="unit">mm</span>
-                            </span>
+        @if($canManageStock)
+            <div class="weather-simulation-control">
+                <div>
+                    <h2 class="weather-simulation-control__title">Systeem testen (DEBUG)</h2>
+                    <p class="weather-simulation-control__text">
+                        Simuleer overstromingsgevaar om de neerslagstatus en gekoppelde voorraad te controleren.
+                    </p>
+                </div>
+
+                <form action="{{ route('weersvoorspelling.simulate') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="sim-btn {{ $isSimulated ? 'active' : '' }}">
+                        {{ $isSimulated ? 'Stop simulatie' : 'Start simulatie' }}
+                    </button>
+                </form>
+            </div>
+        @endif
+
+        <!-- Main Content Grid -->
+        <div class="weather-page-grid">
+            <!-- Left Column: Current Rainfall Data -->
+            <div class="weather-section">
+                <div class="weather-card">
+                    @if(isset($error))
+                        <div class="error-alert">
+                            <span class="alert-icon">✕</span>
+                            <span>{{ $error }}</span>
+                        </div>
+                    @else
+                        <div class="section-header">
+                            <h2 class="section-heading">Actuele neerslag</h2>
                         </div>
 
-                        <div class="stat-box highlighted">
-                            <span class="stat-label">Totaal afgelopen maand</span>
-                            <span class="stat-value value-history">
-                                {{ $pastMonthTotal }} <span class="unit">mm</span>
-                            </span>
-                        </div>
-                    </div>
-
-                    <h3 class="section-title">14-daagse verwachting</h3>
-
-                    <div class="forecast-container">
-                        @forelse($dailyRainForecast as $forecast)
-                            <div class="forecast-item">
-                                <span class="day-name">{{ $forecast['day_name'] }}</span>
-
-                                <div class="badge-wrapper">
-                                    @if($forecast['amount'] > 0)
-                                        <span class="badge rain">Regen</span>
-                                        <span class="rain-amount wet">
-                                            {{ number_format($forecast['amount'], 1) }} mm
-                                        </span>
-                                    @else
-                                        <span class="badge dry">Droog</span>
-                                        <span class="rain-amount dry">0.0 mm</span>
-                                    @endif
-                                </div>
+                        <div class="stats-grid">
+                            <div class="stat-box">
+                                <span class="stat-label">Nu</span>
+                                <span class="stat-value value-current">
+                                    {{ $currentRain }}<span class="unit">mm</span>
+                                </span>
                             </div>
-                        @empty
-                            <p class="forecast-empty">Geen voorspelling beschikbaar.</p>
-                        @endforelse
-                    </div>
-                @endif
+
+                            <div class="stat-box highlighted">
+                                <span class="stat-label">Afgelopen maand</span>
+                                <span class="stat-value value-history">
+                                    {{ $pastMonthTotal }}<span class="unit">mm</span>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="forecast-section">
+                            <h3 class="subsection-heading">14-daagse verwachting</h3>
+
+                            <div class="forecast-container">
+                                @forelse($dailyRainForecast as $forecast)
+                                    <div class="forecast-item">
+                                        <span class="day-name">{{ $forecast['day_name'] }}</span>
+                                        <div class="badge-wrapper">
+                                            @if($forecast['amount'] > 0)
+                                                <span class="badge rain">Regen</span>
+                                                <span class="rain-amount wet">
+                                                    {{ number_format($forecast['amount'], 1) }} mm
+                                                </span>
+                                            @else
+                                                <span class="badge dry">Droog</span>
+                                                <span class="rain-amount dry">0.0 mm</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p class="forecast-empty">Geen voorspelling beschikbaar.</p>
+                                @endforelse
+                            </div>
+                        </div>
+                    @endif
+                </div>
             </div>
 
-            <div>
+            <!-- Middle Column: 5-Year Forecast -->
+            <div class="weather-section">
                 @if(isset($fiveYearForecast) && !empty($fiveYearForecast))
                     <x-flood-forecast-card :fiveYearForecast="$fiveYearForecast" :currentYearAnalysis="$currentYearAnalysis ?? []" />
                 @endif
             </div>
 
-            <div>
-                @if($canManageStock)
-                    <div class="weather-card management-panel">
-                <div class="simulation-panel">
-                    <div>
-                        <h4 class="simulation-panel__title">Systeem testen</h4>
-                        <p class="simulation-panel__text">
-                            Simuleer direct overstromingsgevaar om te controleren of de voorraad correct schakelt.
-                        </p>
-                    </div>
-
-                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST">
-                        @csrf
-                        <button type="submit" class="sim-btn {{ $isSimulated ? 'active' : '' }}">
-                            {{ $isSimulated ? 'Stop simulatie' : 'Start simulatie' }}
-                        </button>
-                    </form>
-                </div>
-
-                <h2 class="section-title management-panel__title">Beheer belangrijke items</h2>
-                <p class="card-subtitle management-panel__subtitle">
-                    Vink materialen aan die kritiek worden zodra er overstromingsgevaar dreigt.
-                </p>
-
-                @if(session('success'))
-                    <div class="weather-alert weather-alert--ok">{{ session('success') }}</div>
-                @endif
-
-                <form action="{{ route('weersvoorspelling.store') }}" method="POST">
-                    @csrf
-
-                    @if($gekoppeldeIds)
-                        <div class="important-items-section">
-                            <h3 class="section-title important-items-title"> Belangrijke items</h3>
-                            <div class="stock-list-container">
-                                @foreach($alleMaterialen as $materials)
-                                    @foreach($materials as $item)
-                                        @if(in_array($item->id, $gekoppeldeIds))
-                                            <label class="stock-item-row material-item material-item--important" data-name="{{ strtolower($item->naam) }}">
-                                                <div class="checkbox-container">
-                                                    <input
-                                                        type="checkbox"
-                                                        name="materiaal_ids[]"
-                                                        value="{{ $item->id }}"
-                                                        checked
-                                                    >
-                                                    <span class="stock-name">{{ $item->naam }}</span>
-                                                </div>
-                                                <span class="badge rain badge--small">Gekoppeld</span>
-                                            </label>
-                                        @endif
-                                    @endforeach
-                                @endforeach
-                            </div>
-                        </div>
-
-                        <hr class="divider">
-                    @endif
-
-                    <h3 class="section-title">Alle materialen</h3>
-                    <div class="stock-list-container">
-                        @forelse($alleMaterialen as $category => $materials)
-                            <div class="material-category">
-                                <h4 class="category-header">{{ $category }}</h4>
-
-                                @foreach($materials as $item)
-                                    @unless(in_array($item->id, $gekoppeldeIds))
-                                        <label class="stock-item-row material-item" data-name="{{ strtolower($item->naam) }}" data-category="{{ strtolower($category) }}">
-                                            <div class="checkbox-container">
-                                                <input
-                                                    type="checkbox"
-                                                    name="materiaal_ids[]"
-                                                    value="{{ $item->id }}"
-                                                >
-                                                <span class="stock-name">{{ $item->naam }}</span>
-                                            </div>
-                                        </label>
-                                    @endunless
-                                @endforeach
-                            </div>
-                        @empty
-                            <p class="stock-empty">Geen materialen gevonden.</p>
-                        @endforelse
-                    </div>
-
-                    <button type="submit" class="submit-btn">Wijzigingen opslaan</button>
-                </form>
-                    </div>
-                @endif
-            </div>
         </div>
     </div>
 
@@ -253,31 +210,6 @@
                     }
                 );
             });
-
-            });
-        }
-    </script>
+        </script>
     @endunless
-
-    <style>
-        .content-grid-three {
-            display: grid;
-            gap: 24px;
-            grid-template-columns: 1fr 1fr 1fr;
-            align-items: start;
-            width: 100%;
-        }
-
-        @media (max-width: 1400px) {
-            .content-grid-three {
-                grid-template-columns: 1fr 1fr;
-            }
-        }
-
-        @media (max-width: 900px) {
-            .content-grid-three {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
 </x-site-layout>
