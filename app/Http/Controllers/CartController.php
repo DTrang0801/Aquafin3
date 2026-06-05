@@ -175,12 +175,42 @@ class CartController extends Controller
         return view('pages.bestellingen', compact('bestellingen', 'zoekterm', 'periode'));
     }
 
-    public function overzicht()
+    public function overzicht(Request $request)
     {
+        $zoekterm = $request->get('zoekterm');
+        $periode = $request->get('periode');
+
         $bestellingen = Bestelling::whereHas('gebruiker', function ($q) {
             $q->where('role', 'technieker');
-        })->with('gebruiker', 'materialen')->orderBy('created_at', 'desc')->get();
+        })->with('gebruiker', 'materialen')
+            ->when($zoekterm, function ($query, $zoekterm) {
+                $query->where(function ($q) use ($zoekterm) {
+                    $q->whereRaw("LPAD(id, 5, '0') LIKE ?", ["%$zoekterm%"])
+                        ->orWhere('locatie', 'like', "%$zoekterm%")
+                        ->orWhere('opmerking', 'like', "%$zoekterm%")
+                        ->orWhereHas('gebruiker', function ($uq) use ($zoekterm) {
+                            $uq->where('name', 'like', "%$zoekterm%");
+                        })
+                        ->orWhereHas('materialen', function ($mq) use ($zoekterm) {
+                            $mq->where('naam', 'like', "%$zoekterm%");
+                        });
+                });
+            })
+            ->when($periode, function ($query, $periode) {
+                $now = now();
+                $start = match ($periode) {
+                    'vandaag' => $now->copy()->startOfDay(),
+                    'week' => $now->copy()->startOfWeek(),
+                    'maand' => $now->copy()->startOfMonth(),
+                    '3maanden' => $now->copy()->subMonths(3)->startOfDay(),
+                    default => null,
+                };
+                if ($start) {
+                    $query->where('created_at', '>=', $start);
+                }
+            })
+            ->orderBy('created_at', 'desc')->get();
 
-        return view('pages.overzicht', compact('bestellingen'));
+        return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode'));
     }
 }

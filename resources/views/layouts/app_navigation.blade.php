@@ -30,6 +30,7 @@
                 @endif
 
                 @if (Auth::user()->role === 'stockbeheerder')
+                    <a href="{{ route('overzicht') }}" class="nav-link">Overzicht</a>
                     <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer materiaal</a>
                     <a href="{{ route('weersvoorspelling.kritieke-items') }}" class="nav-link">Kritieke items</a>
                     <a href="{{ route('stock-dashboard') }}" class="nav-link">Meest bestelde materialen</a>
