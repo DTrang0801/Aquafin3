@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Model: Materiaalcategorie
@@ -16,6 +17,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Materiaalcategorie extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'materiaal_categorieen';
 
     protected $fillable = [
