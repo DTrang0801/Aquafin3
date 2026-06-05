@@ -2,28 +2,27 @@
     <div class="nav-inner">
         <div class="nav-left">
             <a href="{{ route('home') }}" class="nav-brand">Aquafin</a>
-            <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
-
             @guest
+                <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
                 <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
-                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
             @endguest
 
             @auth
                 @if (Auth::user()->role !== 'stockbeheerder')
+                    <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
+                @endif
+
+                @if (Auth::user()->role !== 'stockbeheerder' && Auth::user()->role !== 'admin')
                     <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 @endif
 
-                @if (Auth::user()->role !== 'admin')
+                @if (Auth::user()->role === 'technieker')
                     <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
                 @endif
 
 
-                @if (Auth::user()->role !== 'stockbeheerder')
-                    <a href="{{ route('weersvoorspelling') }}" class="nav-link">Weer</a>
-                @endif
-
-                <a href="{{ route('favorieten') }}" class="nav-link">Favorieten</a>
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
 
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
@@ -31,6 +30,7 @@
 
                 @if (Auth::user()->role === 'stockbeheerder')
                     <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
+                    <a href="{{ route('overzicht') }}" class="nav-link">Overzicht</a>
                 @endif
             @endauth
         </div>

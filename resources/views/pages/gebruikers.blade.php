@@ -3,12 +3,12 @@
         <h1 class="page-title">Gebruikersbeheer</h1>
 
         @if (session('succes'))
-            <p style="color:green">{{ session('succes') }}</p>   
+            <p class="alert-success">{{ session('succes') }}</p>   
         @endif
 
-        <a href="{{ route('gebruikers.create') }}">+ Nieuwe gebruiker</a>
+        <a href="{{ route('gebruikers.create') }}" class="btn-add-user">+ Nieuwe gebruiker</a>
 
-        <table border="1" cellpadding="8" style="margin-top: 16px; width: 100%">
+        <table class="users-table">
             <thead>
                 <tr>
                     <th>Naam</th>
@@ -24,15 +24,16 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role }}</td>
                         <td>
-                            <a href="{{ route('gebruikers.edit', $user) }}">Bewerken</a>
-                            |
-                            @if(auth()->id() !== $user->id)
-                                <form action="{{ route('gebruikers.destroy', $user) }}" method="post" style="display:inline">
-                                    @csrf
-                                    @method('delete')
-                                    <button type="submit" onclick="return confirm('Zeker weten?')">Verwijderen</button>
-                                </form>
-                            @endif
+                            <div class="actions-cell">
+                                <a href="{{ route('gebruikers.edit', $user) }}" class="btn-action btn-action-edit">Bewerken</a>
+                                @if(auth()->id() !== $user->id)
+                                    <form action="{{ route('gebruikers.destroy', $user) }}" method="post" style="display:inline">
+                                        @csrf
+                                        @method('delete')
+                                        <button type="submit" class="btn-action btn-action-delete" onclick="return confirm('Zeker weten?')">Verwijderen</button>
+                                    </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @endforeach
