@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Model: Bestelling
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Bestelling extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'bestellingen';
 
     protected $fillable = [
@@ -37,7 +40,7 @@ class Bestelling extends Model
     public function materialen()
     {
         return $this->belongsToMany(Materiaal::class, 'bestelling_materialen', 'bestelling_id', 'materiaal_id')
-                    ->withPivot('aantal')
-                    ->withTimestamps();
+            ->withPivot('aantal')
+            ->withTimestamps();
     }
 }

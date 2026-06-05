@@ -2,21 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MateriaalSubcategorie;
 use App\Models\Materiaal;
-use App\Models\Bestelling;
-use App\Models\Mandje;
-use App\Models\Materiaalcategorie;  
+use App\Models\Materiaalcategorie;
+use App\Models\MateriaalSubcategorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 
 class MateriaalController extends Controller
 {
+    // Materiaal in een tabel tonen
 
     public function index(Request $request)
     {
-        // Always display global important highlights at the top
+        // Always display global important highlights at the top (excluding soft-deleted)
         $belangrijkeMaterialen = Materiaal::where('belangrijk', true)->with('subcategorie')->get();
 
         // 1. Fetch search inputs & parameters
@@ -33,8 +31,8 @@ class MateriaalController extends Controller
                 ->get();
         }
 
-        // 2. Build the basic relational query
-        $query = Materiaalcategorie::with(['subcategorieen' => function($q) use ($selectedSubcatId) {
+        // 2. Build the basic relational query (excludes soft-deleted by default)
+        $query = Materiaalcategorie::with(['subcategorieen' => function ($q) use ($selectedSubcatId) {
             if ($selectedSubcatId) {
                 $q->where('id', $selectedSubcatId);
             }
@@ -59,10 +57,10 @@ class MateriaalController extends Controller
                 $subMatch = $search ? $this->isTypoTolerantMatch($sub->naam, $search) : true;
 
                 // Filter down materials array inside this subcategory if neither category nor subcategory matched the query text
-                if (!$subMatch && !$catMatch && $search) {
+                if (! $subMatch && ! $catMatch && $search) {
                     $sub->setRelation('materialen', $sub->materialen->filter(function ($m) use ($search) {
-                        return $this->isTypoTolerantMatch($m->naam, $search) || 
-                            $this->isTypoTolerantMatch($m->beschrijving, $search);
+                        return $this->isTypoTolerantMatch($m->naam, $search) ||
+                               $this->isTypoTolerantMatch($m->beschrijving, $search);
                     }));
                 }
 
@@ -93,7 +91,7 @@ class MateriaalController extends Controller
         });
 
         // 4. Fallback default context: if NO search is active, keep everything visible and open
-        if (!$search && !$selectedCatId && !$selectedSubcatId) {
+        if (! $search && ! $selectedCatId && ! $selectedSubcatId) {
             $openCategoryIds = $categorieen->pluck('id');
             foreach ($categorieen as $cat) {
                 $openSubcategoryIds = $openSubcategoryIds->merge($cat->subcategorieen->pluck('id'));
@@ -101,17 +99,23 @@ class MateriaalController extends Controller
         }
 
         return view('pages.materialen', compact(
-            'belangrijkeMaterialen', 
-            'categorieen', 
-            'openCategoryIds', 
+            'belangrijkeMaterialen',
+            'categorieen',
+            'openCategoryIds',
             'openSubcategoryIds',
             'filterCategories',
             'filterSubcategories'
         ));
     }
 
-    private function isTypoTolerantMatch(?string $haystack, string $needle): bool{
-        if (empty($haystack)) return false;
+    /**
+     * Typo-tolerant matching mechanism using Levenshtein distance computations.
+     */
+    private function isTypoTolerantMatch(?string $haystack, string $needle): bool
+    {
+        if (empty($haystack)) {
+            return false;
+        }
 
         $haystack = mb_strtolower(trim($haystack));
         $needle = mb_strtolower(trim($needle));
@@ -126,7 +130,7 @@ class MateriaalController extends Controller
         foreach ($words as $word) {
             // Calculate structural character distance deviations
             $distance = levenshtein($word, $needle);
-            
+
             // Define allowable typo allowances based on length of input query
             $maxAllowedTypos = strlen($needle) > 4 ? 2 : 1;
 
@@ -138,6 +142,23 @@ class MateriaalController extends Controller
         return false;
     }
 
+    public function suggesties(Request $request)
+    {
+        $query = $request->input('q');
+
+        if (strlen($query) < 1) {
+            return response()->json([]);
+        }
+
+        $materialen = Materiaal::where('naam', 'like', '%'.$query.'%')
+            ->orWhere('beschrijving', 'like', '%'.$query.'%')
+            ->limit(10)
+            ->get(['id', 'naam', 'materiaal_subcategorie_id'])
+            ->load('subcategorie');
+
+        return response()->json($materialen);
+    }
+
     public function create()
     {
         $categorieen = Materiaalcategorie::orderBy('naam')->get();
@@ -145,7 +166,7 @@ class MateriaalController extends Controller
 
         return view('pages.materialen-create', compact('categorieen', 'subcategorieen'));
     }
-        
+
     public function store(Request $request)
     {
         Materiaal::create([
@@ -155,15 +176,16 @@ class MateriaalController extends Controller
             'belangrijk' => $request->has('belangrijk'),
         ]);
 
-        return redirect('/materialen');  
-    } 
-        // Toon beheerpagina met alle materialen voor de stockbeheerder
+        return redirect('/materialen');
+    }
+
+    // Toon beheerpagina met alle materialen voor de stockbeheerder
     public function beheer()
     {
         $materialen = Materiaal::with('subcategorie.categorie')->get();
 
         return view('pages.materialen-beheer', compact('materialen'));
-    } 
+    }
 
     public function destroy(Materiaal $materiaal)
     {
