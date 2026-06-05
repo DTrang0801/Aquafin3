@@ -2734,6 +2734,51 @@ body::before {
     min-width: 140px;
 }
 
+.orders-periodes {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.periode-btn {
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    background: #f1f5f9;
+    color: var(--text-medium);
+    border: 1px solid transparent;
+    transition: all 0.2s;
+}
+
+.periode-btn:hover {
+    background: #e2e8f0;
+    color: var(--text-dark);
+}
+
+.periode-btn--actief {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+}
+
+.periode-btn--actief:hover {
+    background: var(--primary-dark);
+    color: #fff;
+}
+
+.periode-btn--wis {
+    background: transparent;
+    color: var(--text-light);
+}
+
+.periode-btn--wis:hover {
+    color: var(--danger);
+    background: #fef2f2;
+}
+
 .orders-list {
     display: flex;
     flex-direction: column;
