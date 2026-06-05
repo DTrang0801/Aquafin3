@@ -33,7 +33,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role_id',
     ];
 
     /**
@@ -68,4 +68,10 @@ class User extends Authenticatable
     {
         return $this->hasMany(Mandje::class, 'gebruiker_id');
     }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
 }

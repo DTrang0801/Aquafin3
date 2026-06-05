@@ -4,31 +4,32 @@
             <a href="{{ route('home') }}" class="nav-brand">Aquafin</a>
             <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
 
+            @auth
+                @if(Auth::user()->role?->name !== 'stockbeheerder')
+                    <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
+                @endif
+
+                @if(Auth::user()->role?->name !== 'admin')
+                    <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
+                @endif
+
+                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
+
+                @if(Auth::user()->role?->name === 'admin')
+                    <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
+                    <a href="{{ route('admin.roles.index') }}" class="nav-link">Rollen beheer</a>
+                @endif
+
+                @if(Auth::user()->role?->name === 'stockbeheerder')
+                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
+                    <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
+                @endif
+            @endauth
+
             @guest
                 <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
             @endguest
-
-            @auth
-                @if (Auth::user()->role !== 'stockbeheerder')
-                    <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
-                @endif
-
-                @if (Auth::user()->role !== 'admin')
-                    <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
-                @endif
-
-
-                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
-
-                @if (Auth::user()->role === 'admin')
-                    <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
-                @endif
-
-                @if (Auth::user()->role === 'stockbeheerder')
-                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
-                @endif
-            @endauth
         </div>
 
         <div class="nav-right">

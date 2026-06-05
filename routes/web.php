@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\MateriaalController;
 use App\Http\Controllers\Userzone\ProfileController;
@@ -11,14 +12,19 @@ Route::get('/', function () {
     return view('home');
 })->name('home');
 
-// Admin gebruikersbeheer
-Route::middleware('role:admin')->group(function () {
+// Admin routes — must be logged in AND be admin
+Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/gebruikers', [UserController::class, 'index'])->name('gebruikers');
     Route::get('/gebruikers/create', [UserController::class, 'create'])->name('gebruikers.create');
     Route::post('/gebruikers', [UserController::class, 'store'])->name('gebruikers.store');
     Route::get('/gebruikers/{user}/edit', [UserController::class, 'edit'])->name('gebruikers.edit');
     Route::put('/gebruikers/{user}', [UserController::class, 'update'])->name('gebruikers.update');
     Route::delete('/gebruikers/{user}', [UserController::class, 'destroy'])->name('gebruikers.destroy');
+
+    Route::get('/admin/roles', [RoleController::class, 'index'])->name('admin.roles.index');
+    Route::get('/admin/roles/create', [RoleController::class, 'create'])->name('admin.roles.create');
+    Route::post('/admin/roles', [RoleController::class, 'store'])->name('admin.roles.store');
+    Route::delete('/admin/roles/{role}', [RoleController::class, 'destroy'])->name('admin.roles.destroy');
 });
 
 Route::middleware('auth')->group(function () {
