@@ -161,9 +161,10 @@ class MateriaalController extends Controller
 
     public function create()
     {
+        $categorieen = Materiaalcategorie::orderBy('naam')->get();
         $subcategorieen = MateriaalSubcategorie::all();
 
-        return view('pages.materialen-create', compact('subcategorieen'));
+        return view('pages.materialen-create', compact('categorieen', 'subcategorieen'));
     }
 
     public function store(Request $request)
@@ -181,7 +182,7 @@ class MateriaalController extends Controller
     // Toon beheerpagina met alle materialen voor de stockbeheerder
     public function beheer()
     {
-        $materialen = Materiaal::with('subcategorie')->get();
+        $materialen = Materiaal::with('subcategorie.categorie')->get();
 
         return view('pages.materialen-beheer', compact('materialen'));
     }
