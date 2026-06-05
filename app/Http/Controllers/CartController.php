@@ -131,6 +131,8 @@ class CartController extends Controller
     public function indexOrders(Request $request)
     {
         $zoekterm = $request->get('zoekterm');
+        $datumVan = $request->get('datum_van');
+        $datumTot = $request->get('datum_tot');
 
         $bestellingen = Bestelling::where('gebruiker_id', Auth::id())
             ->with('materialen')
@@ -144,10 +146,16 @@ class CartController extends Controller
                         });
                 });
             })
+            ->when($datumVan, function ($query, $datumVan) {
+                $query->whereDate('created_at', '>=', $datumVan);
+            })
+            ->when($datumTot, function ($query, $datumTot) {
+                $query->whereDate('created_at', '<=', $datumTot);
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pages.bestellingen', compact('bestellingen', 'zoekterm'));
+        return view('pages.bestellingen', compact('bestellingen', 'zoekterm', 'datumVan', 'datumTot'));
     }
 
     public function overzicht()
