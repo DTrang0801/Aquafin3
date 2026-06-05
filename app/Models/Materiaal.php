@@ -32,6 +32,7 @@ class Materiaal extends Model
         'naam',
         'beschrijving',
         'belangrijk',
+        'foto',
         'order_count',
     ];
 

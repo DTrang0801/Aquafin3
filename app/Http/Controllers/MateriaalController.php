@@ -7,6 +7,7 @@ use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MateriaalController extends Controller
 {
@@ -169,11 +170,18 @@ class MateriaalController extends Controller
 
     public function store(Request $request)
     {
+        $fotoPad = null;
+
+        if ($request->hasFile('foto')) {
+            $fotoPad = $request->file('foto')->store('materialen', 'public');
+        }
+
         Materiaal::create([
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
             'belangrijk' => $request->has('belangrijk'),
+            'foto' => $fotoPad,
         ]);
 
         return redirect('/materialen');
@@ -207,12 +215,27 @@ class MateriaalController extends Controller
 
     public function update(Request $request, Materiaal $materiaal)
     {
-        $materiaal->update([
+        $data = [
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
             'belangrijk' => $request->has('belangrijk'),
-        ]);
+        ];
+
+            if ($request->has('verwijder_foto') && $materiaal->foto) {
+            Storage::disk('public')->delete($materiaal->foto);
+            $data['foto'] = null;
+        }
+
+        if ($request->hasFile('foto')) {
+            if ($materiaal->foto) {
+                Storage::disk('public')->delete($materiaal->foto);
+            }
+
+            $data['foto'] = $request->file('foto')->store('materialen', 'public');
+        }
+
+        $materiaal->update($data);
 
         return redirect()->route('materialen.beheer');
     }
