@@ -2,14 +2,14 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MateriaalController;
+use App\Http\Controllers\StockDashboardController;
 use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
@@ -39,14 +39,20 @@ Route::middleware('auth')->group(function () {
     Route::put('/materialen/{materiaal}', [MateriaalController::class, 'update'])->name('materialen.update');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
 
+    Route::middleware('role:technieker')->group(function () {
+        Route::post('/home/neerslaggegevens/vernieuwen', [HomeController::class, 'refreshForecast'])->name('home.forecast.refresh');
+    });
+
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
     Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::middleware('role:stockbeheerder')->group(function () {
+        Route::get('/weersvoorspelling/kritieke-items', [WeatherController::class, 'criticalItems'])->name('weersvoorspelling.kritieke-items');
         Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
         Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
         Route::post('/weersvoorspelling/materiaal', [WeatherController::class, 'addMaterial'])->name('weersvoorspelling.addMaterial');
+        Route::get('/stock-dashboard', [StockDashboardController::class, 'index'])->name('stock-dashboard');
     });
 
     // Mag ik deze lijn verwijderen??? - Titi

@@ -16,7 +16,7 @@
                     <th>Categorie</th>
                     <th>Subcategorie</th>
                     <th>Beschrijving</th>
-                    <th>Belangrijk</th>
+                   <!-- <th>Belangrijk</th> -->
                     <th style="width: 200px;">Acties</th>
                 </tr>
             </thead>
@@ -39,9 +39,9 @@
                             <td>{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
                         <td>{{ Str::limit($materiaal->beschrijving, 60) ?: 'Geen beschrijving' }}</td>
                         <td>
-                            <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
+                         <!--   <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
                                 {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
-                            </span>
+                            </span> --> 
                         </td>
                         <td>
                             <div style="display: flex; gap: 6px; justify-content: flex-end;">

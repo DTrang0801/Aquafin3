@@ -51,14 +51,14 @@
                     </select>
                 </div>
 
-                <div class="form-group">
+             <!--   <div class="form-group">
                     <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;font-weight:500;color:#374151;">
                         <input type="checkbox" name="belangrijk"
                             {{ $materiaal->belangrijk ? 'checked' : '' }}
                             style="width:18px;height:18px;">
                         Belangrijk materiaal
                     </label>
-                </div>
+                </div> -->
 
                 <div style="display:flex;gap:8px;margin-top:24px;">
                     <button type="submit" class="search-button">Opslaan</button>
