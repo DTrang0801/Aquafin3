@@ -1,10 +1,23 @@
 <x-site-layout>
+
+@auth
     <div class="home-hero">
         <div class="home-logo">
             <span class="logo-aqua">Aqua</span><span class="logo-fin">fin</span>
         </div>
-        <p class="home-slogan">Waterbeheer in goede banen</p>
+            <p class="home-slogan">Waterbeheer in goede banen</p> <br>
     </div>
+@endauth
+@guest
+    <div class="home-hero">
+        <div class="home-logo">
+            <span class="logo-aqua">Aqua</span><span class="logo-fin">fin</span>
+        </div>
+            <p class="home-slogan">Waterbeheer in goede banen</p> <br>
+        
+            <p style="font-size: 2rem; color: #475569; font-weight: 500; letter-spacing: 0.1em; margin-top: 0.5rem; display: inline-block; padding-top: 0.5rem;">Log in om materiaal te bestellen</p>
+        </div>
+        @endguest
 
     @if(session('success'))
         <div class="alert-success home-alert">
@@ -64,6 +77,7 @@
                 <button type="submit" style="background:#2563eb;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">➕ Toevoegen aan mandje</button>
             </form>
         </div>
+        @endif
     @endauth
 
     <style>
