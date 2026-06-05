@@ -146,7 +146,7 @@ class MateriaalController extends Controller
     {
         $query = $request->input('q');
 
-        if (strlen($query) < 2) {
+        if (strlen($query) < 1) {
             return response()->json([]);
         }
 
