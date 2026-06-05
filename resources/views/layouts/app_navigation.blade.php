@@ -21,16 +21,18 @@
                     <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
                 @endif
 
-
-                <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
+                @if (Auth::user()->role === 'admin' || Auth::user()->role === 'stockbeheerder')
+                    <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
+                @endif
 
                 @if (Auth::user()->role === 'admin')
                     <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
                 @endif
 
                 @if (Auth::user()->role === 'stockbeheerder')
-                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
-                    <a href="{{ route('overzicht') }}" class="nav-link">Overzicht</a>
+                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer materiaal</a>
+                    <a href="{{ route('weersvoorspelling.kritieke-items') }}" class="nav-link">Kritieke items</a>
+                    <a href="{{ route('stock-dashboard') }}" class="nav-link">Meest bestelde materialen</a>
                 @endif
             @endauth
         </div>

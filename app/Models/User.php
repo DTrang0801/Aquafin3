@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\Province;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -35,6 +36,7 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
+        'province',
     ];
 
     /**
@@ -68,5 +70,20 @@ class User extends Authenticatable
     public function mandjes()
     {
         return $this->hasMany(Mandje::class, 'gebruiker_id');
+    }
+
+    public function getDepotLocation(): ?string
+    {
+        if (! $this->province) {
+            return null;
+        }
+
+        try {
+            $province = Province::from($this->province);
+
+            return $province->getDepotAddress();
+        } catch (\ValueError) {
+            return null;
+        }
     }
 }

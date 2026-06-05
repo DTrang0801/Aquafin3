@@ -104,13 +104,13 @@
         @if($belangrijkeMaterialen->isNotEmpty())
             <details open class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
                 
-                <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
+             <!--   <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
                         <span style="font-size: 18px;">⚠️</span>
                         <span style="color: #3d3d3d; font-weight: bold; letter-spacing: 0.05em;">Belangrijk materiaal</span>
                     </div>
                     <span class="arrow" style="color: #fca5a5;">▼</span>
-                </summary>
+                </summary> -->
 
                 <div class="category-content" style="padding: 0; background-color: rgba(15, 23, 42, 0.2);">
                     <table class="custom-table table-important" style="width: 100%; margin: 0;">
@@ -127,12 +127,14 @@
                                         {{ $materiaal->beschrijving ?? 'Geen beschrijving beschikbaar.' }}
                                     </td>
                                     <td>
+                                        @if(Auth::user()->role === 'technieker')
                                         <form action="{{ route('winkelmandje.add') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
                                             <input type="number" name="aantal" value="1" min="1">
                                             <button type="submit" class="btn-primary">🛒 Voeg toe</button>
                                         </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -141,7 +143,7 @@
                 </div>
             </details>
         @endif
-        
+
         @foreach ($categorieen as $categorie)
             @if(request('search') && !$openCategoryIds->contains($categorie->id))
                 @continue
@@ -175,17 +177,19 @@
                                                     <td class="font-bold">{{ $materiaal->naam }}</td>
                                                     <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
                                                     <td>
-                                                        <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
+                                                      <!-- <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
                                                             {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
-                                                        </span>
+                                                        </span> -->
                                                     </td>
                                                     <td>
+                                                        @if(Auth::user()->role === 'technieker')
                                                         <form action="{{ route('winkelmandje.add') }}" method="POST">
                                                             @csrf
                                                             <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
                                                             <input type="number" name="aantal" value="1" min="1">
                                                             <button type="submit" class="btn-primary">🛒 Voeg toe</button>
                                                         </form>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach

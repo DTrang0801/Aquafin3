@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Materiaal;
 use App\Models\Bestelling;
 use App\Models\Mandje;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-
 class CartController extends Controller
-
 {
     // Fetch or instantiate the active user's cart
     private function getOrCreateCart()
@@ -77,48 +74,63 @@ class CartController extends Controller
 
         return redirect()->route('winkelmandje.index')->with('success', 'Materiaal verwijderd uit winkelmandje.');
     }
+
     public function checkout()
     {
         $mandje = Mandje::where('gebruiker_id', Auth::id())->with('materialen')->first();
 
-        if (!$mandje || $mandje->materialen->isEmpty()) {
+        if (! $mandje || $mandje->materialen->isEmpty()) {
             return redirect()->route('winkelmandje.index')->with('error', 'Je winkelmandje is leeg!');
         }
 
         $materialen = $mandje->materialen;
+        $user = Auth::user();
 
-        return view('pages.bestel', compact('materialen'));
+        return view('pages.bestel', compact('materialen', 'user'));
     }
 
     public function confirmOrder(Request $request)
     {
         $request->validate([
             'gevraagde_datum' => 'required|date|after_or_equal:today',
-            'gevraagde_tijd'  => 'required',
-            'locatie'         => 'required|string|max:255',
-            'opmerking'       => 'nullable|string|max:1000',
+            'locatie' => 'nullable|string|max:255',
+            'use_custom_location' => 'boolean',
+            'opmerking' => 'nullable|string|max:1000',
         ]);
 
         $userId = Auth::id();
+        $user = Auth::user();
         $mandje = Mandje::where('gebruiker_id', $userId)->first();
 
-        if (!$mandje || $mandje->materialen->isEmpty()) {
+        if (! $mandje || $mandje->materialen->isEmpty()) {
             return redirect()->route('winkelmandje.index')->with('error', 'Er ging iets mis met het verwerken van de bestelling.');
         }
 
-        DB::transaction(function () use ($request, $userId, $mandje) {
+        $useCustomLocation = $request->input('use_custom_location', false);
+        $locatie = $useCustomLocation
+            ? $request->input('locatie')
+            : ($user->getDepotLocation() ?? $request->input('locatie'));
+
+        if (! $locatie) {
+            return back()->withErrors(['locatie' => 'Locatie is vereist.']);
+        }
+
+        DB::transaction(function () use ($request, $userId, $mandje, $locatie, $useCustomLocation) {
             $bestelling = Bestelling::create([
-                'gebruiker_id'    => $userId,
+                'gebruiker_id' => $userId,
                 'gevraagde_datum' => $request->input('gevraagde_datum'),
-                'gevraagde_tijd'  => $request->input('gevraagde_tijd'),
-                'locatie'         => $request->input('locatie'),
-                'opmerking'       => $request->input('opmerking'),
+                'locatie' => $locatie,
+                'opmerking' => $request->input('opmerking'),
+                'custom_location_used' => $useCustomLocation,
             ]);
 
             foreach ($mandje->materialen as $materiaal) {
+                $aantal = $materiaal->pivot->aantal;
                 $bestelling->materialen()->attach($materiaal->id, [
-                    'aantal' => $materiaal->pivot->aantal
+                    'aantal' => $aantal,
                 ]);
+
+                $materiaal->increment('order_count', $aantal);
             }
 
             $mandje->materialen()->detach();
@@ -127,14 +139,40 @@ class CartController extends Controller
         return redirect()->route('bestellingen')->with('success', 'Bestelling succesvol geplaatst!');
     }
 
-    public function indexOrders()
+    public function indexOrders(Request $request)
     {
+        $zoekterm = $request->get('zoekterm');
+        $periode = $request->get('periode');
+
         $bestellingen = Bestelling::where('gebruiker_id', Auth::id())
             ->with('materialen')
+            ->when($zoekterm, function ($query, $zoekterm) {
+                $query->where(function ($q) use ($zoekterm) {
+                    $q->whereRaw("LPAD(id, 5, '0') LIKE ?", ["%$zoekterm%"])
+                        ->orWhere('locatie', 'like', "%$zoekterm%")
+                        ->orWhere('opmerking', 'like', "%$zoekterm%")
+                        ->orWhereHas('materialen', function ($mq) use ($zoekterm) {
+                            $mq->where('naam', 'like', "%$zoekterm%");
+                        });
+                });
+            })
+            ->when($periode, function ($query, $periode) {
+                $now = now();
+                $start = match ($periode) {
+                    'vandaag' => $now->copy()->startOfDay(),
+                    'week' => $now->copy()->startOfWeek(),
+                    'maand' => $now->copy()->startOfMonth(),
+                    '3maanden' => $now->copy()->subMonths(3)->startOfDay(),
+                    default => null,
+                };
+                if ($start) {
+                    $query->where('created_at', '>=', $start);
+                }
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pages.bestellingen', compact('bestellingen'));
+        return view('pages.bestellingen', compact('bestellingen', 'zoekterm', 'periode'));
     }
 
     public function overzicht()
