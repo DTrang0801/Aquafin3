@@ -14,7 +14,7 @@
                     <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 @endif
 
-                @if (Auth::user()->role !== 'admin')
+                @if (Auth::user()->role === 'technieker')
                     <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
                 @endif
 
@@ -27,6 +27,7 @@
 
                 @if (Auth::user()->role === 'stockbeheerder')
                     <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
+                    <a href="{{ route('overzicht') }}" class="nav-link">Overzicht</a>
                 @endif
             @endauth
         </div>

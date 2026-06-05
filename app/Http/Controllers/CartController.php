@@ -136,4 +136,13 @@ class CartController extends Controller
 
         return view('pages.bestellingen', compact('bestellingen'));
     }
+
+    public function overzicht()
+    {
+        $bestellingen = Bestelling::whereHas('gebruiker', function ($q) {
+            $q->where('role', 'technieker');
+        })->with('gebruiker', 'materialen')->orderBy('created_at', 'desc')->get();
+
+        return view('pages.overzicht', compact('bestellingen'));
+    }
 }
