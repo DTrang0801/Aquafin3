@@ -35,6 +35,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,stockbeheerder,technieker',
+            'province' => 'nullable|in:Vlaams-Brabant,West-Vlaanderen,Oost-Vlaanderen,Limburg,Antwerpen',
         ]);
 
         User::create([
@@ -42,6 +43,7 @@ class UserController extends Controller
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'role' => $request->role,
+            'province' => $request->input('province'),
         ]);
 
         return redirect()->route('gebruikers')->with('success', 'Gebruiker aangemaakt!');
@@ -70,11 +72,13 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,'.$user->id,
             'role' => 'required|in:admin,stockbeheerder,technieker',
+            'province' => 'nullable|in:Vlaams-Brabant,West-Vlaanderen,Oost-Vlaanderen,Limburg,Antwerpen',
         ]);
 
         $user->name = $request->name;
         $user->email = $request->email;
         $user->role = $request->role;
+        $user->province = $request->input('province');
 
         if ($request->filled('password')) {
             $user->password = bcrypt($request->password);
