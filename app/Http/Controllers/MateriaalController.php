@@ -7,6 +7,7 @@ use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class MateriaalController extends Controller
 {
@@ -221,7 +222,16 @@ class MateriaalController extends Controller
             'belangrijk' => $request->has('belangrijk'),
         ];
 
+            if ($request->has('verwijder_foto') && $materiaal->foto) {
+            Storage::disk('public')->delete($materiaal->foto);
+            $data['foto'] = null;
+        }
+
         if ($request->hasFile('foto')) {
+            if ($materiaal->foto) {
+                Storage::disk('public')->delete($materiaal->foto);
+            }
+
             $data['foto'] = $request->file('foto')->store('materialen', 'public');
         }
 
