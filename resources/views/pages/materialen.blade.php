@@ -11,7 +11,7 @@
                              suggestions: [],
                              show: false,
                              async fetch() {
-                                 if (this.query.length < 2) {
+                                 if (this.query.length < 1) {
                                      this.suggestions = [];
                                      this.show = false;
                                      return;
