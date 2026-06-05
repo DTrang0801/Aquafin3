@@ -60,8 +60,8 @@
         @endif
 
         <div style="margin-top:24px;padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;">
-            <p style="margin:0 0 8px 0;font-weight:600;color:#856404;">💡 Vergeet geen gasdetectiemateriaal!</p>
-            <p style="margin:0 0 10px 0;color:#856404;font-size:14px;">Gasdetectiemeter (O₂, CH₄, H₂S, CO) — essentieel voor veilige inspecties.</p>
+            <p style="margin:0 0 8px 0;font-weight:600;color:#856404;">⚠️ Vergeet geen gasdetectiemateriaal!</p>
+           <!-- <p style="margin:0 0 10px 0;color:#856404;font-size:14px;">Gasdetectiemeter</p> -->
             <form action="{{ route('winkelmandje.add') }}" method="POST" style="display:inline;">
                 @csrf
                 <input type="hidden" name="materiaal_id" value="59">
