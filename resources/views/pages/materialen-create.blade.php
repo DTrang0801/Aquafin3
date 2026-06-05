@@ -3,7 +3,7 @@
         <h1 class="page-title">Materiaal toevoegen</h1>
 
         <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;max-width:600px;">
-            <form method="POST" action="{{ route('materialen.store') }}">
+            <form method="POST" action="{{ route('materialen.store') }}" enctype="multipart/form-data">
                 @csrf
 
                 <div class="form-group">
@@ -14,6 +14,10 @@
                 <div class="form-group">
                     <label class="form-label">Beschrijving:</label>
                     <textarea name="beschrijving" class="form-input" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Foto materiaal:</label>
+                    <input type="file" name="foto" accept="image/*" class="form-input">
                 </div>
 
                 <div class="form-group">
