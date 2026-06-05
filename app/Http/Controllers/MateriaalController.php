@@ -222,7 +222,7 @@ class MateriaalController extends Controller
             'belangrijk' => $request->has('belangrijk'),
         ];
 
-            if ($request->has('verwijder_foto') && $materiaal->foto) {
+        if ($request->has('verwijder_foto') && $materiaal->foto) {
             Storage::disk('public')->delete($materiaal->foto);
             $data['foto'] = null;
         }
