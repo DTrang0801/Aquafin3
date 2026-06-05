@@ -22,7 +22,15 @@
                         <label class="form-label">Huidige foto:</label><br>
 
                         <img src="{{ asset('storage/' . $materiaal->foto) }}"
-                            style="width:120px;height:auto;border-radius:8px;border:1px solid #e2e8f0;">
+                            style="display:block;width:120px;height:auto;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:10px;">
+
+                        <button type="submit"
+                                name="verwijder_foto"
+                                value="1"
+                                onclick="return confirm('Ben je zeker dat je deze foto wilt verwijderen?')"
+                                style="background:#dc2626;color:#fff;padding:8px 14px;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">
+                            🗑️ Foto verwijderen
+                        </button>
                     </div>
                 @endif
 
