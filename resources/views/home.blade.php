@@ -51,6 +51,7 @@
             </section>
         @endif
 
+        @if(Auth::user()->role === 'technieker')
         <div style="text-align: center; margin-top:24px;padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;">
             <p style="margin:0 0 8px 0;font-weight:600;color:#856404;">⚠️ Vergeet geen gasdetectiemateriaal!</p>
             <!-- <p style="margin:0 0 10px 0;color:#856404;font-size:14px;">Gasdetectiemeter</p> -->
@@ -61,6 +62,7 @@
                 <button type="submit" style="background:#2563eb;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">➕ Toevoegen aan mandje</button>
             </form>
         </div>
+        @endif
     @endauth
 
 </x-site-layout>
