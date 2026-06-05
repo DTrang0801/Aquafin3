@@ -86,7 +86,7 @@
                                 type="date"
                                 name="gevraagde_datum"
                                 id="gevraagde_datum"
-                                value="{{ old('gevraagde_datum', date('Y-m-d')) }}"
+                                value="{{ old('gevraagde_datum', now()->next('Monday')->format('Y-m-d')) }}"
                                 min="{{ date('Y-m-d') }}"
                                 class="form-input"
                                 required
