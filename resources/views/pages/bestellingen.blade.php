@@ -25,25 +25,25 @@
                     placeholder="Zoek op bestelnummer, materiaal, locatie..."
                     value="{{ $zoekterm ?? '' }}"
                 >
-                <input
-                    type="date"
-                    name="datum_van"
-                    class="search-input search-input--date"
-                    value="{{ $datumVan ?? '' }}"
-                    title="Van datum"
-                >
-                <input
-                    type="date"
-                    name="datum_tot"
-                    class="search-input search-input--date"
-                    value="{{ $datumTot ?? '' }}"
-                    title="Tot datum"
-                >
                 <button type="submit" class="search-button">Zoeken</button>
-                @if(($zoekterm ?? '') || ($datumVan ?? '') || ($datumTot ?? ''))
+                @if(($zoekterm ?? '') || ($periode ?? ''))
                     <a href="{{ route('bestellingen') }}" class="search-clear">Wis</a>
                 @endif
             </form>
+            <div class="orders-periodes">
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'vandaag'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === 'vandaag' ? 'periode-btn--actief' : '' }}">Vandaag</a>
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'week'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === 'week' ? 'periode-btn--actief' : '' }}">Deze week</a>
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'maand'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === 'maand' ? 'periode-btn--actief' : '' }}">Deze maand</a>
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => '3maanden'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === '3maanden' ? 'periode-btn--actief' : '' }}">Afgelopen 3 maanden</a>
+                @if($periode ?? '')
+                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null])) }}"
+                        class="periode-btn periode-btn--wis">Alle</a>
+                @endif
+            </div>
         </div>
 
         @if($bestellingen->isEmpty())
