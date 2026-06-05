@@ -52,9 +52,6 @@
 </div>
 
 <style scoped>
-.flood-forecast-card {
-    margin-top: 2rem;
-}
 
 .forecast-years-grid {
     display: grid;
