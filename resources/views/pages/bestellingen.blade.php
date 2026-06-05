@@ -70,7 +70,6 @@
                                     <span class="order-card__label">Gewenste levering</span>
                                     <span class="order-card__value">
                                         {{ \Carbon\Carbon::parse($bestelling->gevraagde_datum)->format('d-m-Y') }}
-                                        om {{ \Carbon\Carbon::parse($bestelling->gevraagde_tijd)->format('H:i') }}
                                     </span>
                                 </div>
                                 <div class="order-card__meta-item">
