@@ -90,6 +90,14 @@ class WeatherController extends Controller
             ->with('success', 'Kritieke materialen succesvol bijgewerkt!');
     }
 
+    public function criticalItems(): View
+    {
+        return view('pages.kritieke-items', $this->materialManagementViewData(
+            linkedIds: $this->floodRisk->linkedMaterialIds(),
+            isSimulated: (bool) session('simulate_flood', false),
+        ));
+    }
+
     public function toggleSimulation(): RedirectResponse
     {
         $wasSimulated = (bool) session('simulate_flood', false);
@@ -138,20 +146,28 @@ class WeatherController extends Controller
         bool $isSimulated,
         array $extra = [],
     ): array {
-        $materialenByCategory = Materiaal::query()
-            ->with('subcategorie.categorie')
-            ->orderBy('naam')
-            ->get()
-            ->groupBy(fn ($m) => $m->subcategorie?->categorie?->naam ?? 'Overig');
-
         return array_merge([
             'lat' => round($latitude, 2),
             'lon' => round($longitude, 2),
-            'alleMaterialen' => $materialenByCategory,
+        ], $this->materialManagementViewData($linkedIds, $isSimulated), $extra);
+    }
+
+    /**
+     * @param  list<int>  $linkedIds
+     * @return array<string, mixed>
+     */
+    private function materialManagementViewData(array $linkedIds, bool $isSimulated): array
+    {
+        return [
+            'alleMaterialen' => Materiaal::query()
+                ->with('subcategorie.categorie')
+                ->orderBy('naam')
+                ->get()
+                ->groupBy(fn (Materiaal $materiaal) => $materiaal->subcategorie?->categorie?->naam ?? 'Overig'),
             'gekoppeldeIds' => $linkedIds,
             'isSimulated' => $isSimulated,
             'canManageStock' => auth()->user()?->role === 'stockbeheerder',
-        ], $extra);
+        ];
     }
 
     private function recalculateFloodRiskFromSession(): void
