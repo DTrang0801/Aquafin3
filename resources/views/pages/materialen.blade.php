@@ -127,12 +127,14 @@
                                         {{ $materiaal->beschrijving ?? 'Geen beschrijving beschikbaar.' }}
                                     </td>
                                     <td>
+                                        @if(Auth::user()->role === 'technieker')
                                         <form action="{{ route('winkelmandje.add') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
                                             <input type="number" name="aantal" value="1" min="1">
                                             <button type="submit" class="btn-primary">🛒 Voeg toe</button>
                                         </form>
+                                        @endif
                                     </td>
                                 </tr>
                             @endforeach
@@ -141,7 +143,7 @@
                 </div>
             </details>
         @endif
-        
+
         @foreach ($categorieen as $categorie)
             @if(request('search') && !$openCategoryIds->contains($categorie->id))
                 @continue
@@ -180,12 +182,14 @@
                                                         </span>
                                                     </td>
                                                     <td>
+                                                        @if(Auth::user()->role === 'technieker')
                                                         <form action="{{ route('winkelmandje.add') }}" method="POST">
                                                             @csrf
                                                             <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
                                                             <input type="number" name="aantal" value="1" min="1">
                                                             <button type="submit" class="btn-primary">🛒 Voeg toe</button>
                                                         </form>
+                                                        @endif
                                                     </td>
                                                 </tr>
                                             @endforeach
