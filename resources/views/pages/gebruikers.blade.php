@@ -29,7 +29,7 @@
                                 <form action="{{ route('gebruikers.destroy', $user) }}" method="post" style="display:inline;">
                                     @csrf
                                     @method('delete')
-                                    <button type="submit" onclick="return confirm('Zeker weten?')" class="btn-primary" style="padding:4px 12px;font-size:13px;background-color:#dc2626;">Verwijderen</button>
+                                    <button type="submit" onclick="return confirm('Wilt u deze gebruiker verwijderen?')" class="btn-primary" style="padding:4px 12px;font-size:13px;background-color:#dc2626;width:auto;">Verwijderen</button>
                                 </form>
                             @endif
                         </td>
