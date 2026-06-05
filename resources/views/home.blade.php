@@ -1,8 +1,10 @@
 <x-site-layout>
-   <!-- <div class="container text-center hero-box">
-        <h1 class="page-title hero-title">Aquafin</h1>
-        <p class="hero-team">Assia · Niels · Trang · Thien Y · Yassine</p>
-    </div> -->
+    <div class="home-hero">
+        <div class="home-logo">
+            <span class="logo-aqua">Aqua</span><span class="logo-fin">fin</span>
+        </div>
+        <p class="home-slogan">Waterbeheer in goede banen</p>
+    </div>
 
     @if(session('success'))
         <div class="alert-success home-alert">
@@ -62,7 +64,38 @@
                 <button type="submit" style="background:#2563eb;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">➕ Toevoegen aan mandje</button>
             </form>
         </div>
-        @endif
     @endauth
 
+    <style>
+        .home-hero {
+            text-align: center;
+            padding: 3rem 1rem 1rem;
+        }
+
+        .home-logo {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            line-height: 1.1;
+        }
+
+        .logo-aqua {
+            color: #2563eb;
+        }
+
+        .logo-fin {
+            color: #1e3a5f;
+        }
+
+        .home-slogan {
+            font-size: 1.2rem;
+            color: #475569;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+            border-top: 2px solid #2563eb;
+            display: inline-block;
+            padding-top: 0.5rem;
+        }
+    </style>
 </x-site-layout>
