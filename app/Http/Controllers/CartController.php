@@ -84,33 +84,44 @@ class CartController extends Controller
         }
 
         $materialen = $mandje->materialen;
+        $user = Auth::user();
 
-        return view('pages.bestel', compact('materialen'));
+        return view('pages.bestel', compact('materialen', 'user'));
     }
 
     public function confirmOrder(Request $request)
     {
         $request->validate([
             'gevraagde_datum' => 'required|date|after_or_equal:today',
-            'gevraagde_tijd' => 'required',
-            'locatie' => 'required|string|max:255',
+            'locatie' => 'nullable|string|max:255',
+            'use_custom_location' => 'boolean',
             'opmerking' => 'nullable|string|max:1000',
         ]);
 
         $userId = Auth::id();
+        $user = Auth::user();
         $mandje = Mandje::where('gebruiker_id', $userId)->first();
 
         if (! $mandje || $mandje->materialen->isEmpty()) {
             return redirect()->route('winkelmandje.index')->with('error', 'Er ging iets mis met het verwerken van de bestelling.');
         }
 
-        DB::transaction(function () use ($request, $userId, $mandje) {
+        $useCustomLocation = $request->input('use_custom_location', false);
+        $locatie = $useCustomLocation
+            ? $request->input('locatie')
+            : ($user->getDepotLocation() ?? $request->input('locatie'));
+
+        if (! $locatie) {
+            return back()->withErrors(['locatie' => 'Locatie is vereist.']);
+        }
+
+        DB::transaction(function () use ($request, $userId, $mandje, $locatie, $useCustomLocation) {
             $bestelling = Bestelling::create([
                 'gebruiker_id' => $userId,
                 'gevraagde_datum' => $request->input('gevraagde_datum'),
-                'gevraagde_tijd' => $request->input('gevraagde_tijd'),
-                'locatie' => $request->input('locatie'),
+                'locatie' => $locatie,
                 'opmerking' => $request->input('opmerking'),
+                'custom_location_used' => $useCustomLocation,
             ]);
 
             foreach ($mandje->materialen as $materiaal) {

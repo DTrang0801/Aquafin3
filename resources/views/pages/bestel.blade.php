@@ -28,7 +28,43 @@
                 <div class="checkout-section">
                     <h2 class="checkout-section-title">Leveringsdetails</h2>
 
-                    <div class="checkout-form-grid">
+                    @if ($user->role === 'technieker' && $user->province)
+                        <div class="checkout-field checkout-field--full">
+                            <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+                                <p style="margin: 0; font-size: 14px; color: #333;">
+                                    <strong>Standaard leverlocatie ({{ $user->province }}):</strong>
+                                </p>
+                                <p style="margin: 4px 0 0 0; font-size: 14px; color: #666;">
+                                    {{ $user->getDepotLocation() }}
+                                </p>
+                            </div>
+
+                            <label style="display: flex; align-items: center; margin-bottom: 16px; cursor: pointer;">
+                                <input
+                                    type="checkbox"
+                                    name="use_custom_location"
+                                    id="use_custom_location"
+                                    value="1"
+                                    onchange="toggleCustomLocation()"
+                                    {{ old('use_custom_location') ? 'checked' : '' }}
+                                    style="margin-right: 8px; cursor: pointer;"
+                                >
+                                <span>Gebruik aangepaste locatie (uitzondering)</span>
+                            </label>
+
+                            <div id="custom-location-field" style="display: {{ old('use_custom_location') ? 'block' : 'none' }};">
+                                <label for="locatie" class="form-label">Aangepaste leverlocatie / werf</label>
+                                <input
+                                    type="text"
+                                    name="locatie"
+                                    id="locatie"
+                                    value="{{ old('locatie') }}"
+                                    placeholder="Bijv. Werf Antwerpen Knooppunt Noord of Magazijn B"
+                                    class="form-input"
+                                >
+                            </div>
+                        </div>
+                    @else
                         <div class="checkout-field checkout-field--full">
                             <label for="locatie" class="form-label">Leverlocatie / werf *</label>
                             <input
@@ -41,7 +77,9 @@
                                 required
                             >
                         </div>
+                    @endif
 
+                    <div class="checkout-form-grid">
                         <div class="checkout-field">
                             <label for="gevraagde_datum" class="form-label">Gevraagde datum *</label>
                             <input
@@ -50,18 +88,6 @@
                                 id="gevraagde_datum"
                                 value="{{ old('gevraagde_datum', date('Y-m-d')) }}"
                                 min="{{ date('Y-m-d') }}"
-                                class="form-input"
-                                required
-                            >
-                        </div>
-
-                        <div class="checkout-field">
-                            <label for="gevraagde_tijd" class="form-label">Gewenst tijdstip *</label>
-                            <input
-                                type="time"
-                                name="gevraagde_tijd"
-                                id="gevraagde_tijd"
-                                value="{{ old('gevraagde_tijd', '08:00') }}"
                                 class="form-input"
                                 required
                             >
@@ -118,4 +144,21 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function toggleCustomLocation() {
+            const checkbox = document.getElementById('use_custom_location');
+            const customField = document.getElementById('custom-location-field');
+            const locationInput = document.getElementById('locatie');
+            
+            if (checkbox.checked) {
+                customField.style.display = 'block';
+                locationInput.required = true;
+            } else {
+                customField.style.display = 'none';
+                locationInput.required = false;
+                locationInput.value = '';
+            }
+        }
+    </script>
 </x-site-layout>
