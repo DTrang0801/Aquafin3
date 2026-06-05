@@ -640,3 +640,171 @@ body::before {
 
         .rain-amount.wet { color: #60a5fa; }
         .rain-amount.dry { color: #64748b; }
+
+.weather-page {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-top: 32px;
+}
+
+.weather-card-title {
+    color: white;
+}
+
+.weather-alert {
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    padding: 12px;
+    text-align: center;
+}
+
+.weather-alert--danger {
+    background-color: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #f87171;
+    font-weight: bold;
+}
+
+.weather-alert--ok {
+    background-color: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    color: #34d399;
+}
+
+.weather-alert__note {
+    color: #fca5a5;
+    display: block;
+    font-size: 11px;
+    font-weight: normal;
+    margin-top: 2px;
+}
+
+.forecast-empty,
+.stock-empty {
+    color: #64748b;
+    font-size: 14px;
+    font-style: italic;
+    grid-column: span 2;
+    text-align: center;
+}
+
+.management-panel {
+    margin-top: 24px;
+}
+
+.simulation-panel {
+    align-items: center;
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px dashed rgba(245, 158, 11, 0.3);
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    padding: 14px;
+}
+
+.simulation-panel__title {
+    color: #f59e0b;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 2px;
+}
+
+.simulation-panel__text {
+    color: #94a3b8;
+    font-size: 11px;
+    margin: 0;
+    max-width: 340px;
+}
+
+.sim-btn {
+    background-color: #d97706;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 16px;
+    transition: background 0.2s ease;
+    white-space: nowrap;
+}
+
+.sim-btn:hover {
+    background-color: #b45309;
+}
+
+.sim-btn.active {
+    background-color: #dc2626;
+}
+
+.sim-btn.active:hover {
+    background-color: #b91c1c;
+}
+
+.management-panel__title {
+    color: #f1f5f9;
+    font-size: 16px;
+    margin-bottom: 8px;
+}
+
+.management-panel__subtitle {
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.stock-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.stock-item-row {
+    align-items: center;
+    background-color: rgba(51, 65, 85, 0.25);
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 12px;
+}
+
+.checkbox-container {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.stock-name {
+    color: #f1f5f9;
+    font-size: 14px;
+}
+
+.badge--small {
+    font-size: 9px;
+    padding: 1px 5px;
+}
+
+.submit-btn {
+    background-color: #0891b2;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 10px 18px;
+    width: 100%;
+}
+
+.submit-btn:hover {
+    background-color: #0e7490;
+}
