@@ -264,6 +264,7 @@
             display: grid;
             gap: 24px;
             grid-template-columns: 1fr 1fr 1fr;
+            align-items: start;
             width: 100%;
         }
 
