@@ -13,7 +13,7 @@ De applicatie voert een 5-jaars voorspelling uit voor overstromingsrisico's op b
 #### Stap 1: Gegevens verzamelen
 Het systeem gebruikt neerslaggegevens uit de periode 2004-2025. Deze data is opgeslagen per maand en per jaar in de database.
 
-#### Stap 2: Seizoen-gegevens aggregeren
+#### Stap 2: Seizoen-gegevens groeperen
 De applicatie groepeert de maanden per seizoen:
 - Winter: December, Januari, Februari
 - Lente: Maart, April, Mei
@@ -28,7 +28,7 @@ Voor elk seizoen wordt een lineaire regressie uitgevoerd op de historische gegev
 - **Gemiddelde**: De gemiddelde neerslag over de gehele periode
 - **Standaarddeviatie**: De variabiliteit in de historische data
 
-#### Stap 4: Toekomstige neerslag projecteren
+#### Stap 4: Toekomstige neerslag voorspellen
 Voor elk jaar in de 5-jaarsperiode wordt de verwachte neerslag berekend op basis van:
 1. Het historische gemiddelde
 2. De trendlijn (trend × aantal jaren in de toekomst)
@@ -36,7 +36,7 @@ Voor elk jaar in de 5-jaarsperiode wordt de verwachte neerslag berekend op basis
 
 **Formule**: `Projectie = Gemiddelde + (Trend × JarenInToekomst) + Variance`
 
-#### Stap 5: Risicoclassificatie
+#### Stap 5: Risico
 Elke seizoen wordt vergeleken met een drempelwaarde voor overstromingsgevaar:
 - Winter: 300 mm
 - Lente: 250 mm
