@@ -12,6 +12,7 @@
             <thead>
                 <tr>
                     <th>Naam</th>
+                    <th>Foto</th>
                     <th>Categorie</th>
                     <th>Subcategorie</th>
                     <th>Beschrijving</th>
@@ -24,8 +25,18 @@
                 @foreach($materialen as $materiaal)
                     <tr class="{{ $materiaal->belangrijk ? 'row-important' : '' }}">
                         <td class="font-bold">{{ $materiaal->naam }}</td>
-                        <td>{{ $materiaal->subcategorie?->categorie?->naam ?? 'N/A' }}</td>
-                        <td>{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
+
+                             <td>
+                                @if($materiaal->foto)
+                                    <img src="{{ asset('storage/' . $materiaal->foto) }}"
+                                        style="width:60px;height:60px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;">
+                                @else
+                                    -
+                                @endif
+                            </td>
+
+                            <td>{{ $materiaal->subcategorie?->categorie?->naam ?? 'N/A' }}</td>
+                            <td>{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
                         <td>{{ Str::limit($materiaal->beschrijving, 60) ?: 'Geen beschrijving' }}</td>
                         <td>
                          <!--   <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
