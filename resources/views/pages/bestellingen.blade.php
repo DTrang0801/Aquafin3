@@ -16,6 +16,36 @@
             </div>
         @endif
 
+        <div class="orders-search-wrapper">
+            <form method="GET" action="{{ route('bestellingen') }}" class="orders-search-form">
+                <input
+                    type="text"
+                    name="zoekterm"
+                    class="search-input"
+                    placeholder="Zoek op bestelnummer, materiaal, locatie..."
+                    value="{{ $zoekterm ?? '' }}"
+                >
+                <button type="submit" class="search-button">Zoeken</button>
+                @if(($zoekterm ?? '') || ($periode ?? ''))
+                    <a href="{{ route('bestellingen') }}" class="search-clear">Wis</a>
+                @endif
+            </form>
+            <div class="orders-periodes">
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'vandaag'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === 'vandaag' ? 'periode-btn--actief' : '' }}">Vandaag</a>
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'week'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === 'week' ? 'periode-btn--actief' : '' }}">Deze week</a>
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'maand'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === 'maand' ? 'periode-btn--actief' : '' }}">Deze maand</a>
+                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => '3maanden'])) }}"
+                    class="periode-btn {{ ($periode ?? '') === '3maanden' ? 'periode-btn--actief' : '' }}">Afgelopen 3 maanden</a>
+                @if($periode ?? '')
+                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null])) }}"
+                        class="periode-btn periode-btn--wis">Alle</a>
+                @endif
+            </div>
+        </div>
+
         @if($bestellingen->isEmpty())
             <div class="orders-empty">
                 <p>Je hebt momenteel nog geen bestellingen geplaatst.</p>
