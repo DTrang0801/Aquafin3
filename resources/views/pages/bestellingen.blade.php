@@ -16,6 +16,22 @@
             </div>
         @endif
 
+        <div class="orders-search-wrapper">
+            <form method="GET" action="{{ route('bestellingen') }}" class="orders-search-form">
+                <input
+                    type="text"
+                    name="zoekterm"
+                    class="search-input"
+                    placeholder="Zoek op bestelnummer, materiaal, locatie..."
+                    value="{{ $zoekterm ?? '' }}"
+                >
+                <button type="submit" class="search-button">Zoeken</button>
+                @if(($zoekterm ?? ''))
+                    <a href="{{ route('bestellingen') }}" class="search-clear">Wis</a>
+                @endif
+            </form>
+        </div>
+
         @if($bestellingen->isEmpty())
             <div class="orders-empty">
                 <p>Je hebt momenteel nog geen bestellingen geplaatst.</p>

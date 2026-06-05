@@ -2715,6 +2715,20 @@ body::before {
     font-weight: 700;
 }
 
+.orders-search-wrapper {
+    margin-bottom: 1.25rem;
+}
+
+.orders-search-form {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.orders-search-form .search-input {
+    flex: 1;
+}
+
 .orders-list {
     display: flex;
     flex-direction: column;
