@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  *
  * Beschrijving:
  * Een bestelling geplaatst door een gebruiker (technieker).
- * Een bestelling bevat data zoals gevraagde datum/tijd, locatie en een
+ * Een bestelling bevat data zoals gevraagde datum, locatie en een
  * algemene opmerking.
  *
  * Relaties:
@@ -30,7 +30,15 @@ class Bestelling extends Model
         'gevraagde_tijd',
         'locatie',
         'opmerking',
+        'custom_location_used',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'custom_location_used' => 'bool',
+        ];
+    }
 
     public function gebruiker()
     {
