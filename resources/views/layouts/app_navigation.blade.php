@@ -2,19 +2,22 @@
     <div class="nav-inner">
         <div class="nav-left">
             <a href="{{ route('home') }}" class="nav-brand">Aquafin</a>
-            <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
-
             @guest
+                <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
                 <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
             @endguest
 
             @auth
                 @if (Auth::user()->role !== 'stockbeheerder')
+                    <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
+                @endif
+
+                @if (Auth::user()->role !== 'stockbeheerder' && Auth::user()->role !== 'admin')
                     <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
                 @endif
 
-                @if (Auth::user()->role !== 'admin')
+                @if (Auth::user()->role === 'technieker')
                     <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
                 @endif
 

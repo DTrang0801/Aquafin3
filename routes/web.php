@@ -41,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
+    Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::middleware('role:stockbeheerder')->group(function () {
