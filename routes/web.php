@@ -2,15 +2,14 @@
 
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MateriaalController;
 use App\Http\Controllers\StockDashboardController;
 use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('home');
-})->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
@@ -39,6 +38,10 @@ Route::middleware('auth')->group(function () {
     Route::get('/materialen/{materiaal}/edit', [MateriaalController::class, 'edit'])->name('materialen.edit');
     Route::put('/materialen/{materiaal}', [MateriaalController::class, 'update'])->name('materialen.update');
     Route::post('/materialen', [MateriaalController::class, 'store'])->name('materialen.store');
+
+    Route::middleware('role:technieker')->group(function () {
+        Route::post('/home/neerslaggegevens/vernieuwen', [HomeController::class, 'refreshForecast'])->name('home.forecast.refresh');
+    });
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
     Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
