@@ -1,7 +1,9 @@
 <x-site-layout>
-    <div class="container text-center hero-box">
-        <h1 class="page-title hero-title">Aquafin</h1>
-        <p class="hero-team">Assia · Niels · Trang · Thien Y · Yassine</p>
+    <div class="home-hero">
+        <div class="home-logo">
+            <span class="logo-aqua">Aqua</span><span class="logo-fin">fin</span>
+        </div>
+        <p class="home-slogan">Waterbeheer in goede banen</p>
     </div>
 
     @if(session('success'))
@@ -50,5 +52,48 @@
                 </div>
             </section>
         @endif
+
+        <div style="text-align: center; margin-top:24px;padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;">
+            <p style="margin:0 0 8px 0;font-weight:600;color:#856404;">⚠️ Vergeet geen gasdetectiemateriaal!</p>
+            <form action="{{ route('winkelmandje.add') }}" method="POST" style="display:inline;">
+                @csrf
+                <input type="hidden" name="materiaal_id" value="59">
+                <input type="hidden" name="aantal" value="1">
+                <button type="submit" style="background:#2563eb;color:#fff;border:none;padding:8px 16px;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">➕ Toevoegen aan mandje</button>
+            </form>
+        </div>
     @endauth
+
+    <style>
+        .home-hero {
+            text-align: center;
+            padding: 3rem 1rem 1rem;
+        }
+
+        .home-logo {
+            font-size: 4.5rem;
+            font-weight: 800;
+            letter-spacing: 0.04em;
+            line-height: 1.1;
+        }
+
+        .logo-aqua {
+            color: #2563eb;
+        }
+
+        .logo-fin {
+            color: #1e3a5f;
+        }
+
+        .home-slogan {
+            font-size: 1.2rem;
+            color: #475569;
+            font-weight: 500;
+            letter-spacing: 0.1em;
+            margin-top: 0.5rem;
+            border-top: 2px solid #2563eb;
+            display: inline-block;
+            padding-top: 0.5rem;
+        }
+    </style>
 </x-site-layout>
