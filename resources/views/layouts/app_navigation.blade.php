@@ -10,9 +10,9 @@
             @endguest
 
             @auth
-               <!-- @if (Auth::user()->role !== 'stockbeheerder')
+                @if (Auth::user()->role !== 'stockbeheerder' && Auth::user()->role !== 'admin')
                     <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
-                @endif -->
+                @endif
 
                 @if (Auth::user()->role === 'technieker')
                     <a href="{{ route('bestellingen') }}" class="nav-link">Bestellingen</a>
