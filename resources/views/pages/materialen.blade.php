@@ -118,7 +118,13 @@
                             @foreach ($belangrijkeMaterialen as $materiaal)
                                 <tr style="border-bottom: 1px solid #1e293b;">
                                     <td class="font-bold text-important" style="padding: 14px 20px; color: #000000; font-weight: 600;">
-                                        {{ $materiaal->naam }}
+                                        @if($materiaal->foto)
+                                            <img src="{{ asset('storage/' . $materiaal->foto) }}"
+                                                style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;">
+                                        @endif
+
+                                        <div>{{ $materiaal->naam }}</div>
+
                                     </td>
                                     <td class="text-italic" style="padding: 14px 20px; color: #000000; font-style: italic;">
                                         {{ $materiaal->subcategorie->naam ?? 'N/A' }}
@@ -174,7 +180,16 @@
                                         <tbody>
                                             @foreach ($subcategorie->materialen as $materiaal)
                                                 <tr>
-                                                    <td class="font-bold">{{ $materiaal->naam }}</td>
+                                                    <td class="font-bold">
+
+                                                        @if($materiaal->foto)
+                                                            <img src="{{ asset('storage/' . $materiaal->foto) }}"
+                                                                style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;">
+                                                        @endif
+
+                                                        <div>{{ $materiaal->naam }}</div>
+
+                                                    </td>
                                                     <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
                                                     <td>
                                                       <!-- <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
