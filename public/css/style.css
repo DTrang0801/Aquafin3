@@ -2729,6 +2729,11 @@ body::before {
     flex: 1;
 }
 
+.search-input--date {
+    flex: 0 0 160px !important;
+    min-width: 140px;
+}
+
 .orders-list {
     display: flex;
     flex-direction: column;

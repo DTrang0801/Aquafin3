@@ -25,8 +25,22 @@
                     placeholder="Zoek op bestelnummer, materiaal, locatie..."
                     value="{{ $zoekterm ?? '' }}"
                 >
+                <input
+                    type="date"
+                    name="datum_van"
+                    class="search-input search-input--date"
+                    value="{{ $datumVan ?? '' }}"
+                    title="Van datum"
+                >
+                <input
+                    type="date"
+                    name="datum_tot"
+                    class="search-input search-input--date"
+                    value="{{ $datumTot ?? '' }}"
+                    title="Tot datum"
+                >
                 <button type="submit" class="search-button">Zoeken</button>
-                @if(($zoekterm ?? ''))
+                @if(($zoekterm ?? '') || ($datumVan ?? '') || ($datumTot ?? ''))
                     <a href="{{ route('bestellingen') }}" class="search-clear">Wis</a>
                 @endif
             </form>
