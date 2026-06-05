@@ -65,5 +65,5 @@ De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
 - JOUHRI Assia
 - FILALI Yassine
 - NGUYEN Trang
-- NGUYEN Thien Y
+- NGUYEN Thien
 - TANGHE Niels
