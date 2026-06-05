@@ -31,7 +31,48 @@ class DatabaseSeeder extends Seeder
 
         User::factory()->create([
             'name' => 'Technieker',
+            'province' => null,
             'email' => 'technieker@aquafin.test',
+            'password' => bcrypt('password'),
+            'role' => 'technieker',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Technieker Vlaams-Brabant',
+            'province' => 'Vlaams-Brabant',
+            'email' => 'technieker.vlaams-brabant@aquafin.test',
+            'password' => bcrypt('password'),
+            'role' => 'technieker',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Technieker West-Vlaanderen',
+            'province' => 'West-Vlaanderen',
+            'email' => 'technieker.west-vlaanderen@aquafin.test',
+            'password' => bcrypt('password'),
+            'role' => 'technieker',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Technieker Oost-Vlaanderen',
+            'province' => 'Oost-Vlaanderen',
+            'email' => 'technieker.oost-vlaanderen@aquafin.test',
+            'password' => bcrypt('password'),
+            'role' => 'technieker',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Technieker Limburg',
+            'province' => 'Limburg',
+            'email' => 'technieker.limburg@aquafin.test',
+            'password' => bcrypt('password'),
+            'role' => 'technieker',
+        ]);
+
+        User::factory()->create([
+            'name' => 'Technieker Antwerpen',
+            'province' => 'Antwerpen',
+            'email' => 'technieker.antwerpen@aquafin.test',
             'password' => bcrypt('password'),
             'role' => 'technieker',
         ]);

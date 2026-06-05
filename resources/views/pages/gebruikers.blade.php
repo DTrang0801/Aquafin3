@@ -14,6 +14,7 @@
                     <th>Naam</th>
                     <th>Email</th>
                     <th>Rol</th>
+                    <th>Provincie</th>
                     <th>Acties</th>
                 </tr>
             </thead>
@@ -23,6 +24,15 @@
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role }}</td>
+                        <td>
+                            @if ($user->role === 'technieker')
+                                <span title="{{ $user->getDepotLocation() ?? 'Geen depot ingesteld' }}">
+                                    {{ $user->province ?? 'Niet ingesteld' }}
+                                </span>
+                            @else
+                                <span style="color: #999;">—</span>
+                            @endif
+                        </td>
                         <td>
                             <div class="actions-cell">
                                 <a href="{{ route('gebruikers.edit', $user) }}" class="btn-action btn-action-edit">Bewerken</a>
