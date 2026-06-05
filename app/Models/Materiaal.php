@@ -32,6 +32,7 @@ class Materiaal extends Model
         'naam',
         'beschrijving',
         'belangrijk',
+        'order_count',
     ];
 
     public function categorie()
