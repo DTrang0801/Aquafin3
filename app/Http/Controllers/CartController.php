@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use App\Models\Materiaal;
 use App\Models\Bestelling;
 use App\Models\Mandje;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-
 class CartController extends Controller
-
 {
     // Fetch or instantiate the active user's cart
     private function getOrCreateCart()
@@ -77,11 +74,12 @@ class CartController extends Controller
 
         return redirect()->route('winkelmandje.index')->with('success', 'Materiaal verwijderd uit winkelmandje.');
     }
+
     public function checkout()
     {
         $mandje = Mandje::where('gebruiker_id', Auth::id())->with('materialen')->first();
 
-        if (!$mandje || $mandje->materialen->isEmpty()) {
+        if (! $mandje || $mandje->materialen->isEmpty()) {
             return redirect()->route('winkelmandje.index')->with('error', 'Je winkelmandje is leeg!');
         }
 
@@ -94,31 +92,34 @@ class CartController extends Controller
     {
         $request->validate([
             'gevraagde_datum' => 'required|date|after_or_equal:today',
-            'gevraagde_tijd'  => 'required',
-            'locatie'         => 'required|string|max:255',
-            'opmerking'       => 'nullable|string|max:1000',
+            'gevraagde_tijd' => 'required',
+            'locatie' => 'required|string|max:255',
+            'opmerking' => 'nullable|string|max:1000',
         ]);
 
         $userId = Auth::id();
         $mandje = Mandje::where('gebruiker_id', $userId)->first();
 
-        if (!$mandje || $mandje->materialen->isEmpty()) {
+        if (! $mandje || $mandje->materialen->isEmpty()) {
             return redirect()->route('winkelmandje.index')->with('error', 'Er ging iets mis met het verwerken van de bestelling.');
         }
 
         DB::transaction(function () use ($request, $userId, $mandje) {
             $bestelling = Bestelling::create([
-                'gebruiker_id'    => $userId,
+                'gebruiker_id' => $userId,
                 'gevraagde_datum' => $request->input('gevraagde_datum'),
-                'gevraagde_tijd'  => $request->input('gevraagde_tijd'),
-                'locatie'         => $request->input('locatie'),
-                'opmerking'       => $request->input('opmerking'),
+                'gevraagde_tijd' => $request->input('gevraagde_tijd'),
+                'locatie' => $request->input('locatie'),
+                'opmerking' => $request->input('opmerking'),
             ]);
 
             foreach ($mandje->materialen as $materiaal) {
+                $aantal = $materiaal->pivot->aantal;
                 $bestelling->materialen()->attach($materiaal->id, [
-                    'aantal' => $materiaal->pivot->aantal
+                    'aantal' => $aantal,
                 ]);
+
+                $materiaal->increment('order_count', $aantal);
             }
 
             $mandje->materialen()->detach();
