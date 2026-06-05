@@ -26,7 +26,8 @@
                 @endif
 
                 @if (Auth::user()->role === 'stockbeheerder')
-                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer</a>
+                    <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer materiaal</a>
+                    <a href="{{ route('stock-dashboard') }}" class="nav-link">Meest bestelde materialen</a>
                 @endif
             @endauth
         </div>
