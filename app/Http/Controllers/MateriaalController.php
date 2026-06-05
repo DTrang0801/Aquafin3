@@ -14,7 +14,7 @@ class MateriaalController extends Controller
 
     public function index(Request $request)
     {
-        // Always display global important highlights at the top
+        // Always display global important highlights at the top (excluding soft-deleted)
         $belangrijkeMaterialen = Materiaal::where('belangrijk', true)->with('subcategorie')->get();
 
         // 1. Fetch search inputs & parameters
@@ -31,7 +31,7 @@ class MateriaalController extends Controller
                 ->get();
         }
 
-        // 2. Build the basic relational query
+        // 2. Build the basic relational query (excludes soft-deleted by default)
         $query = Materiaalcategorie::with(['subcategorieen' => function ($q) use ($selectedSubcatId) {
             if ($selectedSubcatId) {
                 $q->where('id', $selectedSubcatId);
@@ -158,7 +158,6 @@ class MateriaalController extends Controller
 
         return response()->json($materialen);
     }
-
 
     public function create()
     {
