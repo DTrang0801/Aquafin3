@@ -17,11 +17,22 @@
                 </div>
 
                 <div class="form-group">
+                    <label class="form-label">Hoofdcategorie:</label>
+                    <select id="category_id" class="form-input" onchange="filterSubcategories()">
+                        <option value="">Kies een categorie</option>
+                        @foreach($categorieen as $cat)
+                            <option value="{{ $cat->id }}">{{ $cat->naam }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <div class="form-group">
                     <label class="form-label">Subcategorie:</label>
-                    <select name="materiaal_subcategorie_id" required class="form-input">
-                        @foreach($subcategorieen as $subcategorie)
-                            <option value="{{ $subcategorie->id }}">
-                                {{ $subcategorie->naam }}
+                    <select name="materiaal_subcategorie_id" id="subcategory_id" required class="form-input">
+                        <option value="">Kies eerst een categorie</option>
+                        @foreach($subcategorieen as $sub)
+                            <option value="{{ $sub->id }}" data-category-id="{{ $sub->materiaal_categorie_id }}">
+                                {{ $sub->naam }}
                             </option>
                         @endforeach
                     </select>
@@ -41,4 +52,25 @@
             </form>
         </div>
     </div>
+
+    <script>
+        function filterSubcategories() {
+            const catId = document.getElementById('category_id').value;
+            const subSelect = document.getElementById('subcategory_id');
+            const options = subSelect.querySelectorAll('option');
+
+            options.forEach(opt => {
+                if (opt.value === '') {
+                    opt.hidden = false;
+                    opt.text = catId ? 'Kies een subcategorie' : 'Kies eerst een categorie';
+                    return;
+                }
+                opt.hidden = catId && opt.dataset.categoryId !== catId;
+            });
+
+            if (subSelect.value && document.querySelector(`#subcategory_id option[value="${subSelect.value}"]`)?.hidden) {
+                subSelect.value = '';
+            }
+        }
+    </script>
 </x-site-layout>
