@@ -177,9 +177,9 @@
                                                     <td class="font-bold">{{ $materiaal->naam }}</td>
                                                     <td>{{ $materiaal->beschrijving ?? 'Geen beschrijving' }}</td>
                                                     <td>
-                                                        <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
+                                                      <!-- <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
                                                             {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
-                                                        </span>
+                                                        </span> -->
                                                     </td>
                                                     <td>
                                                         @if(Auth::user()->role === 'technieker')
