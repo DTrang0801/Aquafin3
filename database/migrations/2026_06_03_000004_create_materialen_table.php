@@ -16,7 +16,7 @@ class CreateMaterialenTable extends Migration
             $table->foreignId('materiaal_subcategorie_id')->nullable()->constrained('materiaal_subcategorieen');
             $table->string('naam');
             $table->text('beschrijving')->nullable();
-           // $table->boolean('belangrijk')->default(false);
+            // $table->boolean('belangrijk')->default(false);
             $table->timestamps();
         });
     }

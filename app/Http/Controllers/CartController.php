@@ -128,14 +128,26 @@ class CartController extends Controller
         return redirect()->route('bestellingen')->with('success', 'Bestelling succesvol geplaatst!');
     }
 
-    public function indexOrders()
+    public function indexOrders(Request $request)
     {
+        $zoekterm = $request->get('zoekterm');
+
         $bestellingen = Bestelling::where('gebruiker_id', Auth::id())
             ->with('materialen')
+            ->when($zoekterm, function ($query, $zoekterm) {
+                $query->where(function ($q) use ($zoekterm) {
+                    $q->whereRaw("LPAD(id, 5, '0') LIKE ?", ["%$zoekterm%"])
+                        ->orWhere('locatie', 'like', "%$zoekterm%")
+                        ->orWhere('opmerking', 'like', "%$zoekterm%")
+                        ->orWhereHas('materialen', function ($mq) use ($zoekterm) {
+                            $mq->where('naam', 'like', "%$zoekterm%");
+                        });
+                });
+            })
             ->orderBy('created_at', 'desc')
             ->get();
 
-        return view('pages.bestellingen', compact('bestellingen'));
+        return view('pages.bestellingen', compact('bestellingen', 'zoekterm'));
     }
 
     public function overzicht()
