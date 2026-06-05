@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
  * Model: Bestelling
@@ -19,6 +20,8 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Bestelling extends Model
 {
+    use SoftDeletes;
+
     protected $table = 'bestellingen';
 
     protected $fillable = [
