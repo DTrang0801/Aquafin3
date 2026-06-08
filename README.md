@@ -4,7 +4,15 @@ Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op ba
 ## Tech-stack
 Frontend en backend is laravel + blade. Verbonden met een sql database.
 
-## 5-Jaars Overstromings voorspelling
+# Documentatie
+
+## Project structuur
+
+## User rollen en permissies
+
+## Paginas
+
+## Overstromings voorspelling
 
 ### Hoe werkt het?
 
@@ -60,10 +68,9 @@ De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
 - Onvoorziene klimaatveranderingen kunnen het patroon verstoren
 - Korte-termijn extrema kunnen niet worden voorspeld
 
-
 ## Teamleden
-- JOUHRI Assia
-- FILALI Yassine
-- NGUYEN Trang
-- NGUYEN Thien
-- TANGHE Niels
+- JOUHRI Assia - Frontend, Backend, Afbeeldingen, User-Stories
+- FILALI Yassine - Loginsysteem, Frontend, Backend
+- NGUYEN Trang - User-Stories, Frontend, Backend, Prototype
+- NGUYEN Thien - Frontend, User-roles, User-stories, Prototype
+- TANGHE Niels - Database, API, Frontend, Backend, Hosting, Trello
