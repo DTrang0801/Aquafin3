@@ -46,6 +46,7 @@ Aquafin3/
 
 ## Database
 ### ERD
+<img width="1304" height="949" alt="Diagram" src="https://github.com/user-attachments/assets/09455c3c-70eb-480f-b856-52626bf0733b" />
 
 ## User rollen en permissies
 ### Technieker
