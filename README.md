@@ -7,6 +7,42 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 # Documentatie
 
 ## Project structuur
+Aquafin3/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   └── Requests/
+│   ├── Models/
+│   ├── Services/
+│   ├── Enums/
+│   └── Providers/
+├── database/
+│   ├── migrations/
+│   ├── seeders/
+│   └── factories/
+├── resources/
+│   ├── views/
+│   │   ├── pages/
+│   │   ├── layouts/
+│   │   └── components/
+│   ├── css/
+│   └── js/
+├── routes/
+├── storage/
+│   └── app/public/
+│       └── materialen/
+├── public/
+│   ├── storage/
+│   ├── css/
+│   ├── images/
+│   └── build/
+├── config/
+├── tests/
+│   ├── Feature/
+│   └── Unit/
+├── .env
+├── composer.json
+└── package.json
 
 ## Database
 ### ERD
@@ -17,11 +53,31 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 ### Admin
 
 ## Paginas
+
+### Hoofd pagina
+(TECHNIEKER)
+<img width="1876" height="877" alt="image" src="https://github.com/user-attachments/assets/8552b860-bbe9-4795-828f-7ca93fe9dce7" />
+Je komt op deze pagina terecht wannner je inlogd op de technieker account je krijgt de 7 daagse meteo te zien en ook een herhaling van de gasdetectiemateriaal
+
 ### Winkelmandje
 (TECHNIEKER)
 <img width="1919" height="990" alt="image" src="https://github.com/user-attachments/assets/7bf3aac7-52ed-473e-8b60-62434f6dc69c" />
 Hier kan de technieker het materiaal bekijken dat in zijn winkelmandje zit, en hoeveelheden aanpassen of items verwijderen.
-### Pagina 2
+
+### Materialen bestellen
+(TECHNIEKER)
+<img width="1880" height="884" alt="image" src="https://github.com/user-attachments/assets/869970c2-bd05-43f4-aa8a-b634071f958c" />
+Hier kan de technieker materiaal bestellen en in het mandje, materiaal opzoeken via de zoekbalk of filteren op categorie.
+
+### Vorige bestellingen
+(TECNIEKER)
+<img width="1905" height="879" alt="image" src="https://github.com/user-attachments/assets/4a81c8ae-ff86-4bba-9d1a-3ecd69eb758f" />
+Je kunt via deze pagina de overzicht krijgen van al u bestellingen en je kunt ze ook opzoeken.
+
+ 
+
+
+
 
 ## Overstromings voorspelling
 
