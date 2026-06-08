@@ -8,9 +8,17 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 
 ## Project structuur
 
+## Database
+### ERD
+
 ## User rollen en permissies
+### Technieker
+### Stockbeheerder
+### Admin
 
 ## Paginas
+### Pagina 1
+### Pagina 2
 
 ## Overstromings voorspelling
 
