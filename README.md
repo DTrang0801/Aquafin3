@@ -18,8 +18,9 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 
 ## Paginas
 ### Winkelmandje
+(TECHNIEKER)
 <img width="1919" height="990" alt="image" src="https://github.com/user-attachments/assets/7bf3aac7-52ed-473e-8b60-62434f6dc69c" />
-
+Hier kan de technieker het materiaal bekijken dat in zijn winkelmandje zit, en hoeveelheden aanpassen of items verwijderen.
 ### Pagina 2
 
 ## Overstromings voorspelling
