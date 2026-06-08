@@ -6,44 +6,6 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 
 # Documentatie
 
-## Project structuur
-Aquafin3/
-├── app/
-│   ├── Http/
-│   │   ├── Controllers/
-│   │   └── Requests/
-│   ├── Models/
-│   ├── Services/
-│   ├── Enums/
-│   └── Providers/
-├── database/
-│   ├── migrations/
-│   ├── seeders/
-│   └── factories/
-├── resources/
-│   ├── views/
-│   │   ├── pages/
-│   │   ├── layouts/
-│   │   └── components/
-│   ├── css/
-│   └── js/
-├── routes/
-├── storage/
-│   └── app/public/
-│       └── materialen/
-├── public/
-│   ├── storage/
-│   ├── css/
-│   ├── images/
-│   └── build/
-├── config/
-├── tests/
-│   ├── Feature/
-│   └── Unit/
-├── .env
-├── composer.json
-└── package.json
-
 ## Database
 ### ERD
 <img width="1304" height="949" alt="Diagram" src="https://github.com/user-attachments/assets/09455c3c-70eb-480f-b856-52626bf0733b" />
