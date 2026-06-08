@@ -8,7 +8,7 @@
             <div class="checkout-header">
                 <div>
                     <h1 class="checkout-title">Bestelling afronden</h1>
-                    <p class="checkout-subtitle">Controleer je materialen en vul de leveringsdetails in.</p>
+                    <p class="checkout-subtitle">Controleer je materiaal en vul de leveringsdetails in.</p>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@
                             </label>
 
                             <div id="custom-location-field" style="display: {{ old('use_custom_location') ? 'block' : 'none' }};">
-                                <label for="locatie" class="form-label">Aangepaste leverlocatie / werf</label>
+                                <label for="locatie" class="form-label">Aangepaste leverlocatie</label>
                                 <input
                                     type="text"
                                     name="locatie"
@@ -66,7 +66,7 @@
                         </div>
                     @else
                         <div class="checkout-field checkout-field--full">
-                            <label for="locatie" class="form-label">Leverlocatie / werf *</label>
+                            <label for="locatie" class="form-label">Leverlocatie *</label>
                             <input
                                 type="text"
                                 name="locatie"
@@ -94,12 +94,12 @@
                         </div>
 
                         <div class="checkout-field checkout-field--full">
-                            <label for="opmerking" class="form-label">Algemene opmerking / instructies</label>
+                            <label for="opmerking" class="form-label">Opmerking</label>
                             <textarea
                                 name="opmerking"
                                 id="opmerking"
                                 rows="4"
-                                placeholder="Voeg eventueel extra opmerkingen toe voor de stockbeheerder..."
+                                placeholder="Voeg eventueel extra opmerkingen toe..."
                                 class="form-input form-input--textarea"
                             >{{ old('opmerking') }}</textarea>
                         </div>
@@ -161,4 +161,146 @@
             }
         }
     </script>
+
+    <style>
+        @media (max-width: 768px) {
+            .checkout-page {
+                margin: 1rem auto;
+                padding: 0 0.75rem;
+            }
+
+            .checkout-back-link {
+                font-size: 0.875rem;
+                margin-bottom: 0.75rem;
+            }
+
+            .checkout-card {
+                border-radius: 12px;
+            }
+
+            .checkout-header {
+                padding: 1.25rem 1rem;
+            }
+
+            .checkout-title {
+                font-size: 1.5rem;
+            }
+
+            .checkout-subtitle {
+                font-size: 0.9rem;
+            }
+
+            .checkout-errors {
+                margin: 1rem 1rem 0;
+                padding: 0.875rem 1rem;
+            }
+
+            .checkout-form {
+                padding: 1.5rem 1rem;
+                gap: 1.5rem;
+            }
+
+            .checkout-section {
+                padding: 1.25rem;
+                border-radius: 10px;
+            }
+
+            .checkout-section-title {
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+
+            .checkout-form-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .checkout-page .form-input {
+                min-height: 2.5rem;
+                font-size: 16px;
+            }
+
+            .checkout-items-table {
+                font-size: 13px;
+            }
+
+            .checkout-items-table th,
+            .checkout-items-table td {
+                padding: 0.75rem;
+            }
+
+            .checkout-item-quantity {
+                width: 6rem;
+            }
+
+            .checkout-actions {
+                flex-direction: column-reverse;
+                gap: 0.5rem;
+            }
+
+            .btn-secondary,
+            .btn-confirm-order {
+                width: 100%;
+                min-height: 2.5rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .checkout-page {
+                margin: 0.5rem auto;
+                padding: 0 0.5rem;
+            }
+
+            .checkout-header {
+                padding: 1rem;
+            }
+
+            .checkout-title {
+                font-size: 1.25rem;
+            }
+
+            .checkout-form {
+                padding: 1rem;
+                gap: 1.25rem;
+            }
+
+            .checkout-section {
+                padding: 1rem;
+            }
+
+            .checkout-section-title {
+                font-size: 0.95rem;
+                margin-bottom: 0.875rem;
+            }
+
+            .checkout-page .form-label {
+                font-size: 0.85rem;
+            }
+
+            .checkout-page .form-input {
+                min-height: 44px;
+                padding: 0.75rem;
+            }
+
+            .checkout-items-table {
+                font-size: 12px;
+            }
+
+            .checkout-items-table th,
+            .checkout-items-table td {
+                padding: 0.6rem;
+            }
+
+            .checkout-item-name {
+                display: block;
+                word-break: break-word;
+            }
+
+            .checkout-critical-badge {
+                font-size: 0.7rem;
+                margin-left: 0.25rem;
+            }
+        }
+    </style>
 </x-site-layout>
