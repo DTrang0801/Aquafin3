@@ -26,7 +26,7 @@ De stockbeheerder beheerd welk materiaal er te beschilling is voor de technieker
 
 ## Gebruik API
 ### Open-Meteo
-We gebruiken de gratis API van [Open-Meteo]([https://duckduckgo.com](https://open-meteo.com/)). om relevante data over de huidige, toekomstige en vorige neerslag op te halen. deze data word gebruikt om onze database aan te vullen of om de techniekers te informeren over hoeveel neerslag ze kunnen verwachten de komende week.
+We gebruiken de gratis API van [Open-Meteo](https://open-meteo.com/). om relevante data over de huidige, toekomstige en vorige neerslag op te halen. deze data word gebruikt om onze database aan te vullen of om de techniekers te informeren over hoeveel neerslag ze kunnen verwachten de komende week.
 
 ## Paginas
 Een overzicht van elke pagina in onze applicatie.
