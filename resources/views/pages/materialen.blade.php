@@ -298,10 +298,114 @@
         
         .search-clear-btn:hover { color: #f8fafc; }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1200px) {
+            .search-filter-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .actions-row {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 768px) {
             .search-filter-grid {
                 grid-template-columns: 1fr;
                 gap: 12px;
+                padding: 15px;
+            }
+
+            .actions-row {
+                display: flex !important;
+                gap: 8px;
+            }
+
+            .actions-row .search-button,
+            .actions-row .btn-reset {
+                flex: 1;
+                height: 42px;
+            }
+
+            .custom-table {
+                font-size: 13px;
+            }
+
+            .custom-table th,
+            .custom-table td {
+                padding: 12px 8px;
+            }
+
+            .custom-table td:nth-child(1) { width: auto; }
+            .custom-table td:nth-child(2) { width: auto; }
+            .custom-table td:nth-child(3) { width: auto; }
+            .custom-table td:nth-child(4) { width: auto; }
+
+            .custom-table td:last-child form {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .custom-table td:last-child input[type="number"] {
+                width: 100%;
+                height: 36px;
+                padding: 6px;
+            }
+
+            .custom-table td:last-child .btn-primary {
+                width: 100%;
+                height: 36px;
+                padding: 1px;
+                font-size: 11px;
+            }
+
+            .table-important td:nth-child(1) { width: auto; }
+            .table-important td:nth-child(2) { width: auto; }
+            .table-important td:nth-child(3) { width: auto; }
+            .table-important td:nth-child(4) { width: auto; }
+
+            .page-title {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .category-header {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            .category-content {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-filter-grid {
+                padding: 12px;
+            }
+
+            .filter-select,
+            .search-input {
+                font-size: 16px;
+                height: 44px;
+            }
+
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .custom-table {
+                font-size: 12px;
+            }
+
+            .custom-table th,
+            .custom-table td {
+                padding: 10px 6px;
+            }
+
+            .category-header {
+                padding: 10px 12px;
+                font-size: 0.85rem;
             }
         }
     </style>
