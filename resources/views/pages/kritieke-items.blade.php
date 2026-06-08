@@ -106,7 +106,7 @@
                 </form>
             </div>
 
-            <x-add-material-form />
+            <!-- <x-add-material-form /> -->
         </div>
     </div>
 
