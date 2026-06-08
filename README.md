@@ -1,5 +1,12 @@
 # Aquafin | Programming project | Groep 3
-Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op basis van de voorspelde neerslag van het huidig seizoen en waar stockbeheerders de stock van het materiaal kunnen beheren.
+Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op basis van de voorspelde neerslag van het huidig seizoen en waar stockbeheerders het materiaal kunnen beheren.
+
+## Teamleden
+- **Jouhri Assia** - Frontend, Backend, Afbeeldingen, User-Stories
+- **Filali Yassine** - Loginsysteem, Frontend, Backend
+- **Nguyen Trang** - User-Stories, Frontend, Backend, Prototype
+- **Nguyen Thien** Y - Frontend, User-roles, User-stories, Prototype
+- **Tanghe Niels** - Database, API, Frontend, Backend, Hosting, Trello
 
 ## Tech-stack
 Frontend en backend is laravel + blade. Verbonden met een sql database.
@@ -12,28 +19,34 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 
 ## User rollen en permissies
 ### Technieker
+De technieker is een werknemer van aquafin die elke dag op de baan is. Hij kan materiaal bestellen op deze applicatie zodat hij elke week goed voorbereid is.
 ### Stockbeheerder
+De stockbeheerder beheerd welk materiaal er te beschilling is voor de techniekers. Ook kan de stockbeheerder bepalen welk materiaal belangrijk is wanneer er een overstromingsrisico is door naar de risicoanalyses te kijken.
 ### Admin
 
-## Paginas
+## Gebruik API
+### Open-Meteo
+We gebruiken de gratis API van [Open-Meteo]([https://duckduckgo.com](https://open-meteo.com/)). om relevante data over de huidige, toekomstige en vorige neerslag op te halen. deze data word gebruikt om onze database aan te vullen of om de techniekers te informeren over hoeveel neerslag ze kunnen verwachten de komende week.
 
+## Paginas
+Een overzicht van elke pagina in onze applicatie.
 ### Hoofd pagina
-(TECHNIEKER)
+**TECHNIEKER**
 <img width="1876" height="877" alt="image" src="https://github.com/user-attachments/assets/8552b860-bbe9-4795-828f-7ca93fe9dce7" />
 Je komt op deze pagina terecht wannner je inlogd op de technieker account je krijgt de 7 daagse meteo te zien en ook een herhaling van de gasdetectiemateriaal
 
 ### Winkelmandje
-(TECHNIEKER)
+**TECHNIEKER**
 <img width="1919" height="990" alt="image" src="https://github.com/user-attachments/assets/7bf3aac7-52ed-473e-8b60-62434f6dc69c" />
 Hier kan de technieker het materiaal bekijken dat in zijn winkelmandje zit, en hoeveelheden aanpassen of items verwijderen.
 
 ### Materialen bestellen
-(TECHNIEKER)
+**TECHNIEKER**
 <img width="1880" height="884" alt="image" src="https://github.com/user-attachments/assets/869970c2-bd05-43f4-aa8a-b634071f958c" />
 Hier kan de technieker materiaal bestellen en in het mandje, materiaal opzoeken via de zoekbalk of filteren op categorie.
 
 ### Vorige bestellingen
-(TECNIEKER)
+**TECNIEKER**
 <img width="1905" height="879" alt="image" src="https://github.com/user-attachments/assets/4a81c8ae-ff86-4bba-9d1a-3ecd69eb758f" />
 Je kunt via deze pagina de overzicht krijgen van al u bestellingen en je kunt ze ook opzoeken.
 
@@ -97,10 +110,3 @@ De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
 - De toekomst volgt niet altijd het verleden
 - Onvoorziene klimaatveranderingen kunnen het patroon verstoren
 - Korte-termijn extrema kunnen niet worden voorspeld
-
-## Teamleden
-- JOUHRI Assia - Frontend, Backend, Afbeeldingen, User-Stories
-- FILALI Yassine - Loginsysteem, Frontend, Backend
-- NGUYEN Trang - User-Stories, Frontend, Backend, Prototype
-- NGUYEN Thien - Frontend, User-roles, User-stories, Prototype
-- TANGHE Niels - Database, API, Frontend, Backend, Hosting, Trello
