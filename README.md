@@ -17,7 +17,9 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 ### Admin
 
 ## Paginas
-### Pagina 1
+### Winkelmandje
+<img width="1919" height="990" alt="image" src="https://github.com/user-attachments/assets/7bf3aac7-52ed-473e-8b60-62434f6dc69c" />
+
 ### Pagina 2
 
 ## Overstromings voorspelling
