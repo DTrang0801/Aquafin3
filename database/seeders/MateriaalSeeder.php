@@ -128,6 +128,7 @@ class MateriaalSeeder extends Seeder
                         'naam' => $item,
                         'beschrijving' => '',
                         'belangrijk' => false,
+                        'foto' => 'placeholder.png',
                         'created_at' => $now,
                         'updated_at' => $now,
                     ];
