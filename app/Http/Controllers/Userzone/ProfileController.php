@@ -12,9 +12,7 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    /**
-     * Display the user's profile form.
-     */
+    // Toont de bewerkpagina van het profiel van de gebruiker.
     public function edit(Request $request): View
     {
         return view('userzone.profile.edit', [
@@ -22,39 +20,35 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Update the user's profile information.
-     */
+    // Update de gebruikers gegevens in de database.
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $request->user()->fill($request->validated()); // Vul het gebruikersmodel met de gevalideerde gegevens, nog niet in database opgeslagen
 
         if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
+            $request->user()->email_verified_at = null; // Als het e-mailadres is gewijzigd, reset en gebruiker moet opnieuw verifiëren
         }
 
-        $request->user()->save();
+        $request->user()->save(); // Sla de wijzigingen op in de database
 
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-    /**
-     * Delete the user's account.
-     */
+    // Verwijder gebruiker
     public function destroy(Request $request): RedirectResponse
     {
         $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
+            'password' => ['required', 'current_password'], // Komt de wachtwoord overeen met het huidige wachtwoord?
         ]);
 
         $user = $request->user();
 
         Auth::logout();
 
-        $user->delete();
+        $user->delete(); // delete de gebruiker uit de database
 
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        $request->session()->invalidate(); // Ongeldig maken van de huidige sessie, zodat deze niet meer gebruikt kan worden
+        $request->session()->regenerateToken(); // Regenereren van het CSRF-token om beveiligingsrisico's te voorkomen
 
         return Redirect::to('/');
     }
