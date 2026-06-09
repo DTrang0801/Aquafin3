@@ -8,10 +8,7 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    // Show all users
+    // Toont alle gebruikers 
     public function index()
     {
         $users = User::orderBy('name')->get();
@@ -21,13 +18,13 @@ class UserController extends Controller
         ]);
     }
 
-    // Show form to create new user
+    // Toont formulier om nieuwe gebruiker aan te maken
     public function create()
     {
         return view('admin.users.create');
     }
 
-    // Save new user
+    // Sla nieuwe gebruiker op
     public function store(Request $request)
     {
         $request->validate([
@@ -49,15 +46,14 @@ class UserController extends Controller
         return redirect()->route('gebruikers')->with('success', 'Gebruiker aangemaakt!');
     }
 
-    /**
-     * Display the specified resource.
-     */
+
+    // Toont de gespecificeerde resource.
     public function show(string $id)
     {
         //
     }
 
-    // Show form to edit user
+    // Toont formulier om bestaande gebruiker te bewerken
     public function edit(User $user)
     {
         return view('admin.users.edit', [
@@ -65,7 +61,7 @@ class UserController extends Controller
         ]);
     }
 
-    // Save edited user
+    // Sla bewerkte gebruiker op
     public function update(Request $request, User $user)
     {
         $request->validate([
@@ -81,7 +77,7 @@ class UserController extends Controller
         $user->province = $request->input('province');
 
         if ($request->filled('password')) {
-            $user->password = bcrypt($request->password);
+            $user->password = bcrypt($request->password); // Maakt het wachtwoord onleesbaar in database
         }
 
         $user->save();
@@ -89,7 +85,7 @@ class UserController extends Controller
         return redirect()->route('gebruikers')->with('success', 'Gebruiker bijgewerkt!');
     }
 
-    // Delete user
+    // Verwijder gebruiker
     public function destroy(User $user)
     {
         $user->delete();
