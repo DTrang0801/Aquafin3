@@ -3,17 +3,17 @@
 @auth
     <div class="home-hero">
         <div class="home-logo">
-            <span class="logo-aqua">Aqua</span><span class="logo-fin">fin</span>
+            <span class="logo-fin">Aquafin</span>
         </div>
-            <p class="home-slogan">Waterbeheer in goede banen</p> <br>
+            <p class="home-slogan">Samen werken aan proper water en een gezonde leefomgeving.</p> <br>
     </div>
 @endauth
 @guest
     <div class="home-hero">
         <div class="home-logo">
-            <span class="logo-aqua">Aqua</span><span class="logo-fin">fin</span>
+            <span class="logo-fin">Aquafin</span>
         </div>
-            <p class="home-slogan">Waterbeheer in goede banen</p> <br>
+            <p class="home-slogan">Samen werken aan proper water en een gezonde leefomgeving.</p> <br>
         
             <p style="font-size: 2rem; color: #475569; font-weight: 500; letter-spacing: 0.1em; margin-top: 0.5rem; display: inline-block; padding-top: 0.5rem;">Log in om materiaal te bestellen</p>
         </div>
