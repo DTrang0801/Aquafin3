@@ -58,6 +58,14 @@
 
         <!-- Main Content Grid -->
         <div class="weather-page-grid">
+            <!-- Add Neerslag Form (Stockbeheerder Only) -->
+            @if($canManageStock)
+                <div class="weather-section">
+                    <x-add-neerslag-form />
+                    <x-historical-neerslag-data :historicalNeerslagData="$historicalNeerslagData" />
+                </div>
+            @endif
+
             <!-- Left Column: Current Rainfall Data -->
             <div class="weather-section">
                 <div class="weather-card">

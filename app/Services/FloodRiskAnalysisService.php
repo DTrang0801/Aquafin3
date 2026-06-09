@@ -6,11 +6,17 @@ use App\Models\Neerslag;
 use Illuminate\Support\Carbon;
 
 /**
- * Service for analyzing historical rainfall patterns and predicting flood risk.
- * Provides 5-year forecasts and seasonal trend analysis.
+ * Service voor analyse van historische neerslagpatronen en voorspelling van lange termijn overstroomingsrisico.
+ * Biedt 5-jaar trendgebaseerde voorspellingen en analyseert de voortgang van het huidige seizoen naar overstroomingsdrempels.
+ *
+ * Gebruikt lineaire regressie op historische neerslaggegevens (2004-2025) om toekomstige neerslagpatronen te projecteren,
+ * en vergelijkt vervolgens projecties met seizoensdrempels om overstroomingsrisiconiveaus te bepalen.
  */
 class FloodRiskAnalysisService
 {
+    /**
+     * Neerslagdrempels (in mm) per seizoen die waarschuwingen voor overstroomingsrisico activeren.
+     */
     private const SEASON_THRESHOLDS_MM = [
         'Winter' => 300,
         'Lente' => 250,
@@ -18,7 +24,11 @@ class FloodRiskAnalysisService
         'Herfst' => 280,
     ];
 
-    /** @var array<string, list<int>> */
+    /**
+     * Maandgroeperingen voor elk seizoen op het noordelijk halfrond.
+     *
+     * @var array<string, list<int>>
+     */
     private const SEASON_MONTHS = [
         'Winter' => [12, 1, 2],
         'Lente' => [3, 4, 5],
@@ -27,9 +37,11 @@ class FloodRiskAnalysisService
     ];
 
     /**
-     * Analyze 5-year flood risk forecast based on historical rainfall patterns and trends.
+     * Genereer 5-jaar overstroomingsrisicovoorspelling met trendanalyse.
+     * Projecteert neerslag voor de komende 5 jaar op basis van historische patronen en trends.
+     * Gebruikt voor lange termijn planning en risicobeoordelingen.
      *
-     * @return array<int, array<string, mixed>> Array of years with seasonal analysis
+     * @return array<int, array<string, mixed>> Voorspellingsgegevens geïndexeerd per jaar
      */
     public function getFiveYearFloodRiskForecast(): array
     {
@@ -37,6 +49,7 @@ class FloodRiskAnalysisService
         $currentYear = $today->year;
         $nextFiveYears = range($currentYear + 1, $currentYear + 5);
 
+        // Bereken trends uit historische gegevens
         $seasonalTrends = $this->calculateSeasonalTrends();
         $result = [];
 
@@ -49,9 +62,10 @@ class FloodRiskAnalysisService
     }
 
     /**
-     * Calculate average rainfall per season from historical data (2004-2025).
+     * Bereken seizoensgemiddelden uit historische neerslaggegevens (2004-2025).
+     * Biedt minimum, maximum en gemiddelde neerslag per seizoen voor basisvergelijking.
      *
-     * @return array<string, array<string, float>> Seasonal averages with min/max/avg
+     * @return array<string, array<string, float>> Seizoensstatistieken met gemiddelde, min, max
      */
     private function calculateSeasonalAverages(): array
     {
@@ -62,6 +76,7 @@ class FloodRiskAnalysisService
 
         $seasonalTotals = [];
 
+        // Groepeer neerslag per seizoen en jaar
         foreach ($neerslag as $record) {
             $season = $this->seasonForMonth($record->maand);
             $seasonKey = "{$record->jaar}_{$season}";
@@ -77,6 +92,7 @@ class FloodRiskAnalysisService
             $seasonalTotals[$seasonKey]['total'] += $record->mm;
         }
 
+        // Bereken statistieken per seizoen
         $averages = [];
         foreach (array_keys(self::SEASON_MONTHS) as $season) {
             $seasonData = array_filter($seasonalTotals, fn ($item) => $item['season'] === $season);
@@ -105,9 +121,11 @@ class FloodRiskAnalysisService
     }
 
     /**
-     * Calculate seasonal trends over time to project future rainfall.
+     * Bereken seizoenale neerslagtrends met behulp van lineaire regressie.
+     * Bepaalt of neerslag toeneemt, afneemt of stabiel blijft in de loop der tijd.
+     * Berekent ook variantie (standaarddeviatie) voor natuurlijke jaarlijkse variabiliteit.
      *
-     * @return array<string, array<string, mixed>> Trends including slope, standard deviation, and historical values
+     * @return array<string, array<string, mixed>> Trendgegevens met helling, stddev en historische waarden
      */
     private function calculateSeasonalTrends(): array
     {
@@ -118,6 +136,7 @@ class FloodRiskAnalysisService
 
         $seasonalTotals = [];
 
+        // Groepeer neerslag per seizoen en jaar
         foreach ($neerslag as $record) {
             $season = $this->seasonForMonth($record->maand);
             $seasonKey = "{$record->jaar}_{$season}";
@@ -138,7 +157,7 @@ class FloodRiskAnalysisService
         foreach (array_keys(self::SEASON_MONTHS) as $season) {
             $seasonData = array_filter($seasonalTotals, fn ($item) => $item['season'] === $season);
 
-            // Sort by year to ensure chronological order for trend calculation
+            // Sorteer chronologisch voor trendberekening
             usort($seasonData, fn ($a, $b) => $a['year'] <=> $b['year']);
 
             $values = array_map(fn ($item) => $item['total'], $seasonData);
@@ -157,10 +176,10 @@ class FloodRiskAnalysisService
                 continue;
             }
 
-            // Calculate linear regression slope
+            // Bereken lineaire regressiehelling (mm per jaar trend)
             $slope = $this->calculateTrendSlope($years, $values);
 
-            // Calculate standard deviation for variance
+            // Bereken standaarddeviatie voor variantiemodellering
             $mean = array_sum($values) / count($values);
             $squareDiffs = array_map(fn ($v) => ($v - $mean) ** 2, $values);
             $stddev = sqrt(array_sum($squareDiffs) / count($squareDiffs));
@@ -179,10 +198,12 @@ class FloodRiskAnalysisService
     }
 
     /**
-     * Calculate linear regression slope for trend analysis.
+     * Bereken lineaire regressiehelling voor een tijdreeks.
+     * Helling vertegenwoordigt de verandering in neerslag per jaar (positief = stijgend, negatief = dalend).
      *
-     * @param  array<int>  $years
-     * @param  array<float>  $values
+     * @param  array<int>  $years  Array van jaren (x-as)
+     * @param  array<float>  $values  Array van neerslagwaarden (y-as)
+     * @return float De regressiehelling (mm per jaar)
      */
     private function calculateTrendSlope(array $years, array $values): float
     {
@@ -210,11 +231,13 @@ class FloodRiskAnalysisService
     }
 
     /**
-     * Analyze a specific year using trend-based forecasting.
+     * Analyseer een bepaald jaar met trendgebaseerde neerslagprojectie.
+     * Projecteert seizoenale neerslag en categoriseert risiconiveaus.
      *
-     * @param  int  $yearsAhead  Number of years in the future
-     * @param  array<string, array<string, mixed>>  $trends
-     * @return array<string, mixed>
+     * @param  int  $year  Het jaar om te analyseren
+     * @param  array<string, array<string, mixed>>  $trends  Historische trendgegevens
+     * @param  int  $yearsAhead  Aantal jaren in de toekomst
+     * @return array<string, mixed> Jaaranalyse met seizoensvoorspellingen en totaal risico
      */
     private function analyzeYearWithTrend(int $year, array $trends, int $yearsAhead): array
     {
@@ -225,7 +248,7 @@ class FloodRiskAnalysisService
             $trend = $trends[$season];
             $threshold = self::SEASON_THRESHOLDS_MM[$season];
 
-            // Project rainfall based on trend
+            // Projecteer neerslag gebaseerd op historische trend en variantie
             $projectedRainfall = $this->projectRainfallForYear(
                 $trend['average'],
                 $trend['slope'],
@@ -245,6 +268,7 @@ class FloodRiskAnalysisService
             ];
         }
 
+        // Tel seizoenen die drempels overschrijden
         $riskCount = collect($seasons)
             ->filter(fn ($s) => $s['exceeds_threshold'])
             ->count();
@@ -258,11 +282,14 @@ class FloodRiskAnalysisService
     }
 
     /**
-     * Project rainfall for a future year based on trend and variability.
+     * Projecteer neerslag voor een toekomstig jaar met behulp van trendextrapolatie en cyclische variantie.
+     * Combineert het historische gemiddelde met lange termijn trend en voegt cyclische variabiliteit toe.
      *
-     * @param  float  $trend  The slope (mm per year)
-     * @param  int  $yearsAhead  Number of years in the future
-     * @param  float  $stddev  Standard deviation for variance
+     * @param  float  $historicalAverage  Historisch gemiddelde neerslag voor het seizoen
+     * @param  float  $trend  De helling uit trendanalyse (mm per jaar)
+     * @param  int  $yearsAhead  Aantal jaren in de toekomst
+     * @param  float  $stddev  Standaarddeviatie uit historische gegevens
+     * @return float Geprojecteerde neerslag in millimeters
      */
     private function projectRainfallForYear(
         float $historicalAverage,
@@ -270,20 +297,25 @@ class FloodRiskAnalysisService
         int $yearsAhead,
         float $stddev
     ): float {
-        // Base projection: historical average + trend over time
+        // Basisprojectie: pas trend toe op historisch gemiddelde
         $projectedValue = $historicalAverage + ($trend * $yearsAhead);
 
-        // Add cyclical variance based on historical standard deviation
-        // Creates natural variability year-to-year using a pseudo-random but deterministic pattern
+        // Voeg cyclische variantie toe met sinusfunctie voor deterministisch maar variërend patroon
+        // Creëert natuurlijke jaar-tot-jaar oscillatie terwijl deze reproduceerbaar blijft
         $varianceFactor = sin($yearsAhead * 0.5) * ($stddev * 0.3);
 
         return max($projectedValue + $varianceFactor, 0);
     }
 
     /**
-     * Determine risk level based on rainfall vs threshold.
+     * Bepaal overstroomingsrisicokategorie op basis van neerslag versus drempel.
+     * Hoog risico: >= 120% van drempel
+     * Matig risico: >= 100% van drempel
+     * Laag risico: < 100% van drempel
      *
-     * @return 'low'|'medium'|'high'
+     * @param  float  $rainfall  Geprojecteerde neerslag in millimeters
+     * @param  int  $threshold  Seizoensdrempel in millimeters
+     * @return 'low'|'medium'|'high' Risicokategorie
      */
     private function calculateRiskLevel(float $rainfall, int $threshold): string
     {
@@ -298,6 +330,12 @@ class FloodRiskAnalysisService
         return 'low';
     }
 
+    /**
+     * Wijs een maandnummer toe aan zijn corresponderende seizoen.
+     *
+     * @param  int  $month  Maandnummer (1-12)
+     * @return string|null Seizoensnaam of null als ongeldig
+     */
     private function seasonForMonth(int $month): ?string
     {
         foreach (self::SEASON_MONTHS as $season => $months) {
@@ -310,9 +348,11 @@ class FloodRiskAnalysisService
     }
 
     /**
-     * Get seasonal analysis for the current year to date.
+     * Analyseer de voortgang van het huidige jaar naar seizoensgebonden overstroomingsdrempels.
+     * Vergelijkt voltooide seizoensmaanden en voortgang van de huidige maand tegen drempels.
+     * Handig voor real-time controle en waarschuwingen.
      *
-     * @return array<string, mixed>
+     * @return array<string, mixed> Analyse van huidige seizoen met voortgang en risiconiveau
      */
     public function getCurrentYearAnalysis(): array
     {
