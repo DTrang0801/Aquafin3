@@ -1,4 +1,4 @@
-<img width="443" height="114" alt="image" src="https://github.com/user-attachments/assets/3451445e-77f7-4569-a5c8-556b183e6588" /> <br>
+<img width="1855" height="824" alt="image" src="https://github.com/user-attachments/assets/7a47be8e-d9ce-42e0-9a12-27d478d97690" /><img width="443" height="114" alt="image" src="https://github.com/user-attachments/assets/3451445e-77f7-4569-a5c8-556b183e6588" /> <br>
 # Aquafin | Programming project | Groep 3
 Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op basis van de voorspelde neerslag van het huidig seizoen en waar stockbeheerders het materiaal kunnen beheren.
 
@@ -63,7 +63,7 @@ Hier kan de technieker de items uit zijn winkelmandje bestellen. Hij kan hier no
 Je kan ook zien welk materiaal je zal bestellen.
 
 ### Neerslag
-**STOCKBEHEERDER**
+**STOCKBEHEERDER**  +  **ADMIN**
 <img width="1914" height="992" alt="image" src="https://github.com/user-attachments/assets/dc193afd-17eb-44be-9772-5c885505e284" />
 Hier kan de stockbeheerder de huidige neerslag bekijken, de neerslag van de afgelopen maand en de neerslag voor de komende 14 dagen. Ook kan hij kijken naar een overzich van overstomingsrisicos per seizoen voor de komende 5 jaar.
 
@@ -96,6 +96,16 @@ Hier kan de stockbeheerder bekijken welk materiaal er het meest bestelt word.
 **STOCKBEHEERDER**
 <img width="1914" height="990" alt="image" src="https://github.com/user-attachments/assets/d659f92b-01f8-494a-a157-1f95a89822e7" />
 Hier kan de stockbeheerder beslissen welk materiaal er belagrijk is tijdens een perioode van overstromingsrisico.
+
+### Materielen
+<img width="1900" height="827" alt="image" src="https://github.com/user-attachments/assets/7fca00fe-f82a-4ed2-a15e-4a1fbf27c01e" />
+Je ziet de Materialen overzicht van alle beschikbare materialen op de website.
+
+### Gebruikers 
+<img width="1892" height="823" alt="image" src="https://github.com/user-attachments/assets/338ee931-9483-40bc-b29d-d56fe4172c90" />
+Op deze pagina ziet de admin alle gebruikers, hij kan een nieuwe gebruiker toevoegen, hij kan bestaande gebruikers bewerken of verwijderen.
+
+
 
 ## Overstromings voorspelling
 
