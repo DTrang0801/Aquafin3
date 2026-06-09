@@ -34,6 +34,8 @@ class BestellingenSeeder extends Seeder
                     'locatie' => $technician->province ?? 'Onbekend',
                     'opmerking' => fake()->optional(0.7)->sentence(),
                     'custom_location_used' => false,
+                    'created_at' => $orderDate,
+                    'updated_at' => $orderDate,
                 ]);
 
                 // Add 2-5 random materials to each order
@@ -48,5 +50,6 @@ class BestellingenSeeder extends Seeder
         }
     }
 }
+
 
 
