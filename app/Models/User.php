@@ -4,11 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Enums\Province;
+use App\Models\Role;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+
 
 /**
  * Model: User
@@ -35,7 +37,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role_id',
         'province',
     ];
 
@@ -85,5 +87,10 @@ class User extends Authenticatable
         } catch (\ValueError) {
             return null;
         }
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }
