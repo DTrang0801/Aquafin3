@@ -82,5 +82,6 @@ class DatabaseSeeder extends Seeder
         $this->call(MateriaalSubcategorieSeeder::class);
         $this->call(MateriaalSeeder::class);
         $this->call(BelangrijkeItemsSeeder::class);
+        $this->call(BestellingenSeeder::class);
     }
 }
