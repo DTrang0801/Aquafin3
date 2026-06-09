@@ -1,3 +1,4 @@
+<img width="443" height="114" alt="image" src="https://github.com/user-attachments/assets/3451445e-77f7-4569-a5c8-556b183e6588" /> <br>
 # Aquafin | Programming project | Groep 3
 Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op basis van de voorspelde neerslag van het huidig seizoen en waar stockbeheerders het materiaal kunnen beheren.
 
@@ -17,12 +18,17 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 ### ERD
 <img width="1304" height="949" alt="Diagram" src="https://github.com/user-attachments/assets/09455c3c-70eb-480f-b856-52626bf0733b" />
 
+## Folderstructuur
+<img width="307" height="954" alt="image" src="https://github.com/user-attachments/assets/9d5b4e0b-8d8e-4821-aedb-b9170e60ecae" />
+
+
 ## User rollen en permissies
 ### Technieker
 De technieker is een werknemer van aquafin die elke dag op de baan is. Hij kan materiaal bestellen op deze applicatie zodat hij elke week goed voorbereid is.
 ### Stockbeheerder
 De stockbeheerder beheerd welk materiaal er te beschilling is voor de techniekers. Ook kan de stockbeheerder bepalen welk materiaal belangrijk is wanneer er een overstromingsrisico is door naar de risicoanalyses te kijken.
 ### Admin
+De admin is de beheerder van de gebruikers en de rollen binnen de applicatie. Hij kan gebruikers bewerken, toevoegen, of aanpassen. De admin kan geen zelf geen bestellingen plaatsen.
 
 ## Gebruik API
 ### Open-Meteo
@@ -33,27 +39,63 @@ Een overzicht van elke pagina in onze applicatie.
 ### Hoofd pagina
 **TECHNIEKER**
 <img width="1876" height="877" alt="image" src="https://github.com/user-attachments/assets/8552b860-bbe9-4795-828f-7ca93fe9dce7" />
-Je komt op deze pagina terecht wannner je inlogd op de technieker account je krijgt de 7 daagse meteo te zien en ook een herhaling van de gasdetectiemateriaal
+Je krijgt een weersvoorspelling voor de komende 7 dagen te zien en ook een reminder om je gasdetectiemateriaal niet te vergeten.
 
 ### Winkelmandje
 **TECHNIEKER**
 <img width="1919" height="990" alt="image" src="https://github.com/user-attachments/assets/7bf3aac7-52ed-473e-8b60-62434f6dc69c" />
-Hier kan de technieker het materiaal bekijken dat in zijn winkelmandje zit, en hoeveelheden aanpassen of items verwijderen.
+Hier kan de technieker het materiaal bekijken dat in zijn winkelmandje zit, en de hoeveelheden aanpassen of items verwijderen.
 
 ### Materialen bestellen
 **TECHNIEKER**
 <img width="1880" height="884" alt="image" src="https://github.com/user-attachments/assets/869970c2-bd05-43f4-aa8a-b634071f958c" />
-Hier kan de technieker materiaal bestellen en in het mandje, materiaal opzoeken via de zoekbalk of filteren op categorie.
+Hier kan de technieker materiaal kiezen om te bestellen door het toe te voegen aan zijn mandje. Hij kan ook materiaal opzoeken via de zoekbalk of filteren op categorie.
 
 ### Vorige bestellingen
 **TECNIEKER**
 <img width="1905" height="879" alt="image" src="https://github.com/user-attachments/assets/4a81c8ae-ff86-4bba-9d1a-3ecd69eb758f" />
-Je kunt via deze pagina de overzicht krijgen van al u bestellingen en je kunt ze ook opzoeken.
+Je kunt via deze pagina een overzicht krijgen van al uw vorige bestellingen. Je kan hier ook in zoeken met de zoekbalk.
 
- 
+### Bestelling bevestigen
+**TECHNIEKER**
+<img width="1916" height="955" alt="image" src="https://github.com/user-attachments/assets/e4cefd58-3c47-4e0a-a142-e19b379b0d55" />
+Hier kan de technieker de items uit zijn winkelmandje bestellen. Hij kan hier nog extra info toevoegen zoals een aangepaste leverlocatie, datum of een opmerking.
+Je kan ook zien welk materiaal je zal bestellen.
 
+### Neerslag
+**STOCKBEHEERDER**
+<img width="1914" height="992" alt="image" src="https://github.com/user-attachments/assets/dc193afd-17eb-44be-9772-5c885505e284" />
+Hier kan de stockbeheerder de huidige neerslag bekijken, de neerslag van de afgelopen maand en de neerslag voor de komende 14 dagen. Ook kan hij kijken naar een overzich van overstomingsrisicos per seizoen voor de komende 5 jaar.
 
+### Overzicht bestellingen
+**STOCKBEHEERDER**
+<img width="1915" height="988" alt="image" src="https://github.com/user-attachments/assets/02a7dd04-3d5c-4c28-9f1a-0d766a3a7c6a" />
+Hier kan de stockbeheerder alle bestellingen bekijken die de techniekers hebben geplaatst. Hij kan zoeken of filteren op periode.
 
+### Beheer materiaal
+**STOCKBEHEERDER**
+<img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/2a993c2a-b4ba-4b1a-8d26-45d4d416634a" />
+Hier kan de stockbeheerder materiaal aanpassen, toevoegen of verwijderen.
+
+### Materiaal bewerken
+**STOCKBEHEERDER**
+<img width="1917" height="985" alt="image" src="https://github.com/user-attachments/assets/56032df9-1631-4b74-b2ef-d6244e2ec058" />
+Hier kan de stockbeheerder een gekozen materiaal bewerken. Hij kan dingen aanpassen zoals de naam, categorie, afbeelding, beschrijving...
+
+### Materiaal toevoegen
+**STOCKBEHEERDER**
+<img width="1912" height="990" alt="image" src="https://github.com/user-attachments/assets/f1ca7ad9-c598-4d34-b3a4-5441931fcdd0" />
+Hier kan de stockbeheerder materiaal toevoegen.
+
+### Meest bestelde items
+**STOCKBEHEERDER**
+<img width="1919" height="989" alt="image" src="https://github.com/user-attachments/assets/37cb733d-124b-443a-a1c0-88821da0b2bb" />
+Hier kan de stockbeheerder bekijken welk materiaal er het meest bestelt word.
+
+### Kritieke items beheren
+**STOCKBEHEERDER**
+<img width="1914" height="990" alt="image" src="https://github.com/user-attachments/assets/d659f92b-01f8-494a-a157-1f95a89822e7" />
+Hier kan de stockbeheerder beslissen welk materiaal er belagrijk is tijdens een perioode van overstromingsrisico.
 
 ## Overstromings voorspelling
 
