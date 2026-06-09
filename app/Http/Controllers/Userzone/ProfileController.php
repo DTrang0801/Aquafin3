@@ -45,7 +45,7 @@ class ProfileController extends Controller
 
         Auth::logout();
 
-        $user->delete(); // delete de gebruiker uit de database
+        $user->delete(); // Delete de gebruiker uit de database
 
         $request->session()->invalidate(); // Ongeldig maken van de huidige sessie, zodat deze niet meer gebruikt kan worden
         $request->session()->regenerateToken(); // Regenereren van het CSRF-token om beveiligingsrisico's te voorkomen
