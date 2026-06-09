@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAndLinkMaterialRequest;
 use App\Http\Requests\StoreBelangrijkeItemsRequest;
+use App\Http\Requests\StoreNeerslagRequest;
 use App\Models\Materiaal;
+use App\Models\Neerslag;
 use App\Services\FloodRiskAnalysisService;
 use App\Services\FloodRiskService;
 use App\Services\OpenMeteoService;
@@ -14,7 +16,6 @@ use Illuminate\View\View;
 
 class WeatherController extends Controller
 {
-
     public function __construct(
         private FloodRiskService $floodRisk,
         private OpenMeteoService $openMeteo,
@@ -45,7 +46,7 @@ class WeatherController extends Controller
         $isSimulated = (bool) session('simulate_flood', false);
         $linkedIds = $this->floodRisk->linkedMaterialIds();
 
-        //Als de neerslaggegevens niet kunnen worden opgehaald dan een foutmelding tonen en gegevens sturen naar de view.
+        // Als de neerslaggegevens niet kunnen worden opgehaald dan een foutmelding tonen en gegevens sturen naar de view.
         if ($forecast === null) {
             return view('pages.weersvoorspelling', $this->baseViewData(
                 latitude: $latitude,
@@ -60,6 +61,7 @@ class WeatherController extends Controller
                     'floodAlarmTriggered' => false,
                     'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
                     'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
+                    'historicalNeerslagData' => Neerslag::query()->orderByDesc('jaar')->orderByDesc('maand')->get(),
                 ],
             ));
         }
@@ -85,6 +87,7 @@ class WeatherController extends Controller
                 'floodAlarmTriggered' => $floodAlarmTriggered,
                 'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
                 'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
+                'historicalNeerslagData' => Neerslag::query()->orderByDesc('jaar')->orderByDesc('maand')->get(),
             ],
         ));
     }
@@ -150,12 +153,29 @@ class WeatherController extends Controller
             ->with('success', "Materiaal '{$materiaal->naam}' succesvol toegevoegd!");
     }
 
+    // Neerslaggegevens voor een maand toevoegen
+    public function storeNeerslag(StoreNeerslagRequest $request): RedirectResponse
+    {
+        Neerslag::query()->updateOrCreate(
+            [
+                'jaar' => $request->integer('jaar'),
+                'maand' => $request->integer('maand'),
+            ],
+            [
+                'mm' => $request->integer('mm'),
+            ],
+        );
+
+        return redirect()
+            ->back()
+            ->with('success', sprintf('Neerslaggegevens voor %s/%s succesvol opgeslagen!', $request->integer('maand'), $request->integer('jaar')));
+    }
+
     /**
      * @param  list<int>  $linkedIds
      * @param  array<string, mixed>  $extra
      * @return array<string, mixed>
      */
-
     private function baseViewData(
         float $latitude,
         float $longitude,
