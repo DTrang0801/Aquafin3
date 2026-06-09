@@ -157,6 +157,12 @@ Voor elk jaar in de 5-jaarsperiode wordt het totale risico bepaald door het aant
 - 2-3 seizoenen: Gemiddeld risico
 - 4 seizoenen: Hoog risico
 
+### Commands
+- php artisan app:fetch-all-missing-months
+      Haalt alle neerslag gegevens op van de maanden die nog niet in de huidige database zitten en slaat deze op in de database.
+- php artisan app:archive-past-month
+      Haalt de neerslaggegevens op van de vorige maand uit open meteo en slaagt deze op in de database.
+
 ### Beperkingen
 De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
 - De toekomst volgt niet altijd het verleden
