@@ -10,26 +10,24 @@ use Illuminate\Support\Facades\DB;
 
 class CartController extends Controller
 {
-    // Fetch or instantiate the active user's cart
+    // Haal op of creëer het mandje van de ingelogde gebruiker
     private function getOrCreateCart()
     {
         return Mandje::firstOrCreate(['gebruiker_id' => Auth::id()]);
     }
 
-    // Display the Cart Page
     public function index()
     {
-        // Haal het mandje op van de ingelogde gebruiker inclusief de materialen
+        // Haal het mandje op van de ingelogde gebruiker
         $cart = Mandje::where('gebruiker_id', Auth::id())->with('materialen.subcategorie')->first();
 
-        // Als de gebruiker nog geen mandje heeft, maken we een lege collectie aan
+        // Als de gebruiker nog geen mandje heeft, maken we een lege mandje aan
         $materialen = $cart ? $cart->materialen : collect();
 
-        // Stuur de variabele $materialen expliciet door naar de juiste view map (pages/winkelmandje)
         return view('pages.winkelmandje', compact('materialen'));
     }
 
-    // Add item or increment quantity
+    // Voeg een item toe of verhoog de hoeveelheid
     public function add(Request $request)
     {
         $request->validate([
@@ -41,21 +39,22 @@ class CartController extends Controller
         $materiaalId = $request->input('materiaal_id');
         $aantal = $request->input('aantal');
 
-        // Check if item is already present in cart
+        // Controleer of het item al in het mandje aanwezig is
         $existingItem = $cart->materialen()->where('materiaal_id', $materiaalId)->first();
 
+        // Als het item al in het mandje aanwezig is, verhoog de hoeveelheid
         if ($existingItem) {
-            // Update quantity on existing pivot record
             $newQuantity = $existingItem->pivot->aantal + $aantal;
             $cart->materialen()->updateExistingPivot($materiaalId, ['aantal' => $newQuantity]);
         } else {
-            // Attach new item
+            // Voeg het nieuwe item toe aan het mandje
             $cart->materialen()->attach($materiaalId, ['aantal' => $aantal]);
         }
 
         return redirect()->back()->with('success', 'Materiaal is toegevoegd aan je mandje!');
     }
 
+    // Update de hoeveelheid van een item in het mandje
     public function update(Request $request, $id)
     {
         $request->validate(['aantal' => 'required|integer|min:1']);
@@ -66,7 +65,7 @@ class CartController extends Controller
         return redirect()->route('winkelmandje.index')->with('success', 'Winkelmandje bijgewerkt!');
     }
 
-    // Remove item from Cart
+    // Verwijder een item uit het mandje
     public function destroy($id)
     {
         $cart = $this->getOrCreateCart();
@@ -75,6 +74,7 @@ class CartController extends Controller
         return redirect()->route('winkelmandje.index')->with('success', 'Materiaal verwijderd uit winkelmandje.');
     }
 
+    // Toon de bestelpagina voor de ingelogde gebruiker
     public function checkout()
     {
         $mandje = Mandje::where('gebruiker_id', Auth::id())->with('materialen')->first();
@@ -89,6 +89,7 @@ class CartController extends Controller
         return view('pages.bestel', compact('materialen', 'user'));
     }
 
+    // Bevestig de bestelling
     public function confirmOrder(Request $request)
     {
         $request->validate([
@@ -106,6 +107,7 @@ class CartController extends Controller
             return redirect()->route('winkelmandje.index')->with('error', 'Er ging iets mis met het verwerken van de bestelling.');
         }
 
+        // Controleer of de gebruiker een aangepaste locatie heeft geselecteerd
         $useCustomLocation = $request->input('use_custom_location', false);
         $locatie = $useCustomLocation
             ? $request->input('locatie')
@@ -139,6 +141,7 @@ class CartController extends Controller
         return redirect()->route('bestellingen')->with('success', 'Bestelling succesvol geplaatst!');
     }
 
+    // Toon de bestelgeschiedenis van de ingelogde gebruiker
     public function indexOrders(Request $request)
     {
         $zoekterm = $request->get('zoekterm');
@@ -175,6 +178,7 @@ class CartController extends Controller
         return view('pages.bestellingen', compact('bestellingen', 'zoekterm', 'periode'));
     }
 
+    // Toon het overzicht van de bestellingen voor de stockbeheerder
     public function overzicht(Request $request)
     {
         $zoekterm = $request->get('zoekterm');
