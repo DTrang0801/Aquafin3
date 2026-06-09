@@ -151,7 +151,7 @@ class CartController extends Controller
             ->with('materialen')
             ->when($zoekterm, function ($query, $zoekterm) {
                 $query->where(function ($q) use ($zoekterm) {
-                    $q->whereRaw("LPAD(id, 5, '0') LIKE ?", ["%$zoekterm%"])
+                    $q->where('id', 'like', "%$zoekterm%")
                         ->orWhere('locatie', 'like', "%$zoekterm%")
                         ->orWhere('opmerking', 'like', "%$zoekterm%")
                         ->orWhereHas('materialen', function ($mq) use ($zoekterm) {
@@ -189,7 +189,7 @@ class CartController extends Controller
         })->with('gebruiker', 'materialen')
             ->when($zoekterm, function ($query, $zoekterm) {
                 $query->where(function ($q) use ($zoekterm) {
-                    $q->whereRaw("LPAD(id, 5, '0') LIKE ?", ["%$zoekterm%"])
+                    $q->where('id', 'like', "%$zoekterm%")
                         ->orWhere('locatie', 'like', "%$zoekterm%")
                         ->orWhere('opmerking', 'like', "%$zoekterm%")
                         ->orWhereHas('gebruiker', function ($uq) use ($zoekterm) {
