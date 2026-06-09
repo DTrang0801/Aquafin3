@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
         Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
         Route::post('/weersvoorspelling/materiaal', [WeatherController::class, 'addMaterial'])->name('weersvoorspelling.addMaterial');
+        Route::post('/weersvoorspelling/neerslag', [WeatherController::class, 'storeNeerslag'])->name('weersvoorspelling.storeNeerslag');
         Route::get('/stock-dashboard', [StockDashboardController::class, 'index'])->name('stock-dashboard');
     });
 
