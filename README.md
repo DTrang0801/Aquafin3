@@ -1,4 +1,4 @@
-<img width="1855" height="824" alt="image" src="https://github.com/user-attachments/assets/7a47be8e-d9ce-42e0-9a12-27d478d97690" /><img width="443" height="114" alt="image" src="https://github.com/user-attachments/assets/3451445e-77f7-4569-a5c8-556b183e6588" /> <br>
+<img width="443" height="114" alt="image" src="https://github.com/user-attachments/assets/3451445e-77f7-4569-a5c8-556b183e6588" /> <br>
 # Aquafin | Programming project | Groep 3
 Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op basis van de voorspelde neerslag van het huidig seizoen en waar stockbeheerders het materiaal kunnen beheren.
 
