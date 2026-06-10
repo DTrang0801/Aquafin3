@@ -7,6 +7,7 @@ use App\Http\Requests\StoreBelangrijkeItemsRequest;
 use App\Http\Requests\StoreNeerslagRequest;
 use App\Models\Materiaal;
 use App\Models\Neerslag;
+use App\Models\Role;
 use App\Services\FloodRiskAnalysisService;
 use App\Services\FloodRiskService;
 use App\Services\OpenMeteoService;
@@ -204,7 +205,7 @@ class WeatherController extends Controller
                 ->groupBy(fn (Materiaal $materiaal) => $materiaal->subcategorie?->categorie?->naam ?? 'Overig'),
             'gekoppeldeIds' => $linkedIds,
             'isSimulated' => $isSimulated,
-            'canManageStock' => auth()->user()?->role === 'stockbeheerder',
+            'canManageStock' => auth()->user()?->role_id === Role::STOCKBEHEERDER,
         ];
     }
 

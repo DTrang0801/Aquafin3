@@ -11,7 +11,7 @@ use Illuminate\Support\Carbon;
  * Service voor het beheren van risicobeoordelingen en beheer van materialen.
  * Bepaalt overstroomingsrisico op basis van neerslagvoorspellingen en historische gegevens,
  * markeert belangrijke materialen wanneer overstroomingsrisico actief is, en archiveert historische neerslaggegevens.
- * 
+ *
  * Overstroomingsrisico wordt berekend door seizoensgebonden opgehoopte neerslag te vergelijken met voorgedefinieerde drempels.
  * Wanneer risico wordt gedetecteerd, worden gekoppelde materialen gemarkeerd als "belangrijk" voor magazijnbeheer.
  */
@@ -47,10 +47,8 @@ class FloodRiskService
      * Voorkomt dubbele vermeldingen en vult de Neerslag-tabel met eerdere weergegevens.
      * Aangeroepen door de ArchivePastMonth-opdracht om een historische dataset samen te stellen.
      *
-     * @param  int  $year  
-     * @param  int  $month  
-     * @param  float  $latitude   (standaard naar Brussel)
-     * @param  float  $longitude   (standaard naar Brussel)
+     * @param  float  $latitude  (standaard naar Brussel)
+     * @param  float  $longitude  (standaard naar Brussel)
      */
     public function archiveHistoricalMonth(
         int $year,

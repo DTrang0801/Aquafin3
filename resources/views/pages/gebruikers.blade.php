@@ -25,7 +25,7 @@
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role->name ?? '—' }}</td>
                         <td>
-                            @if ($user->role?->name === 'technieker')
+                            @if ($user->role_id === \App\Models\Role::TECHNIEKER)
                                 <span title="{{ $user->getDepotLocation() ?? 'Geen depot ingesteld' }}">
                                     {{ $user->province ?? 'Niet ingesteld' }}
                                 </span>

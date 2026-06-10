@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Role;
 use App\Services\OpenMeteoService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Carbon;
@@ -17,7 +18,7 @@ class HomeController extends Controller
         $techniekerRainForecast = []; // standaardwaarden instellen voor niet-techniekers
         $homeForecastUpdatedAt = null;
 
-        if (auth()->user()?->role === 'technieker') {
+        if (auth()->user()?->role_id === Role::TECHNIEKER) {
             $forecastData = Cache::remember(self::FORECAST_CACHE_KEY, now()->addMinutes(30), function () use ($openMeteo): array {
                 return $this->buildTechniekerForecast($openMeteo); // Forecastgegevens ophalen en cachen voor 30 minuten
             });
@@ -28,7 +29,7 @@ class HomeController extends Controller
 
         return view('home', [
             'techniekerRainForecast' => $techniekerRainForecast, // Neerslagvoorspelling voor techniekers, leeg voor anderen
-            'homeForecastUpdatedAt' => $homeForecastUpdatedAt, 
+            'homeForecastUpdatedAt' => $homeForecastUpdatedAt,
         ]);
     }
 
@@ -47,7 +48,7 @@ class HomeController extends Controller
     {
         $forecast = $openMeteo->fetchForecast( // Weerdat ophalen voor de standaardlocatie
             OpenMeteoService::DEFAULT_LATITUDE,
-            OpenMeteoService::DEFAULT_LONGITUDE, 
+            OpenMeteoService::DEFAULT_LONGITUDE,
         );
 
         if ($forecast === null) {
@@ -61,7 +62,7 @@ class HomeController extends Controller
 
         return [
             'techniekerRainForecast' => array_slice($parsedForecast['dailyRainForecast'], 0, 7), // Alleen de neerslagvoorspelling voor de komende 7 dagen teruggeven
-            'updatedAt' => Carbon::now('Europe/Brussels')->format('d-m-Y H:i'), // Sla het huidige tijdstip op in Belgische tijd 
+            'updatedAt' => Carbon::now('Europe/Brussels')->format('d-m-Y H:i'), // Sla het huidige tijdstip op in Belgische tijd
         ];
     }
 }
