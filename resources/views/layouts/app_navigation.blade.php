@@ -15,28 +15,28 @@
                 @endguest
 
                 @auth
-                    @if (Auth::user()->role?->name !== 'stockbeheerder')
+                    @if (Auth::user()?->role_id !== \App\Models\Role::STOCKBEHEERDER)
                         <a href="{{ route('materialen') }}" class="nav-link">Materiaal bestellen</a>
                     @endif
 
-                    @if (Auth::user()->role?->name !== 'stockbeheerder' && Auth::user()->role?->name !== 'admin')
+                    @if (Auth::user()?->role_id !== \App\Models\Role::STOCKBEHEERDER && Auth::user()?->role_id !== \App\Models\Role::ADMIN)
                         <a href="{{ route('winkelmandje.index') }}" class="nav-link">Winkelmandje</a>
                     @endif
 
-                    @if (Auth::user()->role?->name === 'technieker')
+                    @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                         <a href="{{ route('bestellingen') }}" class="nav-link">Vorige bestellingen</a>
                     @endif
 
-                    @if (Auth::user()->role?->name === 'admin' || Auth::user()->role?->name === 'stockbeheerder')
+                    @if (Auth::user()?->role_id === \App\Models\Role::ADMIN || Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
                         <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
                     @endif
 
-                    @if (Auth::user()->role?->name === 'admin')
+                    @if (Auth::user()?->role_id === \App\Models\Role::ADMIN)
                         <a href="{{ route('gebruikers') }}" class="nav-link">Gebruikers</a>
                         <a href="{{ route('roles.index') }}" class="nav-link">Rollenbeheer</a>
                     @endif
 
-                    @if (Auth::user()->role?->name === 'stockbeheerder')
+                    @if (Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
                         <a href="{{ route('overzicht') }}" class="nav-link">Bestellingen</a>
                         <a href="{{ route('materialen.beheer') }}" class="nav-link">Beheer materiaal</a>
                         <a href="{{ route('weersvoorspelling.kritieke-items') }}" class="nav-link">Kritieke items</a>

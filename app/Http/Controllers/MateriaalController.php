@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Materiaal;
 use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -200,7 +201,7 @@ class MateriaalController extends Controller
     // Materialen verwijderen
     public function destroy(Materiaal $materiaal)
     {
-        if (Auth::user()->role !== 'stockbeheerder') {
+        if (Auth::user()->role_id !== Role::STOCKBEHEERDER) {
             abort(403);
         }
 
@@ -227,7 +228,7 @@ class MateriaalController extends Controller
             'belangrijk' => $request->has('belangrijk'),
         ];
 
-            if ($request->has('verwijder_foto') && $materiaal->foto) {
+        if ($request->has('verwijder_foto') && $materiaal->foto) {
             Storage::disk('public')->delete($materiaal->foto);
             $data['foto'] = null;
         }

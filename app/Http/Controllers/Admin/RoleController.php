@@ -11,6 +11,7 @@ class RoleController extends Controller
     public function index()
     {
         $roles = Role::withCount('users')->orderBy('name')->get();
+
         return view('admin.roles.index', ['roles' => $roles]);
     }
 
@@ -38,7 +39,7 @@ class RoleController extends Controller
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name' => 'required|string|max:255|unique:roles,name,' . $role->id,
+            'name' => 'required|string|max:255|unique:roles,name,'.$role->id,
         ]);
 
         $role->name = $request->name;

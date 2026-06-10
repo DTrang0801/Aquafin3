@@ -37,8 +37,6 @@ class OpenMeteoService
      * Haal weersvoorspelling op van de Open-Meteo API.
      * Retourneert zowel huidige neerslag als een 14-daagse voorspelling met historische gegevens (afgelopen 30 dagen).
      *
-     * @param  float  $latitude
-     * @param  float  $longitude
      * @return array<string, mixed>|null Neerslaggegevens of null als API-aanroep mislukt
      */
     public function fetchForecast(float $latitude, float $longitude): ?array
