@@ -133,7 +133,7 @@
                                         {{ $materiaal->beschrijving ?? 'Geen beschrijving beschikbaar.' }}
                                     </td>
                                     <td>
-                                        @if(Auth::user()->role === 'technieker')
+                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                                         <form action="{{ route('winkelmandje.add') }}" method="POST">
                                             @csrf
                                             <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
@@ -197,7 +197,7 @@
                                                         </span> -->
                                                     </td>
                                                     <td>
-                                                        @if(Auth::user()->role === 'technieker')
+                                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                                                         <form action="{{ route('winkelmandje.add') }}" method="POST">
                                                             @csrf
                                                             <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">

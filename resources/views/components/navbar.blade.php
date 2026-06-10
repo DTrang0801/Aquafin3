@@ -8,7 +8,7 @@
             <div class="flex items-center space-x-4">
                 <a href="#" class="text-sm text-gray-600 hover:text-gray-900">Materiaal bestellen</a>
 
-                @if(Auth::user()->role?->name === 'stockbeheerder')
+                @if(Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
                     <a href="{{ route('materialen.create') }}" class="text-sm text-gray-600 hover:text-gray-900">
                     Nieuw materiaal
                     </a>
