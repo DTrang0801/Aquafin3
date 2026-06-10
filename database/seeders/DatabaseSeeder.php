@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
@@ -15,18 +16,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(RoleSeeder::class);
+
+        $adminRole = Role::where('name', 'admin')->first();
+        $stockRole = Role::where('name', 'stockbeheerder')->first();
+        $technikerRole = Role::where('name', 'technieker')->first();
+
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'admin',
+            'role_id' => $adminRole->id,
         ]);
 
         User::factory()->create([
             'name' => 'Stockbeheerder',
             'email' => 'stock@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'stockbeheerder',
+            'role_id' => $stockRole->id,
         ]);
 
         User::factory()->create([
@@ -34,7 +41,7 @@ class DatabaseSeeder extends Seeder
             'province' => null,
             'email' => 'technieker@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'technieker',
+            'role_id' => $technikerRole->id,
         ]);
 
         User::factory()->create([
@@ -42,7 +49,7 @@ class DatabaseSeeder extends Seeder
             'province' => 'Vlaams-Brabant',
             'email' => 'technieker.vlaams-brabant@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'technieker',
+            'role_id' => $technikerRole->id,
         ]);
 
         User::factory()->create([
@@ -50,7 +57,7 @@ class DatabaseSeeder extends Seeder
             'province' => 'West-Vlaanderen',
             'email' => 'technieker.west-vlaanderen@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'technieker',
+            'role_id' => $technikerRole->id,
         ]);
 
         User::factory()->create([
@@ -58,7 +65,7 @@ class DatabaseSeeder extends Seeder
             'province' => 'Oost-Vlaanderen',
             'email' => 'technieker.oost-vlaanderen@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'technieker',
+            'role_id' => $technikerRole->id,
         ]);
 
         User::factory()->create([
@@ -66,7 +73,7 @@ class DatabaseSeeder extends Seeder
             'province' => 'Limburg',
             'email' => 'technieker.limburg@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'technieker',
+            'role_id' => $technikerRole->id,
         ]);
 
         User::factory()->create([
@@ -74,7 +81,7 @@ class DatabaseSeeder extends Seeder
             'province' => 'Antwerpen',
             'email' => 'technieker.antwerpen@aquafin.test',
             'password' => bcrypt('password'),
-            'role' => 'technieker',
+            'role_id' => $technikerRole->id,
         ]);
 
         $this->call(NeerslagSeeder::class);

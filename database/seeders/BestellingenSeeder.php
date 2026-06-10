@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Bestelling;
 use App\Models\Materiaal;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -14,7 +15,8 @@ class BestellingenSeeder extends Seeder
      */
     public function run(): void
     {
-        $technicians = User::where('role', 'technieker')->get();
+        $technikerRole = Role::where('name', 'technieker')->first();
+        $technicians = User::where('role_id', $technikerRole->id)->get();
         $materialen = Materiaal::all();
 
         if ($materialen->isEmpty()) {
@@ -50,6 +52,3 @@ class BestellingenSeeder extends Seeder
         }
     }
 }
-
-
-
