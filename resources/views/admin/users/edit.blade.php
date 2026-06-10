@@ -27,7 +27,7 @@
             @endforeach
             </select>
             @error('role_id') <p class="alert-error">{{ $message }}</p> @enderror
-            <div id="province-field" style="display: {{ old('role_id', $user->role_id) == $user->role?->id && $user->role?->name == 'technieker' ? 'block' : 'none' }};">                <label for="province">Provincie (alleen voor technikers)</label>
+            <div id="province-field" style="display: {{ old('role_id', $user->role_id) == $user->role?->id && $user->role_id === \App\Models\Role::TECHNIEKER ? 'block' : 'none' }};">                <label for="province">Provincie (alleen voor technikers)</label>
                 <select name="province" id="province">
                     <option value="">-- Geen provincie --</option>
                     <option value="Vlaams-Brabant" {{ old('province', $user->province) == 'Vlaams-Brabant' ? 'selected' : '' }}>Vlaams-Brabant</option>

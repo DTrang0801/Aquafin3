@@ -28,7 +28,7 @@
                 <div class="checkout-section">
                     <h2 class="checkout-section-title">Leveringsdetails</h2>
 
-                    @if ($user->role === 'technieker' && $user->province)
+                    @if ($user->role_id === \App\Models\Role::TECHNIEKER && $user->province)
                         <div class="checkout-field checkout-field--full">
                             <div style="background: #f0f9ff; border-left: 4px solid #0ea5e9; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
                                 <p style="margin: 0; font-size: 14px; color: #333;">

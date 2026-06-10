@@ -26,7 +26,7 @@
     @endif
 
     @auth
-        @if(Auth::user()->role === 'technieker' && ! empty($techniekerRainForecast))
+        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER && ! empty($techniekerRainForecast))
             <section class="home-weather-card">
                 <div class="home-weather-card__header">
                     <div>
@@ -66,7 +66,7 @@
             </section>
         @endif
 
-        @if(Auth::user()->role === 'technieker')
+        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
         <div style="text-align: center; margin-top:24px;padding:16px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;">
             <p style="margin:0 0 8px 0;font-weight:600;color:#856404;">⚠️ Vergeet geen gasdetectiemateriaal!</p>
             <!-- <p style="margin:0 0 10px 0;color:#856404;font-size:14px;">Gasdetectiemeter</p> -->

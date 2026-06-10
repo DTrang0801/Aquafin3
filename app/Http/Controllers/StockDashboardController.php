@@ -11,7 +11,7 @@ class StockDashboardController extends Controller
     public function index(): View
     {
         $mostOrderedItems = Materiaal::query()
-            ->with('subcategorie.categorie') 
+            ->with('subcategorie.categorie')
             ->where('order_count', '>', 0) // Materialen die minstens 1 keer besteld zijn
             ->orderByDesc('order_count') // Sorteer van meest naar minst besteld
             ->limit(20)

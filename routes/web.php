@@ -1,7 +1,7 @@
 <?php
 
-use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RoleController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\MateriaalController;

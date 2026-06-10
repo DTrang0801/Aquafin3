@@ -54,7 +54,7 @@ test('technieker sees a seven day rain forecast on the landing page', function (
         'api.open-meteo.com/*' => Http::response(fakeHomeForecastPayload(), 200),
     ]);
 
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
 
     $this->actingAs($user)
         ->get(route('home'))
@@ -74,7 +74,7 @@ test('technieker landing page forecast is cached until refreshed', function () {
             ->push(fakeHomeForecastPayloadWithAmount(9.5), 200),
     ]);
 
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
 
     $this->actingAs($user)
         ->get(route('home'))
@@ -98,7 +98,7 @@ test('technieker can refresh the cached forecast', function () {
             ->push(fakeHomeForecastPayloadWithAmount(9.5), 200),
     ]);
 
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
 
     $this->actingAs($user)
         ->get(route('home'))
@@ -119,7 +119,7 @@ test('technieker can refresh the cached forecast', function () {
 });
 
 test('non techniekers do not see the landing page rain forecast', function () {
-    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
 
     $this->actingAs($user)
         ->get(route('home'))
