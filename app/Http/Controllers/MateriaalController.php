@@ -153,10 +153,10 @@ class MateriaalController extends Controller
         }
 
         $materialen = Materiaal::where('naam', 'like', '%'.$query.'%')
-            ->orWhere('beschrijving', 'like', '%'.$query.'%')
+           // ->orWhere('beschrijving', 'like', '%'.$query.'%')
             ->limit(10)
-            ->get(['id', 'naam', 'materiaal_subcategorie_id'])
-            ->load('subcategorie');
+->with('subcategorie')  // ✅ eager load VOOR get()
+->get(['id', 'naam', 'materiaal_subcategorie_id']);
 
         return response()->json($materialen);
     }
