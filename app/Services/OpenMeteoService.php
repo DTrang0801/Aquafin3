@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Service voor de Open-Meteo weerinformatie API.
@@ -41,21 +42,39 @@ class OpenMeteoService
      */
     public function fetchForecast(float $latitude, float $longitude): ?array
     {
-        $response = Http::get('https://api.open-meteo.com/v1/forecast', [
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'daily' => 'rain_sum',
-            'current' => 'rain,precipitation',
-            'timezone' => 'auto',
-            'past_days' => 30,
-            'forecast_days' => 14,
-        ]);
+        try {
+            $response = Http::timeout(10)->get('https://api.open-meteo.com/v1/forecast', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'daily' => 'rain_sum',
+                'current' => 'rain,precipitation',
+                'timezone' => 'auto',
+                'past_days' => 30,
+                'forecast_days' => 14,
+            ]);
 
-        if ($response->failed()) {
+            if ($response->failed()) {
+                Log::warning('Open-Meteo API request failed', [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'status_code' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                return null;
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Open-Meteo API exception', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+            ]);
+
             return null;
         }
-
-        return $response->json();
     }
 
     /**
@@ -74,25 +93,45 @@ class OpenMeteoService
         int $year,
         int $month,
     ): ?float {
-        $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->format('Y-m-d');
-        $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
+        try {
+            $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
 
-        $response = Http::get('https://archive-api.open-meteo.com/v1/archive', [
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'daily' => 'rain_sum',
-            'timezone' => 'Europe/Berlin',
-        ]);
+            $response = Http::timeout(10)->get('https://archive-api.open-meteo.com/v1/archive', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'daily' => 'rain_sum',
+                'timezone' => 'Europe/Berlin',
+            ]);
 
-        if ($response->failed()) {
+            if ($response->failed()) {
+                Log::warning('Open-Meteo Archive API request failed', [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'year' => $year,
+                    'month' => $month,
+                    'status_code' => $response->status(),
+                ]);
+
+                return null;
+            }
+
+            $dailyRain = $response->json()['daily']['rain_sum'] ?? [];
+
+            return (float) array_sum($dailyRain);
+        } catch (\Exception $e) {
+            Log::error('Open-Meteo Archive API exception', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'year' => $year,
+                'month' => $month,
+                'error' => $e->getMessage(),
+            ]);
+
             return null;
         }
-
-        $dailyRain = $response->json()['daily']['rain_sum'] ?? [];
-
-        return (float) array_sum($dailyRain);
     }
 
     /**

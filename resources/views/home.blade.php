@@ -25,6 +25,12 @@
         </div>
     @endif
 
+    @if($forecastError ?? null)
+        <div class="alert-error home-alert">
+            ⚠️ {{ $forecastError }}
+        </div>
+    @endif
+
     @auth
         @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER && ! empty($techniekerRainForecast))
             <section class="home-weather-card">
@@ -110,6 +116,26 @@
             border-top: 2px solid #2563eb;
             display: inline-block;
             padding-top: 0.5rem;
+        }
+
+        .home-alert {
+            max-width: 600px;
+            margin: 1.5rem auto;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #7f1d1d;
         }
     </style>
 </x-site-layout>
