@@ -72,7 +72,11 @@
                     @if(isset($error))
                         <div class="error-alert">
                             <span class="alert-icon">✕</span>
-                            <span>{{ $error }}</span>
+                            <div>
+                                <strong>Fout bij het ophalen van weergegevens</strong>
+                                <p>{{ $error }}</p>
+                                <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.8;">Probeer de pagina over enkele ogenblikken opnieuw in te laden.</p>
+                            </div>
                         </div>
                     @else
                         <div class="section-header">
