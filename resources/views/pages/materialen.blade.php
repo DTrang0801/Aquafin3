@@ -134,12 +134,56 @@
                                     </td>
                                     <td>
                                         @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
-                                        <form action="{{ route('winkelmandje.add') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
-                                            <input type="number" name="aantal" value="1" min="1">
-                                            <button type="submit" class="btn-primary">🛒 Voeg toe</button>
-                                        </form>
+                                        <div class="add-to-cart-form" x-data="{
+                                            quantidade: 1,
+                                            isSubmitting: false,
+                                            async addToCart(e) {
+                                                e.preventDefault();
+                                                this.isSubmitting = true;
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('materiaal_id', {{ $materiaal->id }});
+                                                    formData.append('aantal', this.quantidade);
+                                                    formData.append('_token', '{{ csrf_token() }}');
+                                                    
+                                                    const response = await fetch('{{ route('winkelmandje.add') }}', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    
+                                                    if (response.ok) {
+                                                        this.quantidade = 1;
+                                                        // Update cart badge
+                                                        this.updateCartBadge();
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error adding to cart:', error);
+                                                } finally {
+                                                    this.isSubmitting = false;
+                                                }
+                                            },
+                                            updateCartBadge() {
+                                                fetch('{{ route('winkelmandje.index') }}')
+                                                    .then(r => r.text())
+                                                    .then(html => {
+                                                        const parser = new DOMParser();
+                                                        const newDoc = parser.parseFromString(html, 'text/html');
+                                                        const newBadge = newDoc.querySelector('.nav-cart-badge');
+                                                        const oldBadge = document.querySelector('.nav-cart-badge');
+                                                        if (newBadge && oldBadge) {
+                                                            oldBadge.textContent = newBadge.textContent;
+                                                        } else if (newBadge && !oldBadge) {
+                                                            const cartLink = document.querySelector('.nav-cart-link');
+                                                            if (cartLink) cartLink.appendChild(newBadge);
+                                                        }
+                                                    });
+                                            }
+                                        }">
+                                            <form @submit="addToCart" style="display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                                <input type="number" x-model.number="quantidade" min="1" :disabled="isSubmitting">
+                                                <button type="submit" class="btn-primary" :disabled="isSubmitting" x-text="isSubmitting ? '🔄' : '🛒 Voeg toe'"></button>
+                                            </form>
+                                        </div>
                                         @endif
                                     </td>
                                 </tr>
@@ -198,16 +242,60 @@
                                                             {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
                                                         </span> -->
                                                     </td>
-                                                    <td>
-                                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
-                                                        <form action="{{ route('winkelmandje.add') }}" method="POST">
-                                                            @csrf
-                                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
-                                                            <input type="number" name="aantal" value="1" min="1">
-                                                            <button type="submit" class="btn-primary">🛒 Voeg toe</button>
-                                                        </form>
-                                                        @endif
-                                                    </td>
+                                    <td>
+                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
+                                        <div class="add-to-cart-form" x-data="{
+                                            quantidade: 1,
+                                            isSubmitting: false,
+                                            async addToCart(e) {
+                                                e.preventDefault();
+                                                this.isSubmitting = true;
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('materiaal_id', {{ $materiaal->id }});
+                                                    formData.append('aantal', this.quantidade);
+                                                    formData.append('_token', '{{ csrf_token() }}');
+                                                    
+                                                    const response = await fetch('{{ route('winkelmandje.add') }}', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    
+                                                    if (response.ok) {
+                                                        this.quantidade = 1;
+                                                        // Update cart badge
+                                                        this.updateCartBadge();
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error adding to cart:', error);
+                                                } finally {
+                                                    this.isSubmitting = false;
+                                                }
+                                            },
+                                            updateCartBadge() {
+                                                fetch('{{ route('winkelmandje.index') }}')
+                                                    .then(r => r.text())
+                                                    .then(html => {
+                                                        const parser = new DOMParser();
+                                                        const newDoc = parser.parseFromString(html, 'text/html');
+                                                        const newBadge = newDoc.querySelector('.nav-cart-badge');
+                                                        const oldBadge = document.querySelector('.nav-cart-badge');
+                                                        if (newBadge && oldBadge) {
+                                                            oldBadge.textContent = newBadge.textContent;
+                                                        } else if (newBadge && !oldBadge) {
+                                                            const cartLink = document.querySelector('.nav-cart-link');
+                                                            if (cartLink) cartLink.appendChild(newBadge);
+                                                        }
+                                                    });
+                                            }
+                                        }">
+                                            <form @submit="addToCart" style="display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                                <input type="number" x-model.number="quantidade" min="1" :disabled="isSubmitting">
+                                                <button type="submit" class="btn-primary" :disabled="isSubmitting" x-text="isSubmitting ? '🔄' : '🛒 Voeg toe'"></button>
+                                            </form>
+                                        </div>
+                                        @endif
+                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
