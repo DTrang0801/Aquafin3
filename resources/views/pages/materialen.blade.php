@@ -26,7 +26,7 @@
                                  }
                              },
                              select(name) {
-                                 window.location.href = '{{ route('materialen') }}?search=' + encodeURIComponent(name);
+                                 window.location.href = '{{ route('materialen') }}?search=' + encodeURIComponent(name) + '&suggestie=1';
                              },
                              hide() { setTimeout(() => this.show = false, 200) }
                          }">
