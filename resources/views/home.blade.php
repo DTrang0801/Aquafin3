@@ -1,32 +1,25 @@
 <x-site-layout>
 
-@auth
-    <div class="home-hero">
-        <div class="home-logo">
-            <span class="logo-fin">Aquafin</span>
-        </div>
-            <p class="home-slogan">Samen werken aan proper water en een gezonde leefomgeving.</p> <br>
-    </div>
-@endauth
-@guest
-    <div class="home-hero">
-        <div class="home-logo">
-            <span class="logo-fin">Aquafin</span>
-        </div>
-            <p class="home-slogan">Samen werken aan proper water en een gezonde leefomgeving.</p> <br>
-        
-            <p style="font-size: 2rem; color: #475569; font-weight: 500; letter-spacing: 0.1em; margin-top: 0.5rem; display: inline-block; padding-top: 0.5rem;">Log in om materiaal te bestellen</p>
-        </div>
-        @endguest
-
     @if(session('success'))
         <div class="alert-success home-alert">
             {{ session('success') }}
         </div>
     @endif
 
+    @if($forecastError ?? null)
+        <div class="alert-error home-alert">
+            ⚠️ {{ $forecastError }}
+        </div>
+    @endif
+
     @auth
         @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER && ! empty($techniekerRainForecast))
+
+            <div class="go-to-order-materials">
+                <a href="{{ route('materialen') }}" class="go-to-order-material__link">
+                    <span>Materiaal bestellen</span>
+                </a>
+            </div>
             <section class="home-weather-card">
                 <div class="home-weather-card__header">
                     <div>
@@ -80,6 +73,39 @@
         @endif
     @endauth
 
+    @auth
+        @if(Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
+            <div class="home-hero">
+                <div class="home-logo">
+                    <span class="logo-fin">Aquafin</span><br>
+                    <p style="font-size: 2rem; color: #475569; font-weight: 500; letter-spacing: 0.1em; margin-top: 0.5rem; display: inline-block; padding-top: 0.5rem;">Stockbeheer</p> <br>
+                </div>
+            </div>
+
+            <div class="go-to-order-materials">
+                <a href="{{ route('overzicht') }}" class="go-to-order-material__link">
+                    <span>Overzicht bestellingen</span>
+                </a>
+            </div>
+        @endif
+    @endauth
+
+    @auth
+        @if(Auth::user()?->role_id === \App\Models\Role::ADMIN)
+            <div class="home-hero">
+                <div class="home-logo">
+                    <span class="logo-fin">Aquafin</span><br>
+                    <p style="font-size: 2rem; color: #475569; font-weight: 500; letter-spacing: 0.1em; margin-top: 0.5rem; display: inline-block; padding-top: 0.5rem;">Admin</p> <br>
+                </div>
+            </div>
+
+            <div class="go-to-order-materials">
+                <a href="{{ route('gebruikers') }}" class="go-to-order-material__link">
+                    <span>Gebruikers beheren</span>
+                </a>
+            </div>
+        @endif
+    @endauth
     <style>
         .home-hero {
             text-align: center;
@@ -110,6 +136,26 @@
             border-top: 2px solid #2563eb;
             display: inline-block;
             padding-top: 0.5rem;
+        }
+
+        .home-alert {
+            max-width: 600px;
+            margin: 1.5rem auto;
+            padding: 1rem;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d1fae5;
+            border: 1px solid #6ee7b7;
+            color: #065f46;
+        }
+
+        .alert-error {
+            background-color: #fee2e2;
+            border: 1px solid #fca5a5;
+            color: #7f1d1d;
         }
     </style>
 </x-site-layout>

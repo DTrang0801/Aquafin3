@@ -255,4 +255,24 @@ class MateriaalController extends Controller
 
         return redirect()->route('materialen.beheer');
     }
+
+    // API endpoint to get all materials as JSON for AJAX
+    public function getMaterialsJson()
+    {
+        $materials = Materiaal::with('subcategorie')
+            ->where('deleted_at', null)
+            ->orderBy('naam')
+            ->get()
+            ->map(function ($material) {
+                return [
+                    'id' => $material->id,
+                    'naam' => $material->naam,
+                    'beschrijving' => $material->beschrijving,
+                    'belangrijk' => $material->belangrijk,
+                    'subcategorie' => $material->subcategorie ? ['naam' => $material->subcategorie->naam] : null,
+                ];
+            });
+
+        return response()->json($materials);
+    }
 }
