@@ -47,8 +47,15 @@
                     <article class="order-card">
                         <header class="order-card__header">
                             <div class="order-card__meta-item order-card__meta-item--number">
-                                <span class="order-card__label">Bestelnummer</span>
-                                <span class="order-card__value">#{{ str_pad($bestelling->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                <div class="order-card__number-wrapper">
+                                    <div>
+                                        <span class="order-card__label">Bestelnummer</span>
+                                        <span class="order-card__value">#{{ str_pad($bestelling->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                    </div>
+                                    @if($bestelling->is_edited)
+                                        <span class="badge-edited">Bewerkt</span>
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="order-card__meta-grid">

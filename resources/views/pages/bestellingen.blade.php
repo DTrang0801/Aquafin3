@@ -57,8 +57,15 @@
                     <article class="order-card">
                         <header class="order-card__header">
                             <div class="order-card__meta-item order-card__meta-item--number">
-                                <span class="order-card__label">Bestelnummer</span>
-                                <span class="order-card__value">#{{ str_pad($bestelling->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                <div class="order-card__number-wrapper">
+                                    <div>
+                                        <span class="order-card__label">Bestelnummer</span>
+                                        <span class="order-card__value">#{{ str_pad($bestelling->id, 5, '0', STR_PAD_LEFT) }}</span>
+                                    </div>
+                                    @if($bestelling->is_edited)
+                                        <span class="badge-edited">Bewerkt</span>
+                                    @endif
+                                </div>
                             </div>
 
                             <div class="order-card__meta-grid">
@@ -80,6 +87,12 @@
                         </header>
 
                         <div class="order-card__body">
+                            @if($bestelling->canStillBeEdited())
+                                <div class="order-card__actions">
+                                    <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-action btn-action-edit">Bewerk bestelling</a>
+                                </div>
+                            @endif
+
                             @if($bestelling->opmerking)
                                 <div class="order-note">
                                     <span class="order-card__label">Opmerking</span>
