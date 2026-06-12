@@ -3368,6 +3368,35 @@ body::before {
         flex: 1;
     }
 }
+
+/* ==================== GO TO ORDER MATERIALS ==================== */
+.go-to-order-materials {
+    text-align: center;
+    margin-top: 3rem;
+    margin-bottom: 3rem;
+    padding: 16px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.go-to-order-material__link {
+    background: #2563eb;
+    color: #fff;
+    padding: 2rem;
+    border-radius: 6px;
+    font-size: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.go-to-order-material__link:hover {
+    background: #1d4ed8;
+}
+
 /* ==================== ORDER EDIT TRACKING ==================== */
 .order-card__number-wrapper {
     display: flex;
