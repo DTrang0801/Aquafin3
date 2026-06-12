@@ -7,6 +7,24 @@
                 <span></span>
                 <span></span>
             </button>
+            @auth
+                @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
+                    <a href="{{ route('winkelmandje.index') }}" class="nav-cart-link-mobile" title="Winkelmandje">
+                        <svg class="nav-cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        @php
+                            $cart = \App\Models\Mandje::where('gebruiker_id', Auth::id())->first();
+                            $itemCount = $cart ? $cart->materialen()->count() : 0;
+                        @endphp
+                        @if ($itemCount > 0)
+                            <span class="nav-cart-badge">{{ $itemCount }}</span>
+                        @endif
+                    </a>
+                @endif
+            @endauth
             <div class="nav-links-container" id="nav-links-container">
                 @auth
                     @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
@@ -52,6 +70,22 @@
 
         <div class="nav-right" id="nav-right">
             @auth
+                @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
+                    <a href="{{ route('winkelmandje.index') }}" class="nav-cart-link" title="Winkelmandje">
+                        <svg class="nav-cart-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        @php
+                            $cart = \App\Models\Mandje::where('gebruiker_id', Auth::id())->first();
+                            $itemCount = $cart ? $cart->materialen()->count() : 0;
+                        @endphp
+                        @if ($itemCount > 0)
+                            <span class="nav-cart-badge">{{ $itemCount }}</span>
+                        @endif
+                    </a>
+                @endif
                 <span class="nav-user">{{ Auth::user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}" class="inline-form">
                     @csrf
