@@ -46,9 +46,9 @@
                             @endif
 
                             <div x-show="show" x-cloak
-                                 style="position: absolute; bottom: 100%; left: 0; right: 0; z-index: 50;
+                                 style="position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
                                          background: #fff; border: 1px solid #475569; border-radius: 6px;
-                                         margin-bottom: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                         margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                                 <template x-for="item in suggestions" :key="item.id">
                                     <button type="button" @click="select(item.naam)"
                                             style="display: block; width: 100%; text-align: left; padding: 10px 12px;

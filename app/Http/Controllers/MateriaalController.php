@@ -155,7 +155,7 @@ class MateriaalController extends Controller
         $likePattern = strlen($query) === 1 ? $query.'%' : '%'.$query.'%';
 
         $exact = Materiaal::where('naam', 'like', $likePattern)
-            ->limit(10)
+            ->limit(100)
             ->get(['id', 'naam', 'materiaal_subcategorie_id'])
             ->load('subcategorie');
 
@@ -173,7 +173,7 @@ class MateriaalController extends Controller
                 ->load('subcategorie');
         }
 
-        $materialen = $exact->concat($typo)->take(10)->values();
+        $materialen = $exact->concat($typo)->take(100)->values();
 
         return response()->json($materialen);
     }
