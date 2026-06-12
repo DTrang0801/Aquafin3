@@ -40,6 +40,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/materialen/suggesties', [MateriaalController::class, 'suggesties'])->name('materialen.suggesties');
 
     Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
+    Route::get('/winkelmandje/count', [CartController::class, 'getCount'])->name('winkelmandje.count');
+    Route::get('/winkelmandje/suggestions/{materiaalId}', [CartController::class, 'getSuggestions'])->name('winkelmandje.suggestions');
     Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
     Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
     Route::delete('/winkelmandje/verwijder/{id}', [CartController::class, 'destroy'])->name('winkelmandje.destroy');
