@@ -153,6 +153,8 @@
                                                         this.quantidade = 1;
                                                         // Update cart badge
                                                         this.updateCartBadge();
+                                                        // Show suggestions popup
+                                                        showSuggestionsPopup({{ $materiaal->id }});
                                                     }
                                                 } catch (error) {
                                                     console.error('Error adding to cart:', error);
@@ -161,18 +163,26 @@
                                                 }
                                             },
                                             updateCartBadge() {
-                                                fetch('{{ route('winkelmandje.index') }}')
-                                                    .then(r => r.text())
-                                                    .then(html => {
-                                                        const parser = new DOMParser();
-                                                        const newDoc = parser.parseFromString(html, 'text/html');
-                                                        const newBadge = newDoc.querySelector('.nav-cart-badge');
-                                                        const oldBadge = document.querySelector('.nav-cart-badge');
-                                                        if (newBadge && oldBadge) {
-                                                            oldBadge.textContent = newBadge.textContent;
-                                                        } else if (newBadge && !oldBadge) {
-                                                            const cartLink = document.querySelector('.nav-cart-link');
-                                                            if (cartLink) cartLink.appendChild(newBadge);
+                                                fetch('{{ route('winkelmandje.count') }}')
+                                                    .then(r => r.json())
+                                                    .then(data => {
+                                                        const badges = document.querySelectorAll('.nav-cart-badge');
+                                                        const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                                        
+                                                        if (data.count > 0) {
+                                                            badges.forEach(badge => badge.textContent = data.count);
+                                                            // If no badge exists, create one
+                                                            if (badges.length === 0) {
+                                                                links.forEach(link => {
+                                                                    const badge = document.createElement('span');
+                                                                    badge.className = 'nav-cart-badge';
+                                                                    badge.textContent = data.count;
+                                                                    link.appendChild(badge);
+                                                                });
+                                                            }
+                                                        } else {
+                                                            // Remove all badges if count is 0
+                                                            badges.forEach(badge => badge.remove());
                                                         }
                                                     });
                                             }
@@ -263,6 +273,8 @@
                                                         this.quantidade = 1;
                                                         // Update cart badge
                                                         this.updateCartBadge();
+                                                        // Show suggestions popup
+                                                        showSuggestionsPopup({{ $materiaal->id }});
                                                     }
                                                 } catch (error) {
                                                     console.error('Error adding to cart:', error);
@@ -271,18 +283,26 @@
                                                 }
                                             },
                                             updateCartBadge() {
-                                                fetch('{{ route('winkelmandje.index') }}')
-                                                    .then(r => r.text())
-                                                    .then(html => {
-                                                        const parser = new DOMParser();
-                                                        const newDoc = parser.parseFromString(html, 'text/html');
-                                                        const newBadge = newDoc.querySelector('.nav-cart-badge');
-                                                        const oldBadge = document.querySelector('.nav-cart-badge');
-                                                        if (newBadge && oldBadge) {
-                                                            oldBadge.textContent = newBadge.textContent;
-                                                        } else if (newBadge && !oldBadge) {
-                                                            const cartLink = document.querySelector('.nav-cart-link');
-                                                            if (cartLink) cartLink.appendChild(newBadge);
+                                                fetch('{{ route('winkelmandje.count') }}')
+                                                    .then(r => r.json())
+                                                    .then(data => {
+                                                        const badges = document.querySelectorAll('.nav-cart-badge');
+                                                        const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                                        
+                                                        if (data.count > 0) {
+                                                            badges.forEach(badge => badge.textContent = data.count);
+                                                            // If no badge exists, create one
+                                                            if (badges.length === 0) {
+                                                                links.forEach(link => {
+                                                                    const badge = document.createElement('span');
+                                                                    badge.className = 'nav-cart-badge';
+                                                                    badge.textContent = data.count;
+                                                                    link.appendChild(badge);
+                                                                });
+                                                            }
+                                                        } else {
+                                                            // Remove all badges if count is 0
+                                                            badges.forEach(badge => badge.remove());
                                                         }
                                                     });
                                             }
@@ -497,4 +517,120 @@
             }
         }
     </style>
+
+    <!-- Suggestions Popup Modal -->
+    <div id="suggestions-overlay" class="suggestions-popup-overlay" style="display: none;"></div>
+    <div id="suggestions-popup" class="suggestions-popup" style="display: none;">
+        <div class="suggestions-popup-header">
+            <h2 class="suggestions-popup-title">Aanbevolen Producten</h2>
+            <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+        </div>
+        <div class="suggestions-popup-content" id="suggestions-content"></div>
+    </div>
+
+    <script>
+        function showSuggestionsPopup(materiaalId) {
+            const overlay = document.getElementById('suggestions-overlay');
+            const popup = document.getElementById('suggestions-popup');
+            
+            fetch('/winkelmandje/suggestions/' + materiaalId)
+                .then(r => r.json())
+                .then(suggestions => {
+                    const content = document.getElementById('suggestions-content');
+                    content.innerHTML = '';
+                    
+                    if (suggestions.length === 0) {
+                        content.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light); padding: 1rem;">Geen aanbevelingen beschikbaar</p>';
+                    } else {
+                        suggestions.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'suggestion-card';
+                            
+                            let imageHtml = '';
+                            if (item.foto) {
+                                imageHtml = `<img src="/storage/${item.foto}" alt="${item.naam}" class="suggestion-card-image">`;
+                            }
+                            
+                            card.innerHTML = `
+                                ${imageHtml}
+                                <div class="suggestion-card-name">${item.naam}</div>
+                                <div class="suggestion-card-actions">
+                                    <input type="number" value="1" min="1" class="suggestion-quantity" data-id="${item.id}">
+                                    <button type="button" onclick="addSuggestionToCart(${item.id}, this)" class="suggestion-add-btn">Voeg toe</button>
+                                </div>
+                            `;
+                            
+                            content.appendChild(card);
+                        });
+                    }
+                    
+                    overlay.style.display = 'block';
+                    popup.style.display = 'block';
+                });
+        }
+        
+        function closeSuggestionsPopup() {
+            const overlay = document.getElementById('suggestions-overlay');
+            const popup = document.getElementById('suggestions-popup');
+            overlay.style.display = 'none';
+            popup.style.display = 'none';
+        }
+        
+        function addSuggestionToCart(materiaalId, button) {
+            const quantity = button.parentElement.querySelector('.suggestion-quantity').value;
+            button.disabled = true;
+            button.textContent = '🔄';
+            
+            const formData = new FormData();
+            formData.append('materiaal_id', materiaalId);
+            formData.append('aantal', quantity);
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            fetch('{{ route('winkelmandje.add') }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => {
+                if (r.ok) {
+                    button.textContent = '✓ Toegevoegd';
+                    button.style.background = 'var(--success)';
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.textContent = 'Voeg toe';
+                        button.style.background = '';
+                        // Update cart badge
+                        fetch('{{ route('winkelmandje.count') }}')
+                            .then(r => r.json())
+                            .then(data => {
+                                const badges = document.querySelectorAll('.nav-cart-badge');
+                                const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                
+                                if (data.count > 0) {
+                                    badges.forEach(badge => badge.textContent = data.count);
+                                    if (badges.length === 0) {
+                                        links.forEach(link => {
+                                            const badge = document.createElement('span');
+                                            badge.className = 'nav-cart-badge';
+                                            badge.textContent = data.count;
+                                            link.appendChild(badge);
+                                        });
+                                    }
+                                }
+                            });
+                    }, 1500);
+                } else {
+                    button.disabled = false;
+                    button.textContent = 'Voeg toe';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                button.disabled = false;
+                button.textContent = 'Voeg toe';
+            });
+        }
+        
+        // Close popup when clicking on overlay
+        document.getElementById('suggestions-overlay').addEventListener('click', closeSuggestionsPopup);
+    </script>
 </x-site-layout>
