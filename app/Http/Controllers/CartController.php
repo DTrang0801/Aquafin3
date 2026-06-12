@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Bestelling;
 use App\Models\Mandje;
+use App\Models\Materiaal;
 use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,55 @@ class CartController extends Controller
         return view('pages.winkelmandje', compact('materialen'));
     }
 
-    // Voeg een item toe of verhoog de hoeveelheid
+    public function getCount()
+    {
+        $cart = Mandje::where('gebruiker_id', Auth::id())->first();
+        $itemCount = $cart ? $cart->materialen()->count() : 0;
+
+        return response()->json(['count' => $itemCount]);
+    }
+
+    public function getSuggestions($materiaalId)
+    {
+        $materiaal = Materiaal::with('subcategorie')->findOrFail($materiaalId);
+
+        // First try to get suggestions from the same subcategory
+        $suggestions = Materiaal::where('materiaal_subcategorie_id', $materiaal->materiaal_subcategorie_id)
+            ->where('id', '!=', $materiaalId)
+            ->orderByRaw('COALESCE(order_count, 0) DESC')
+            ->limit(3)
+            ->get();
+
+        // If not enough suggestions from same subcategory, try from same category
+        if ($suggestions->count() < 3) {
+            $categoryId = $materiaal->subcategorie->materiaal_categorie_id;
+            $suggestionIds = $suggestions->pluck('id')->toArray();
+
+            $suggestionsFromCategory = Materiaal::with('subcategorie')
+                ->whereHas('subcategorie', function ($query) use ($categoryId) {
+                    $query->where('materiaal_categorie_id', $categoryId);
+                })
+                ->where('id', '!=', $materiaalId)
+                ->whereNotIn('id', $suggestionIds)
+                ->orderByRaw('COALESCE(order_count, 0) DESC')
+                ->limit(3 - $suggestions->count())
+                ->get();
+
+            $suggestions = $suggestions->concat($suggestionsFromCategory);
+        }
+
+        $suggestions = $suggestions->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'naam' => $item->naam,
+                'beschrijving' => $item->beschrijving,
+                'foto' => $item->foto,
+            ];
+        });
+
+        return response()->json($suggestions);
+    }
+
     public function add(Request $request)
     {
         $request->validate([
