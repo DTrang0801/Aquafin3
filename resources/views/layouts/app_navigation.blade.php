@@ -32,10 +32,6 @@
                     @endif
 
                     @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
-                        <a href="{{ route('winkelmandje.index') }}" class="nav-link">Winkelmandje</a>
-                    @endif
-
-                    @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                         <a href="{{ route('bestellingen') }}" class="nav-link">Vorige bestellingen</a>
                     @endif
 
