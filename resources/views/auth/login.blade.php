@@ -11,7 +11,7 @@
 
     <nav class="login-nav">
         <div class="login-nav-inner">
-            <a href="{{ route('home') }}" class="login-nav-brand">Aquafin</a>
+            <a href="{{ route('login') }}" class="login-nav-brand">Aquafin</a>
         </div>
     </nav>
 
