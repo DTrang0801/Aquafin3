@@ -10,7 +10,9 @@ use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/login')->name('home');
+Route::get('/', function () {
+    return auth()->check() ? redirect()->route('materialen') : redirect()->route('login');
+})->name('home');
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
