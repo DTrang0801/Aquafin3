@@ -100,7 +100,7 @@
             </form>
 
         @if($belangrijkeMaterialen->isNotEmpty())
-            <details open class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
+            <details class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
                 
              <!--   <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -152,8 +152,7 @@
             @if(request('search') && !$openCategoryIds->contains($categorie->id))
                 @continue
             @endif
-            <details {{ $openCategoryIds->contains($categorie->id) ? 'open' : '' }} class="category-block">
-                
+            <details {{ $openCategoryIds->contains($categorie->id) ? 'open' : '' }} class="category-block">                
                 <summary class="category-header" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">
                     <span>{{ $categorie->naam }}</span>
                     <span class="arrow">▼</span>

@@ -162,7 +162,7 @@ class MateriaalController extends Controller
 
             $typo = $typoQuery
                 ->get(['id', 'naam', 'materiaal_subcategorie_id'])
-                ->filter(fn($m) => $this->isTypoTolerantMatch($m->naam, $query))
+                ->filter(fn ($m) => $this->isTypoTolerantMatch($m->naam, $query))
                 ->load('subcategorie');
         }
 
