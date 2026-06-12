@@ -1,13 +1,5 @@
 <x-site-layout>
 
-@auth
-    <div class="home-hero">
-        <div class="home-logo">
-            <span class="logo-fin">Aquafin</span>
-        </div>
-            <p class="home-slogan">Samen werken aan proper water en een gezonde leefomgeving.</p> <br>
-    </div>
-@endauth
 @guest
     <div class="home-hero">
         <div class="home-logo">
@@ -33,6 +25,12 @@
 
     @auth
         @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER && ! empty($techniekerRainForecast))
+
+            <div class="go-to-order-materials">
+                <a href="{{ route('materialen') }}" class="go-to-order-material__link">
+                    <span>Materiaal bestellen</span>
+                </a>
+            </div>
             <section class="home-weather-card">
                 <div class="home-weather-card__header">
                     <div>
