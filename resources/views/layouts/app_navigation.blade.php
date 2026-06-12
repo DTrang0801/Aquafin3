@@ -9,11 +9,11 @@
             </button>
             <div class="nav-links-container" id="nav-links-container">
                 @auth
-                    @if (Auth::user()?->role_id !== \App\Models\Role::STOCKBEHEERDER)
+                    @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                         <a href="{{ route('materialen') }}" class="nav-link">Materiaal bestellen</a>
                     @endif
 
-                    @if (Auth::user()?->role_id !== \App\Models\Role::STOCKBEHEERDER && Auth::user()?->role_id !== \App\Models\Role::ADMIN)
+                    @if (Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                         <a href="{{ route('winkelmandje.index') }}" class="nav-link">Winkelmandje</a>
                     @endif
 
