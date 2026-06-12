@@ -8,12 +8,6 @@
                 <span></span>
             </button>
             <div class="nav-links-container" id="nav-links-container">
-                @guest
-                    <a href="{{ route('materialen') }}" class="nav-link">Materialen</a>
-                    <a href="{{ route('winkelmandje.index') }}" class="nav-link">Mandje</a>
-                    <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
-                @endguest
-
                 @auth
                     @if (Auth::user()?->role_id !== \App\Models\Role::STOCKBEHEERDER)
                         <a href="{{ route('materialen') }}" class="nav-link">Materiaal bestellen</a>
@@ -27,7 +21,7 @@
                         <a href="{{ route('bestellingen') }}" class="nav-link">Vorige bestellingen</a>
                     @endif
 
-                    @if (Auth::user()?->role_id === \App\Models\Role::ADMIN || Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
+                    @if (Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
                         <a href="{{ route('weersvoorspelling') }}" class="nav-link">Neerslag</a>
                     @endif
 
