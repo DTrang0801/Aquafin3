@@ -30,6 +30,7 @@ Route::middleware('role:admin')->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
+    Route::get('/materialen/json', [MateriaalController::class, 'getMaterialsJson'])->name('materialen.json');
     Route::get('/materialen/suggesties', [MateriaalController::class, 'suggesties'])->name('materialen.suggesties');
 
     Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
@@ -51,6 +52,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
+    Route::get('/bestellingen/{bestelling}/bewerk', [CartController::class, 'editOrder'])->name('bestellingen.edit');
+    Route::put('/bestellingen/{bestelling}', [CartController::class, 'updateOrder'])->name('bestellingen.update');
     Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');

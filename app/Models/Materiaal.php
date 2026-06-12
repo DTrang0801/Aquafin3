@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Database\Factories\MateriaalFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,7 +25,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Materiaal extends Model
 {
-    use SoftDeletes;
+    /** @use HasFactory<MateriaalFactory> */
+    use HasFactory, SoftDeletes;
 
     protected $table = 'materialen';
 

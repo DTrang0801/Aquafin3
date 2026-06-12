@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Database\Factories\BestellingFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -20,7 +22,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Bestelling extends Model
 {
-    use SoftDeletes;
+    /** @use HasFactory<BestellingFactory> */
+    use HasFactory, SoftDeletes;
 
     protected $table = 'bestellingen';
 
@@ -31,12 +34,25 @@ class Bestelling extends Model
         'locatie',
         'opmerking',
         'custom_location_used',
+        'is_edited',
+        'can_edit_until',
     ];
+
+    protected static function booted(): void
+    {
+        static::creating(function (self $bestelling) {
+            if ($bestelling->can_edit_until === null) {
+                $bestelling->can_edit_until = now()->addDay();
+            }
+        });
+    }
 
     protected function casts(): array
     {
         return [
             'custom_location_used' => 'bool',
+            'is_edited' => 'bool',
+            'can_edit_until' => 'datetime',
         ];
     }
 
@@ -50,5 +66,19 @@ class Bestelling extends Model
         return $this->belongsToMany(Materiaal::class, 'bestelling_materialen', 'bestelling_id', 'materiaal_id')
             ->withPivot('aantal')
             ->withTimestamps();
+    }
+
+    public function canStillBeEdited(): bool
+    {
+        if ($this->can_edit_until === null) {
+            return false;
+        }
+
+        return now()->isBefore($this->can_edit_until);
+    }
+
+    public function markAsEdited(): void
+    {
+        $this->update(['is_edited' => true]);
     }
 }
