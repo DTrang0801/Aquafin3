@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Bestelling;
 use App\Models\Mandje;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 
 class CartController extends Controller
 {
@@ -185,7 +187,7 @@ class CartController extends Controller
         $periode = $request->get('periode');
 
         $bestellingen = Bestelling::whereHas('gebruiker', function ($q) {
-            $q->where('role', 'technieker');
+            $q->where('role_id', Role::TECHNIEKER);
         })->with('gebruiker', 'materialen')
             ->when($zoekterm, function ($query, $zoekterm) {
                 $query->where(function ($q) use ($zoekterm) {
@@ -216,5 +218,90 @@ class CartController extends Controller
             ->orderBy('created_at', 'desc')->get();
 
         return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode'));
+    }
+
+    // Toon het formulier voor het bewerken van een bestelling
+    public function editOrder($id)
+    {
+        $bestelling = Bestelling::findOrFail($id);
+
+        // Check authorization using Gate
+        if (! Gate::allows('update', $bestelling)) {
+            abort(403);
+        }
+
+        return view('pages.bewerk-bestelling', compact('bestelling'));
+    }
+
+    // Werk een bestaande bestelling bij
+    public function updateOrder(Request $request, $id)
+    {
+        $bestelling = Bestelling::findOrFail($id);
+
+        // Check authorization using Gate
+        if (! Gate::allows('update', $bestelling)) {
+            abort(403);
+        }
+
+        $request->validate([
+            'gevraagde_datum' => 'required|date|after_or_equal:today',
+            'locatie' => 'nullable|string|max:255',
+            'use_custom_location' => 'boolean',
+            'opmerking' => 'nullable|string|max:1000',
+            'materials' => 'nullable|array',
+            'materials.*' => 'integer|min:1|max:10000',
+            'removed_materials' => 'nullable|array',
+        ]);
+
+        $user = Auth::user();
+        $useCustomLocation = $request->input('use_custom_location', false);
+        $locatie = $useCustomLocation
+            ? $request->input('locatie')
+            : ($user->getDepotLocation() ?? $request->input('locatie'));
+
+        if (! $locatie) {
+            return back()->withErrors(['locatie' => 'Locatie is vereist.']);
+        }
+
+        DB::transaction(function () use ($request, $bestelling, $locatie, $useCustomLocation) {
+            // Update order fields
+            $bestelling->update([
+                'gevraagde_datum' => $request->input('gevraagde_datum'),
+                'locatie' => $locatie,
+                'opmerking' => $request->input('opmerking'),
+                'custom_location_used' => $useCustomLocation,
+            ]);
+
+            // Handle material updates
+            $materials = $request->input('materials', []);
+            $removedMaterials = $request->input('removed_materials', []);
+
+            if (! empty($materials)) {
+                // Get currently attached materials before any changes
+                $currentMaterialIds = $bestelling->materialen()->pluck('bestelling_materialen.materiaal_id')->toArray();
+
+                // Process each material in the form
+                foreach ($materials as $materialId => $quantity) {
+                    $quantity = (int) $quantity;
+
+                    if (in_array($materialId, $currentMaterialIds)) {
+                        // Material already attached - update its quantity
+                        $bestelling->materialen()->updateExistingPivot($materialId, ['aantal' => $quantity]);
+                    } else {
+                        // New material - attach it
+                        $bestelling->materialen()->attach($materialId, ['aantal' => $quantity]);
+                    }
+                }
+            }
+
+            // Remove materials that were deleted
+            if (! empty($removedMaterials)) {
+                $bestelling->materialen()->detach(array_keys($removedMaterials));
+            }
+        });
+
+        $bestelling->markAsEdited();
+
+        return redirect()->route('bestellingen')->with('success', 'Bestelling succesvol bijgewerkt!');
     }
 }
