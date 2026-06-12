@@ -10,7 +10,7 @@ use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::redirect('/', '/login')->name('home');
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
