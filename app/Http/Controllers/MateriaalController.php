@@ -152,22 +152,26 @@ class MateriaalController extends Controller
             return response()->json([]);
         }
 
-        $exact = Materiaal::where('naam', 'like', '%'.$query.'%')
-            ->orWhere('beschrijving', 'like', '%'.$query.'%')
+        $likePattern = strlen($query) === 1 ? $query.'%' : '%'.$query.'%';
+
+        $exact = Materiaal::where('naam', 'like', $likePattern)
             ->limit(10)
             ->get(['id', 'naam', 'materiaal_subcategorie_id'])
             ->load('subcategorie');
 
         $exactIds = $exact->pluck('id');
 
-        $typoQuery = $exactIds->isNotEmpty()
-            ? Materiaal::whereNotIn('id', $exactIds)
-            : Materiaal::query();
+        $typo = collect();
+        if (strlen($query) > 1) {
+            $typoQuery = $exactIds->isNotEmpty()
+                ? Materiaal::whereNotIn('id', $exactIds)
+                : Materiaal::query();
 
-        $typo = $typoQuery
-            ->get(['id', 'naam', 'materiaal_subcategorie_id'])
-            ->filter(fn($m) => $this->isTypoTolerantMatch($m->naam, $query))
-            ->load('subcategorie');
+            $typo = $typoQuery
+                ->get(['id', 'naam', 'materiaal_subcategorie_id'])
+                ->filter(fn($m) => $this->isTypoTolerantMatch($m->naam, $query))
+                ->load('subcategorie');
+        }
 
         $materialen = $exact->concat($typo)->take(10)->values();
 
