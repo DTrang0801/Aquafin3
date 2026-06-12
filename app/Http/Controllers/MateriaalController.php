@@ -70,8 +70,8 @@ class MateriaalController extends Controller
                     return false;
                 }
 
-                // Open de subcategorie als er een zoekopdracht is en er matching items zijn
-                if ($search) {
+                // Open de subcategorie alleen bij suggestie-klik
+                if (request('suggestie') && $search) {
                     $openSubcategoryIds->push($sub->id);
                 }
 
@@ -83,21 +83,14 @@ class MateriaalController extends Controller
                 return false;
             }
 
-            // Open de categorie als er een zoekopdracht is of een subcategorie is geselecteerd
-            if ($search || request('category_id') || request('subcategory_id')) {
+            // Open de categorie alleen bij suggestie-klik
+            if (request('suggestie') && ($search || request('category_id') || request('subcategory_id'))) {
                 $openCategoryIds->push($cat->id);
             }
 
             return true;
         });
 
-        // Als er geen zoekopdracht is en geen categorie of subcategorie is geselecteerd, open alle categorieën en subcategorieën
-        if (! $search && ! $selectedCatId && ! $selectedSubcatId) {
-            $openCategoryIds = $categorieen->pluck('id');
-            foreach ($categorieen as $cat) {
-                $openSubcategoryIds = $openSubcategoryIds->merge($cat->subcategorieen->pluck('id'));
-            }
-        }
 
         return view('pages.materialen', compact(
             'belangrijkeMaterialen',
