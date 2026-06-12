@@ -11,8 +11,12 @@ use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check() ? redirect()->route('materialen') : redirect()->route('login');
+    return auth()->check() ? redirect()->route('home.page') : redirect()->route('login');
 })->name('home');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home.page');
+});
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
