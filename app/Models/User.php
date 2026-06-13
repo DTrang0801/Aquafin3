@@ -35,7 +35,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'role',
+        'role_id',
         'province',
     ];
 
@@ -85,5 +85,10 @@ class User extends Authenticatable
         } catch (\ValueError) {
             return null;
         }
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

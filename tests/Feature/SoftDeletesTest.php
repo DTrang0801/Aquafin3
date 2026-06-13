@@ -125,8 +125,8 @@ it('soft deleted materials do not appear in queries', function () {
 });
 
 it('only stockbeheerder can soft delete materials', function () {
-    $user = User::factory()->create(['role' => 'user']);
-    $stockbeheerder = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => null]);
+    $stockbeheerder = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
     $materiaal = Materiaal::create([
         'naam' => 'Test Material',
     ]);

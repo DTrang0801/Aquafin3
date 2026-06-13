@@ -26,9 +26,7 @@
                                  }
                              },
                              select(name) {
-                                 this.query = name;
-                                 this.show = false;
-                                 $el.closest('form').submit();
+                                 window.location.href = '{{ route('materialen') }}?search=' + encodeURIComponent(name) + '&suggestie=1';
                              },
                              hide() { setTimeout(() => this.show = false, 200) }
                          }">
@@ -47,8 +45,8 @@
 
                             <div x-show="show" x-cloak
                                  style="position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
-                                        background: #fff; border: 1px solid #475569; border-radius: 6px;
-                                        margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                         background: #fff; border: 1px solid #475569; border-radius: 6px;
+                                         margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                                 <template x-for="item in suggestions" :key="item.id">
                                     <button type="button" @click="select(item.naam)"
                                             style="display: block; width: 100%; text-align: left; padding: 10px 12px;
@@ -102,7 +100,7 @@
             </form>
 
         @if($belangrijkeMaterialen->isNotEmpty())
-            <details open class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
+            <details class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
                 
              <!--   <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
@@ -133,13 +131,67 @@
                                         {{ $materiaal->beschrijving ?? 'Geen beschrijving beschikbaar.' }}
                                     </td>
                                     <td>
-                                        @if(Auth::user()->role === 'technieker')
-                                        <form action="{{ route('winkelmandje.add') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
-                                            <input type="number" name="aantal" value="1" min="1">
-                                            <button type="submit" class="btn-primary">🛒 Voeg toe</button>
-                                        </form>
+                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
+                                        <div class="add-to-cart-form" x-data="{
+                                            quantidade: 1,
+                                            isSubmitting: false,
+                                            async addToCart(e) {
+                                                e.preventDefault();
+                                                this.isSubmitting = true;
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('materiaal_id', {{ $materiaal->id }});
+                                                    formData.append('aantal', this.quantidade);
+                                                    formData.append('_token', '{{ csrf_token() }}');
+                                                    
+                                                    const response = await fetch('{{ route('winkelmandje.add') }}', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    
+                                                    if (response.ok) {
+                                                        this.quantidade = 1;
+                                                        // Update cart badge
+                                                        this.updateCartBadge();
+                                                        // Show suggestions popup
+                                                        showSuggestionsPopup({{ $materiaal->id }});
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error adding to cart:', error);
+                                                } finally {
+                                                    this.isSubmitting = false;
+                                                }
+                                            },
+                                            updateCartBadge() {
+                                                fetch('{{ route('winkelmandje.count') }}')
+                                                    .then(r => r.json())
+                                                    .then(data => {
+                                                        const badges = document.querySelectorAll('.nav-cart-badge');
+                                                        const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                                        
+                                                        if (data.count > 0) {
+                                                            badges.forEach(badge => badge.textContent = data.count);
+                                                            // If no badge exists, create one
+                                                            if (badges.length === 0) {
+                                                                links.forEach(link => {
+                                                                    const badge = document.createElement('span');
+                                                                    badge.className = 'nav-cart-badge';
+                                                                    badge.textContent = data.count;
+                                                                    link.appendChild(badge);
+                                                                });
+                                                            }
+                                                        } else {
+                                                            // Remove all badges if count is 0
+                                                            badges.forEach(badge => badge.remove());
+                                                        }
+                                                    });
+                                            }
+                                        }">
+                                            <form @submit="addToCart" style="display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                                <input type="number" x-model.number="quantidade" min="1" :disabled="isSubmitting">
+                                                <button type="submit" class="btn-primary" :disabled="isSubmitting" x-text="isSubmitting ? '🔄' : '🛒 Voeg toe'"></button>
+                                            </form>
+                                        </div>
                                         @endif
                                     </td>
                                 </tr>
@@ -154,7 +206,7 @@
             @if(request('search') && !$openCategoryIds->contains($categorie->id))
                 @continue
             @endif
-            <details {{ $openCategoryIds->contains($categorie->id) ? 'open' : '' }} class="category-block">
+            <details class="category-block">
                 
                 <summary class="category-header" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">
                     <span>{{ $categorie->naam }}</span>
@@ -166,10 +218,12 @@
                         @if(request('search') && !$openSubcategoryIds->contains($subcategorie->id))
                             @continue
                         @endif
-                            <details {{ $openSubcategoryIds->contains($subcategorie->id) ? 'open' : '' }} class="subcategory-block" style="margin-bottom: 15px;">
+                            <details class="subcategory-block" style="margin-bottom: 15px;">
                             
                             <summary class="subcategory-title" style="cursor: pointer; user-select: none; list-style: none;">
                                 <strong>{{ $subcategorie->naam }}</strong>
+                                <span class="arrow">▼</span>
+
                             </summary>
 
                             <div style="margin-top: 10px;">
@@ -196,16 +250,70 @@
                                                             {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
                                                         </span> -->
                                                     </td>
-                                                    <td>
-                                                        @if(Auth::user()->role === 'technieker')
-                                                        <form action="{{ route('winkelmandje.add') }}" method="POST">
-                                                            @csrf
-                                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
-                                                            <input type="number" name="aantal" value="1" min="1">
-                                                            <button type="submit" class="btn-primary">🛒 Voeg toe</button>
-                                                        </form>
-                                                        @endif
-                                                    </td>
+                                    <td>
+                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
+                                        <div class="add-to-cart-form" x-data="{
+                                            quantidade: 1,
+                                            isSubmitting: false,
+                                            async addToCart(e) {
+                                                e.preventDefault();
+                                                this.isSubmitting = true;
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('materiaal_id', {{ $materiaal->id }});
+                                                    formData.append('aantal', this.quantidade);
+                                                    formData.append('_token', '{{ csrf_token() }}');
+                                                    
+                                                    const response = await fetch('{{ route('winkelmandje.add') }}', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    
+                                                    if (response.ok) {
+                                                        this.quantidade = 1;
+                                                        // Update cart badge
+                                                        this.updateCartBadge();
+                                                        // Show suggestions popup
+                                                        showSuggestionsPopup({{ $materiaal->id }});
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error adding to cart:', error);
+                                                } finally {
+                                                    this.isSubmitting = false;
+                                                }
+                                            },
+                                            updateCartBadge() {
+                                                fetch('{{ route('winkelmandje.count') }}')
+                                                    .then(r => r.json())
+                                                    .then(data => {
+                                                        const badges = document.querySelectorAll('.nav-cart-badge');
+                                                        const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                                        
+                                                        if (data.count > 0) {
+                                                            badges.forEach(badge => badge.textContent = data.count);
+                                                            // If no badge exists, create one
+                                                            if (badges.length === 0) {
+                                                                links.forEach(link => {
+                                                                    const badge = document.createElement('span');
+                                                                    badge.className = 'nav-cart-badge';
+                                                                    badge.textContent = data.count;
+                                                                    link.appendChild(badge);
+                                                                });
+                                                            }
+                                                        } else {
+                                                            // Remove all badges if count is 0
+                                                            badges.forEach(badge => badge.remove());
+                                                        }
+                                                    });
+                                            }
+                                        }">
+                                            <form @submit="addToCart" style="display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                                <input type="number" x-model.number="quantidade" min="1" :disabled="isSubmitting">
+                                                <button type="submit" class="btn-primary" :disabled="isSubmitting" x-text="isSubmitting ? '🔄' : '🛒 Voeg toe'"></button>
+                                            </form>
+                                        </div>
+                                        @endif
+                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -298,11 +406,231 @@
         
         .search-clear-btn:hover { color: #f8fafc; }
 
-        @media (max-width: 900px) {
+        @media (max-width: 1200px) {
+            .search-filter-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 12px;
+            }
+
+            .actions-row {
+                grid-column: 1 / -1;
+            }
+        }
+
+        @media (max-width: 768px) {
             .search-filter-grid {
                 grid-template-columns: 1fr;
                 gap: 12px;
+                padding: 15px;
+            }
+
+            .actions-row {
+                display: flex !important;
+                gap: 8px;
+            }
+
+            .actions-row .search-button,
+            .actions-row .btn-reset {
+                flex: 1;
+                height: 42px;
+            }
+
+            .custom-table {
+                font-size: 13px;
+            }
+
+            .custom-table th,
+            .custom-table td {
+                padding: 12px 8px;
+            }
+
+            .custom-table td:nth-child(1) { width: auto; }
+            .custom-table td:nth-child(2) { width: auto; }
+            .custom-table td:nth-child(3) { width: auto; }
+            .custom-table td:nth-child(4) { width: auto; }
+
+            .custom-table td:last-child form {
+                flex-direction: column;
+                gap: 4px;
+            }
+
+            .custom-table td:last-child input[type="number"] {
+                width: 100%;
+                height: 36px;
+                padding: 6px;
+            }
+
+            .custom-table td:last-child .btn-primary {
+                width: 100%;
+                height: 36px;
+                padding: 1px;
+                font-size: 11px;
+            }
+
+            .table-important td:nth-child(1) { width: auto; }
+            .table-important td:nth-child(2) { width: auto; }
+            .table-important td:nth-child(3) { width: auto; }
+            .table-important td:nth-child(4) { width: auto; }
+
+            .page-title {
+                font-size: 1.5rem;
+                margin-bottom: 1.5rem;
+            }
+
+            .category-header {
+                padding: 12px 16px;
+                font-size: 0.9rem;
+            }
+
+            .category-content {
+                padding: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-filter-grid {
+                padding: 12px;
+            }
+
+            .filter-select,
+            .search-input {
+                font-size: 16px;
+                height: 44px;
+            }
+
+            .container {
+                padding: 1rem 0.75rem;
+            }
+
+            .custom-table {
+                font-size: 12px;
+            }
+
+            .custom-table th,
+            .custom-table td {
+                padding: 10px 6px;
+            }
+
+            .category-header {
+                padding: 10px 12px;
+                font-size: 0.85rem;
             }
         }
     </style>
+
+    <!-- Suggestions Popup Modal -->
+    <div id="suggestions-overlay" class="suggestions-popup-overlay" style="display: none;"></div>
+    <div id="suggestions-popup" class="suggestions-popup" style="display: none;">
+        <div class="suggestions-popup-header">
+            <h2 class="suggestions-popup-title">Aanbevolen Producten</h2>
+            <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+        </div>
+        <div class="suggestions-popup-content" id="suggestions-content"></div>
+    </div>
+
+    <script>
+        function showSuggestionsPopup(materiaalId) {
+            const overlay = document.getElementById('suggestions-overlay');
+            const popup = document.getElementById('suggestions-popup');
+            
+            fetch('/winkelmandje/suggestions/' + materiaalId)
+                .then(r => r.json())
+                .then(suggestions => {
+                    const content = document.getElementById('suggestions-content');
+                    content.innerHTML = '';
+                    
+                    if (suggestions.length === 0) {
+                        content.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light); padding: 1rem;">Geen aanbevelingen beschikbaar</p>';
+                    } else {
+                        suggestions.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'suggestion-card';
+                            
+                            let imageHtml = '';
+                            if (item.foto) {
+                                imageHtml = `<img src="/storage/${item.foto}" alt="${item.naam}" class="suggestion-card-image">`;
+                            }
+                            
+                            card.innerHTML = `
+                                ${imageHtml}
+                                <div class="suggestion-card-name">${item.naam}</div>
+                                <div class="suggestion-card-actions">
+                                    <input type="number" value="1" min="1" class="suggestion-quantity" data-id="${item.id}">
+                                    <button type="button" onclick="addSuggestionToCart(${item.id}, this)" class="suggestion-add-btn">Voeg toe</button>
+                                </div>
+                            `;
+                            
+                            content.appendChild(card);
+                        });
+                    }
+                    
+                    overlay.style.display = 'block';
+                    popup.style.display = 'block';
+                });
+        }
+        
+        function closeSuggestionsPopup() {
+            const overlay = document.getElementById('suggestions-overlay');
+            const popup = document.getElementById('suggestions-popup');
+            overlay.style.display = 'none';
+            popup.style.display = 'none';
+        }
+        
+        function addSuggestionToCart(materiaalId, button) {
+            const quantity = button.parentElement.querySelector('.suggestion-quantity').value;
+            button.disabled = true;
+            button.textContent = '🔄';
+            
+            const formData = new FormData();
+            formData.append('materiaal_id', materiaalId);
+            formData.append('aantal', quantity);
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            fetch('{{ route('winkelmandje.add') }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => {
+                if (r.ok) {
+                    button.textContent = '✓ Toegevoegd';
+                    button.style.background = 'var(--success)';
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.textContent = 'Voeg toe';
+                        button.style.background = '';
+                        // Update cart badge
+                        fetch('{{ route('winkelmandje.count') }}')
+                            .then(r => r.json())
+                            .then(data => {
+                                const badges = document.querySelectorAll('.nav-cart-badge');
+                                const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                
+                                if (data.count > 0) {
+                                    badges.forEach(badge => badge.textContent = data.count);
+                                    if (badges.length === 0) {
+                                        links.forEach(link => {
+                                            const badge = document.createElement('span');
+                                            badge.className = 'nav-cart-badge';
+                                            badge.textContent = data.count;
+                                            link.appendChild(badge);
+                                        });
+                                    }
+                                }
+                            });
+                    }, 1500);
+                } else {
+                    button.disabled = false;
+                    button.textContent = 'Voeg toe';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                button.disabled = false;
+                button.textContent = 'Voeg toe';
+            });
+        }
+        
+        // Close popup when clicking on overlay
+        document.getElementById('suggestions-overlay').addEventListener('click', closeSuggestionsPopup);
+    </script>
 </x-site-layout>

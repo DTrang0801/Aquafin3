@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\RoleController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\HomeController;
@@ -9,7 +10,13 @@ use App\Http\Controllers\Userzone\ProfileController;
 use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', function () {
+    return auth()->check() ? redirect()->route('home.page') : redirect()->route('login');
+})->name('home');
+
+Route::middleware('auth')->group(function () {
+    Route::get('/home', [HomeController::class, 'index'])->name('home.page');
+});
 
 // Admin gebruikersbeheer
 Route::middleware('role:admin')->group(function () {
@@ -19,13 +26,22 @@ Route::middleware('role:admin')->group(function () {
     Route::get('/gebruikers/{user}/edit', [UserController::class, 'edit'])->name('gebruikers.edit');
     Route::put('/gebruikers/{user}', [UserController::class, 'update'])->name('gebruikers.update');
     Route::delete('/gebruikers/{user}', [UserController::class, 'destroy'])->name('gebruikers.destroy');
+    Route::get('/roles', [RoleController::class, 'index'])->name('roles.index');
+    Route::get('/roles/create', [RoleController::class, 'create'])->name('roles.create');
+    Route::post('/roles', [RoleController::class, 'store'])->name('roles.store');
+    Route::get('/roles/{role}/edit', [RoleController::class, 'edit'])->name('roles.edit');
+    Route::put('/roles/{role}', [RoleController::class, 'update'])->name('roles.update');
+    Route::delete('/roles/{role}', [RoleController::class, 'destroy'])->name('roles.destroy');
 });
 
 Route::middleware('auth')->group(function () {
     Route::get('/materialen', [MateriaalController::class, 'index'])->name('materialen');
+    Route::get('/materialen/json', [MateriaalController::class, 'getMaterialsJson'])->name('materialen.json');
     Route::get('/materialen/suggesties', [MateriaalController::class, 'suggesties'])->name('materialen.suggesties');
 
     Route::get('/winkelmandje', [CartController::class, 'index'])->name('winkelmandje.index');
+    Route::get('/winkelmandje/count', [CartController::class, 'getCount'])->name('winkelmandje.count');
+    Route::get('/winkelmandje/suggestions/{materiaalId}', [CartController::class, 'getSuggestions'])->name('winkelmandje.suggestions');
     Route::post('/winkelmandje/voeg-toe', [CartController::class, 'add'])->name('winkelmandje.add');
     Route::patch('/winkelmandje/update/{id}', [CartController::class, 'update'])->name('winkelmandje.update');
     Route::delete('/winkelmandje/verwijder/{id}', [CartController::class, 'destroy'])->name('winkelmandje.destroy');
@@ -44,6 +60,8 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
+    Route::get('/bestellingen/{bestelling}/bewerk', [CartController::class, 'editOrder'])->name('bestellingen.edit');
+    Route::put('/bestellingen/{bestelling}', [CartController::class, 'updateOrder'])->name('bestellingen.update');
     Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
@@ -52,6 +70,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/weersvoorspelling/belangrijk', [WeatherController::class, 'storeBelangrijk'])->name('weersvoorspelling.store');
         Route::post('/weersvoorspelling/simulatie', [WeatherController::class, 'toggleSimulation'])->name('weersvoorspelling.simulate');
         Route::post('/weersvoorspelling/materiaal', [WeatherController::class, 'addMaterial'])->name('weersvoorspelling.addMaterial');
+        Route::post('/weersvoorspelling/neerslag', [WeatherController::class, 'storeNeerslag'])->name('weersvoorspelling.storeNeerslag');
         Route::get('/stock-dashboard', [StockDashboardController::class, 'index'])->name('stock-dashboard');
     });
 

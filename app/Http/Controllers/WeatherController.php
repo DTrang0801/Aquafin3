@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\CreateAndLinkMaterialRequest;
 use App\Http\Requests\StoreBelangrijkeItemsRequest;
+use App\Http\Requests\StoreNeerslagRequest;
 use App\Models\Materiaal;
+use App\Models\Neerslag;
+use App\Models\Role;
 use App\Services\FloodRiskAnalysisService;
 use App\Services\FloodRiskService;
 use App\Services\OpenMeteoService;
@@ -22,6 +25,7 @@ class WeatherController extends Controller
 
     public function index(Request $request): View
     {
+        // Lon en lat ophalen uit de locatie van de gebruiker of standaard locatie (Brussel)
         $coordinates = $this->openMeteo->resolveCoordinates(
             $request->filled('lat') ? $request->float('lat') : null,
             $request->filled('lon') ? $request->float('lon') : null,
@@ -30,15 +34,20 @@ class WeatherController extends Controller
         $latitude = $coordinates['lat'];
         $longitude = $coordinates['lon'];
 
+        // Session lat en lon opslaan
         session([
             'weather_latitude' => $latitude,
             'weather_longitude' => $longitude,
         ]);
 
+        // Neerslaggegevens ophalen op basis van lat en lon
         $forecast = $this->openMeteo->fetchForecast($latitude, $longitude);
+
+        // Checken of de simulatiemodus is ingeschakeld
         $isSimulated = (bool) session('simulate_flood', false);
         $linkedIds = $this->floodRisk->linkedMaterialIds();
 
+        // Als de neerslaggegevens niet kunnen worden opgehaald dan een foutmelding tonen en gegevens sturen naar de view.
         if ($forecast === null) {
             return view('pages.weersvoorspelling', $this->baseViewData(
                 latitude: $latitude,
@@ -53,16 +62,20 @@ class WeatherController extends Controller
                     'floodAlarmTriggered' => false,
                     'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
                     'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
+                    'historicalNeerslagData' => Neerslag::query()->orderByDesc('jaar')->orderByDesc('maand')->get(),
                 ],
             ));
         }
 
+        // Neerslaggegevens parseren
         $parsed = $this->openMeteo->parseForecastForDisplay($forecast);
 
+        // Checken of de simulatiemodus is ingeschakeld
         $floodAlarmTriggered = $isSimulated
             ? $this->floodRisk->applySimulation()
             : $this->floodRisk->checkAndFlagItems($latitude, $longitude, $parsed['daily'], $parsed['timezone']);
 
+        // Gegevens sturen naar de view.
         return view('pages.weersvoorspelling', $this->baseViewData(
             latitude: $latitude,
             longitude: $longitude,
@@ -75,14 +88,18 @@ class WeatherController extends Controller
                 'floodAlarmTriggered' => $floodAlarmTriggered,
                 'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
                 'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
+                'historicalNeerslagData' => Neerslag::query()->orderByDesc('jaar')->orderByDesc('maand')->get(),
             ],
         ));
     }
 
+    // Kritieke materialen bijwerken
     public function storeBelangrijk(StoreBelangrijkeItemsRequest $request): RedirectResponse
     {
+        // Kritieke materialen bijwerken op basis van de geselecteerde materialen
         $this->floodRisk->syncLinkedMaterials($request->materiaalIds());
 
+        // Neerslaggegevens opnieuw berekenen
         $this->recalculateFloodRiskFromSession();
 
         return redirect()
@@ -90,6 +107,7 @@ class WeatherController extends Controller
             ->with('success', 'Kritieke materialen succesvol bijgewerkt!');
     }
 
+    // Kritieke materialen tonen
     public function criticalItems(): View
     {
         return view('pages.kritieke-items', $this->materialManagementViewData(
@@ -98,6 +116,7 @@ class WeatherController extends Controller
         ));
     }
 
+    // Simulatiemodus aan/uit zetten
     public function toggleSimulation(): RedirectResponse
     {
         $wasSimulated = (bool) session('simulate_flood', false);
@@ -111,6 +130,7 @@ class WeatherController extends Controller
             ->with('success', 'Simulatiemodus gewijzigd!');
     }
 
+    // Nieuw materiaal toevoegen en koppelen als kritiek item (momenteel niet in gebruik))
     public function addMaterial(CreateAndLinkMaterialRequest $request): RedirectResponse
     {
         $materiaal = Materiaal::query()->create([
@@ -132,6 +152,24 @@ class WeatherController extends Controller
         return redirect()
             ->back()
             ->with('success', "Materiaal '{$materiaal->naam}' succesvol toegevoegd!");
+    }
+
+    // Neerslaggegevens voor een maand toevoegen
+    public function storeNeerslag(StoreNeerslagRequest $request): RedirectResponse
+    {
+        Neerslag::query()->updateOrCreate(
+            [
+                'jaar' => $request->integer('jaar'),
+                'maand' => $request->integer('maand'),
+            ],
+            [
+                'mm' => $request->integer('mm'),
+            ],
+        );
+
+        return redirect()
+            ->back()
+            ->with('success', sprintf('Neerslaggegevens voor %s/%s succesvol opgeslagen!', $request->integer('maand'), $request->integer('jaar')));
     }
 
     /**
@@ -156,6 +194,7 @@ class WeatherController extends Controller
      * @param  list<int>  $linkedIds
      * @return array<string, mixed>
      */
+    // Lijst met alle materialen sturen naar de view.
     private function materialManagementViewData(array $linkedIds, bool $isSimulated): array
     {
         return [
@@ -166,10 +205,11 @@ class WeatherController extends Controller
                 ->groupBy(fn (Materiaal $materiaal) => $materiaal->subcategorie?->categorie?->naam ?? 'Overig'),
             'gekoppeldeIds' => $linkedIds,
             'isSimulated' => $isSimulated,
-            'canManageStock' => auth()->user()?->role === 'stockbeheerder',
+            'canManageStock' => auth()->user()?->role_id === Role::STOCKBEHEERDER,
         ];
     }
 
+    // Neerslaggegevens opnieuw berekenen op basis van de session data
     private function recalculateFloodRiskFromSession(): void
     {
         if (session('simulate_flood', false)) {

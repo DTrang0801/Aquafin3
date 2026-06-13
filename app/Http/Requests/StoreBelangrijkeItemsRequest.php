@@ -2,13 +2,14 @@
 
 namespace App\Http\Requests;
 
+use App\Models\Role;
 use Illuminate\Foundation\Http\FormRequest;
 
 class StoreBelangrijkeItemsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->role === 'stockbeheerder';
+        return $this->user()?->role_id === Role::STOCKBEHEERDER;
     }
 
     /**

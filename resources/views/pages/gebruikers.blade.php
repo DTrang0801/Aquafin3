@@ -3,12 +3,12 @@
         <h1 class="page-title">Gebruikersbeheer</h1>
 
         @if (session('succes'))
-            <p class="alert-success">{{ session('succes') }}</p>   
+            <p style="color:green">{{ session('succes') }}</p>   
         @endif
 
-        <a href="{{ route('gebruikers.create') }}" class="btn-add-user">+ Nieuwe gebruiker</a>
+        <a href="{{ route('gebruikers.create') }}">+ Nieuwe gebruiker</a>
 
-        <table class="users-table">
+        <table border="1" cellpadding="8" style="margin-top: 16px; width: 100%">
             <thead>
                 <tr>
                     <th>Naam</th>
@@ -23,9 +23,9 @@
                     <tr>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->role }}</td>
+                        <td>{{ $user->role->name ?? '—' }}</td>
                         <td>
-                            @if ($user->role === 'technieker')
+                            @if ($user->role_id === \App\Models\Role::TECHNIEKER)
                                 <span title="{{ $user->getDepotLocation() ?? 'Geen depot ingesteld' }}">
                                     {{ $user->province ?? 'Niet ingesteld' }}
                                 </span>

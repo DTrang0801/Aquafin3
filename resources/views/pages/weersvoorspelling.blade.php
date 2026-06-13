@@ -58,13 +58,25 @@
 
         <!-- Main Content Grid -->
         <div class="weather-page-grid">
+            <!-- Add Neerslag Form (Stockbeheerder Only) -->
+            @if($canManageStock)
+                <div class="weather-section">
+                    <x-add-neerslag-form />
+                    <x-historical-neerslag-data :historicalNeerslagData="$historicalNeerslagData" />
+                </div>
+            @endif
+
             <!-- Left Column: Current Rainfall Data -->
             <div class="weather-section">
                 <div class="weather-card">
                     @if(isset($error))
                         <div class="error-alert">
                             <span class="alert-icon">✕</span>
-                            <span>{{ $error }}</span>
+                            <div>
+                                <strong>Fout bij het ophalen van weergegevens</strong>
+                                <p>{{ $error }}</p>
+                                <p style="font-size: 0.875rem; margin-top: 0.5rem; opacity: 0.8;">Probeer de pagina over enkele ogenblikken opnieuw in te laden.</p>
+                            </div>
                         </div>
                     @else
                         <div class="section-header">

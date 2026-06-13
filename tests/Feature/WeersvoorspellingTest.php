@@ -3,6 +3,7 @@
 use App\Models\Materiaal;
 use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
+use App\Models\Neerslag;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
@@ -58,7 +59,7 @@ test('authenticated users can view the neerslag page', function () {
 });
 
 test('stockbeheerder can view critical item management page', function () {
-    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
 
     $this->actingAs($user)
         ->get(route('weersvoorspelling.kritieke-items'))
@@ -69,7 +70,7 @@ test('stockbeheerder can view critical item management page', function () {
 });
 
 test('critical item management page renders add material subcategory options', function () {
-    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
     $categorie = Materiaalcategorie::query()->create(['naam' => 'Pompen']);
 
     MateriaalSubcategorie::query()->create([
@@ -85,7 +86,7 @@ test('critical item management page renders add material subcategory options', f
 });
 
 test('non stockbeheerder cannot view critical item management page', function () {
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
 
     $this->actingAs($user)
         ->get(route('weersvoorspelling.kritieke-items'))
@@ -95,7 +96,7 @@ test('non stockbeheerder cannot view critical item management page', function ()
 test('stockbeheerder neerslag page does not include critical item management form', function () {
     fakeSuccessfulWeatherApi();
 
-    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
 
     $this->actingAs($user)
         ->get(route('weersvoorspelling'))
@@ -109,7 +110,7 @@ test('stockbeheerder neerslag page does not include critical item management for
 test('non stockbeheerder neerslag page does not include simulation control', function () {
     fakeSuccessfulWeatherApi();
 
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
 
     $this->actingAs($user)
         ->get(route('weersvoorspelling'))
@@ -121,7 +122,7 @@ test('non stockbeheerder neerslag page does not include simulation control', fun
 test('stockbeheerder can update linked critical materials', function () {
     fakeSuccessfulWeatherApi();
 
-    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
     $materiaal = Materiaal::query()->create(['naam' => 'Pomp A']);
 
     $this->actingAs($user)
@@ -137,7 +138,7 @@ test('stockbeheerder can update linked critical materials', function () {
 });
 
 test('non stockbeheerders cannot update linked critical materials', function () {
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
     $materiaal = Materiaal::query()->create(['naam' => 'Pomp B']);
 
     $this->actingAs($user)
@@ -167,7 +168,7 @@ test('neerslag page shows an error when the forecast api fails', function () {
 test('stockbeheerder can add a new material and link it as critical', function () {
     fakeSuccessfulWeatherApi();
 
-    $user = User::factory()->create(['role' => 'stockbeheerder']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
 
     $subcategorie = MateriaalSubcategorie::query()->first();
     if (! $subcategorie) {
@@ -193,7 +194,7 @@ test('stockbeheerder can add a new material and link it as critical', function (
 });
 
 test('non stockbeheerder cannot add a new material', function () {
-    $user = User::factory()->create(['role' => 'technieker']);
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
 
     $subcategorie = MateriaalSubcategorie::query()->first();
     if (! $subcategorie) {
@@ -212,4 +213,141 @@ test('non stockbeheerder cannot add a new material', function () {
     $this->assertDatabaseMissing('materialen', [
         'naam' => 'Nieuw materiaal',
     ]);
+});
+
+test('stockbeheerder can add neerslag data', function () {
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+
+    $this->actingAs($user)
+        ->post(route('weersvoorspelling.storeNeerslag'), [
+            'jaar' => 2024,
+            'maand' => 6,
+            'mm' => 85,
+        ])
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('neerslags', [
+        'jaar' => 2024,
+        'maand' => 6,
+        'mm' => 85,
+    ]);
+});
+
+test('stockbeheerder can update existing neerslag data', function () {
+    Neerslag::query()->create([
+        'jaar' => 2024,
+        'maand' => 6,
+        'mm' => 75,
+    ]);
+
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+
+    $this->actingAs($user)
+        ->post(route('weersvoorspelling.storeNeerslag'), [
+            'jaar' => 2024,
+            'maand' => 6,
+            'mm' => 85,
+        ])
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('neerslags', [
+        'jaar' => 2024,
+        'maand' => 6,
+        'mm' => 85,
+    ]);
+
+    $this->assertDatabaseMissing('neerslags', [
+        'jaar' => 2024,
+        'maand' => 6,
+        'mm' => 75,
+    ]);
+});
+
+test('non stockbeheerder cannot add neerslag data', function () {
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
+
+    $this->actingAs($user)
+        ->post(route('weersvoorspelling.storeNeerslag'), [
+            'jaar' => 2024,
+            'maand' => 6,
+            'mm' => 85,
+        ])
+        ->assertForbidden();
+
+    $this->assertDatabaseMissing('neerslags', [
+        'jaar' => 2024,
+        'maand' => 6,
+    ]);
+});
+
+test('neerslag storage validates input', function () {
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+
+    $this->actingAs($user)
+        ->post(route('weersvoorspelling.storeNeerslag'), [
+            'jaar' => 2000,
+            'maand' => 13,
+            'mm' => 2000,
+        ])
+        ->assertSessionHasErrors(['jaar', 'maand', 'mm']);
+
+    $this->assertDatabaseMissing('neerslags', [
+        'jaar' => 2000,
+    ]);
+});
+
+test('stockbeheerder neerslag page shows add neerslag form', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling'))
+        ->assertOk()
+        ->assertSee('Neerslaggegevens toevoegen');
+});
+
+test('non stockbeheerder neerslag page does not show add neerslag form', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role_id' => \App\Models\Role::TECHNIEKER]);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling'))
+        ->assertOk()
+        ->assertDontSee('Neerslaggegevens toevoegen');
+});
+
+test('stockbeheerder can see historical neerslag data', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+
+    Neerslag::query()->create([
+        'jaar' => 2024,
+        'maand' => 6,
+        'mm' => 85,
+    ]);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling'))
+        ->assertOk()
+        ->assertSee('Historische neerslaggegevens')
+        ->assertSee('85 mm')
+        ->assertSee('2024')
+        ->assertSee('Juni');
+});
+
+test('empty historical neerslag table shows no data message', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+
+    $this->actingAs($user)
+        ->get(route('weersvoorspelling'))
+        ->assertOk()
+        ->assertSee('Historische neerslaggegevens')
+        ->assertSee('Geen gegevens beschikbaar');
 });

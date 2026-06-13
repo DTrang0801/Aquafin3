@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Materiaal;
 use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
+use App\Models\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,18 +13,17 @@ use Illuminate\Support\Facades\Storage;
 class MateriaalController extends Controller
 {
     // Materiaal in een tabel tonen
-
     public function index(Request $request)
     {
-        // Always display global important highlights at the top (excluding soft-deleted)
+        // Belangrijke materialen ophalen
         $belangrijkeMaterialen = Materiaal::where('belangrijk', true)->with('subcategorie')->get();
 
-        // 1. Fetch search inputs & parameters
+        // Zoekopdracht ophalen
         $search = $request->input('search');
         $selectedCatId = $request->input('category_id');
         $selectedSubcatId = $request->input('subcategory_id');
 
-        // Fetch master sets for dropdown selectors
+        // Categorieën en subcategorieën ophalen
         $filterCategories = Materiaalcategorie::orderBy('naam', 'asc')->get();
         $filterSubcategories = collect();
         if ($selectedCatId) {
@@ -32,7 +32,7 @@ class MateriaalController extends Controller
                 ->get();
         }
 
-        // 2. Build the basic relational query (excludes soft-deleted by default)
+        // Relatie query ophalen en filteren op basis van de geselecteerde subcategorie
         $query = Materiaalcategorie::with(['subcategorieen' => function ($q) use ($selectedSubcatId) {
             if ($selectedSubcatId) {
                 $q->where('id', $selectedSubcatId);
@@ -45,19 +45,19 @@ class MateriaalController extends Controller
 
         $rawCategories = $query->get();
 
-        // Collections to track which accordions should be expanded ('open')
+        // Ophalen van de open categorieën en subcategorieën
         $openCategoryIds = collect();
         $openSubcategoryIds = collect();
 
-        // 3. Filter down the data structure and determine visibility
+        // Filter de categorieën en subcategorieën op basis van de zoekopdracht
         $categorieen = $rawCategories->filter(function ($cat) use ($search, $openCategoryIds, $openSubcategoryIds) {
             $catMatch = $search ? $this->isTypoTolerantMatch($cat->naam, $search) : true;
 
-            // Filter the subcategories inside this category
+            // Filter de subcategorieën binnen deze categorie
             $cat->setRelation('subcategorieen', $cat->subcategorieen->filter(function ($sub) use ($search, $catMatch, $openSubcategoryIds) {
                 $subMatch = $search ? $this->isTypoTolerantMatch($sub->naam, $search) : true;
 
-                // Filter down materials array inside this subcategory if neither category nor subcategory matched the query text
+                // Filter de materialen binnen deze subcategorie
                 if (! $subMatch && ! $catMatch && $search) {
                     $sub->setRelation('materialen', $sub->materialen->filter(function ($m) use ($search) {
                         return $this->isTypoTolerantMatch($m->naam, $search) ||
@@ -65,39 +65,32 @@ class MateriaalController extends Controller
                     }));
                 }
 
-                // Hide this subcategory completely if it contains no matching items
+                // Verberg subcategorie volledig als deze geen matching items bevat
                 if ($sub->materialen->isEmpty()) {
                     return false;
                 }
 
-                // If we are searching and there are items, force this subcategory to expand
-                if ($search) {
+                // Open de subcategorie alleen bij suggestie-klik
+                if (request('suggestie') && $search) {
                     $openSubcategoryIds->push($sub->id);
                 }
 
                 return true;
             }));
 
-            // Hide this entire main category if it has no visible subcategories left
+            // Verberg categorie volledig als deze geen matching items of subcategorieën bevat
             if ($cat->subcategorieen->isEmpty()) {
                 return false;
             }
 
-            // If we are actively searching and it passed the checks, force this category to expand
-            if ($search || request('category_id') || request('subcategory_id')) {
+            // Open de categorie alleen bij suggestie-klik
+            if (request('suggestie') && ($search || request('category_id') || request('subcategory_id'))) {
                 $openCategoryIds->push($cat->id);
             }
 
             return true;
         });
 
-        // 4. Fallback default context: if NO search is active, keep everything visible and open
-        if (! $search && ! $selectedCatId && ! $selectedSubcatId) {
-            $openCategoryIds = $categorieen->pluck('id');
-            foreach ($categorieen as $cat) {
-                $openSubcategoryIds = $openSubcategoryIds->merge($cat->subcategorieen->pluck('id'));
-            }
-        }
 
         return view('pages.materialen', compact(
             'belangrijkeMaterialen',
@@ -110,7 +103,7 @@ class MateriaalController extends Controller
     }
 
     /**
-     * Typo-tolerant matching mechanism using Levenshtein distance computations.
+     * Typo-tolerant matching mechanisme gebaseerd op Levenshtein afstand berekeningen.
      */
     private function isTypoTolerantMatch(?string $haystack, string $needle): bool
     {
@@ -143,6 +136,7 @@ class MateriaalController extends Controller
         return false;
     }
 
+    // Suggesties ophalen voor de zoekopdracht
     public function suggesties(Request $request)
     {
         $query = $request->input('q');
@@ -151,15 +145,33 @@ class MateriaalController extends Controller
             return response()->json([]);
         }
 
-        $materialen = Materiaal::where('naam', 'like', '%'.$query.'%')
-            ->orWhere('beschrijving', 'like', '%'.$query.'%')
-            ->limit(10)
+        $likePattern = strlen($query) === 1 ? $query.'%' : '%'.$query.'%';
+
+        $exact = Materiaal::where('naam', 'like', $likePattern)
+            ->limit(100)
             ->get(['id', 'naam', 'materiaal_subcategorie_id'])
             ->load('subcategorie');
+
+        $exactIds = $exact->pluck('id');
+
+        $typo = collect();
+        if (strlen($query) > 1) {
+            $typoQuery = $exactIds->isNotEmpty()
+                ? Materiaal::whereNotIn('id', $exactIds)
+                : Materiaal::query();
+
+            $typo = $typoQuery
+                ->get(['id', 'naam', 'materiaal_subcategorie_id'])
+                ->filter(fn ($m) => $this->isTypoTolerantMatch($m->naam, $query))
+                ->load('subcategorie');
+        }
+
+        $materialen = $exact->concat($typo)->take(100)->values();
 
         return response()->json($materialen);
     }
 
+    // Toon creatiepagina voor materialen
     public function create()
     {
         $categorieen = Materiaalcategorie::orderBy('naam')->get();
@@ -168,6 +180,7 @@ class MateriaalController extends Controller
         return view('pages.materialen-create', compact('categorieen', 'subcategorieen'));
     }
 
+    // Materialen opslaan
     public function store(Request $request)
     {
         $fotoPad = null;
@@ -195,9 +208,10 @@ class MateriaalController extends Controller
         return view('pages.materialen-beheer', compact('materialen'));
     }
 
+    // Materialen verwijderen
     public function destroy(Materiaal $materiaal)
     {
-        if (Auth::user()->role !== 'stockbeheerder') {
+        if (Auth::user()->role_id !== Role::STOCKBEHEERDER) {
             abort(403);
         }
 
@@ -206,6 +220,7 @@ class MateriaalController extends Controller
         return redirect()->route('materialen.beheer');
     }
 
+    // Toon bewerkingpagina voor materialen
     public function edit(Materiaal $materiaal)
     {
         $subcategorieen = MateriaalSubcategorie::all();
@@ -213,6 +228,7 @@ class MateriaalController extends Controller
         return view('pages.materialen-edit', compact('materiaal', 'subcategorieen'));
     }
 
+    // Materialen bijwerken
     public function update(Request $request, Materiaal $materiaal)
     {
         $data = [
@@ -222,7 +238,7 @@ class MateriaalController extends Controller
             'belangrijk' => $request->has('belangrijk'),
         ];
 
-            if ($request->has('verwijder_foto') && $materiaal->foto) {
+        if ($request->has('verwijder_foto') && $materiaal->foto) {
             Storage::disk('public')->delete($materiaal->foto);
             $data['foto'] = null;
         }
@@ -238,5 +254,25 @@ class MateriaalController extends Controller
         $materiaal->update($data);
 
         return redirect()->route('materialen.beheer');
+    }
+
+    // API endpoint to get all materials as JSON for AJAX
+    public function getMaterialsJson()
+    {
+        $materials = Materiaal::with('subcategorie')
+            ->where('deleted_at', null)
+            ->orderBy('naam')
+            ->get()
+            ->map(function ($material) {
+                return [
+                    'id' => $material->id,
+                    'naam' => $material->naam,
+                    'beschrijving' => $material->beschrijving,
+                    'belangrijk' => $material->belangrijk,
+                    'subcategorie' => $material->subcategorie ? ['naam' => $material->subcategorie->naam] : null,
+                ];
+            });
+
+        return response()->json($materials);
     }
 }

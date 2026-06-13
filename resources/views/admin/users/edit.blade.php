@@ -2,32 +2,32 @@
     <div class="container">
         <h1 class="page-title">Gebruiker bewerken</h1>
 
-        <form action="{{ route('gebruikers.update', $user) }}" method="post" class="user-form">
+        <form action="{{ route('gebruikers.update', $user) }}" method="post">
             @csrf
             @method('put')
 
             <label for="name">Naam</label>
-            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required>
-            @error('name') <p class="alert-error">{{ $message }}</p> @enderror
+            <input type="text" name="name" id="name" value="{{ old('name', $user->name) }}" required><br>
+            @error('name') <p style="color:red">{{ $message }}</p> @enderror
 
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required>
-            @error('email') <p class="alert-error">{{ $message }}</p> @enderror
+            <label for="email">Email</label><br>
+            <input type="email" name="email" id="email" value="{{ old('email', $user->email) }}" required><br>
+            @error('email') <p style="color:red">{{ $message }}</p> @enderror
 
-            <label for="password">Nieuw wachtwoord (leeg = ongewijzigd)</label>
-            <input type="password" name="password" id="password">
-            @error('password') <p class="alert-error">{{ $message }}</p> @enderror
+            <label for="password">Nieuw wachtwoord (leeg = ongewijzigd)</label><br>
+            <input type="password" name="password" id="password"><br>
+            @error('password') <p style="color:red">>{{ $message }}</p> @enderror
 
-            <label for="role">Rol</label>
-            <select name="role" id="role" required onchange="toggleProvinceField()">
-                <option value="admin" {{ old('role', $user->role) == 'admin' ? 'selected' : '' }}>Admin</option>
-                <option value="stockbeheerder" {{ old('role', $user->role) == 'stockbeheerder' ? 'selected' : '' }}>Stockbeheerder</option>
-                <option value="technieker" {{ old('role', $user->role) == 'technieker' ? 'selected' : '' }}>Technieker</option>
+            <label for="role_id">Rol</label><br>
+            <select name="role_id" id="role_id" required onchange="toggleProvinceField()">
+            @foreach($roles as $role)
+                <option value="{{ $role->id }}" {{ old('role_id', $user->role_id) == $role->id ? 'selected' : '' }}>
+                    {{ $role->name }}
+                </option>
+            @endforeach
             </select>
-            @error('role') <p class="alert-error">{{ $message }}</p> @enderror
-
-            <div id="province-field" style="display: {{ old('role', $user->role) == 'technieker' ? 'block' : 'none' }};">
-                <label for="province">Provincie (alleen voor technikers)</label>
+            @error('role_id') <p class="alert-error">{{ $message }}</p> @enderror
+            <div id="province-field" style="display: {{ old('role_id', $user->role_id) == $user->role?->id && $user->role_id === \App\Models\Role::TECHNIEKER ? 'block' : 'none' }};">                <label for="province">Provincie (alleen voor technikers)</label>
                 <select name="province" id="province">
                     <option value="">-- Geen provincie --</option>
                     <option value="Vlaams-Brabant" {{ old('province', $user->province) == 'Vlaams-Brabant' ? 'selected' : '' }}>Vlaams-Brabant</option>
@@ -48,9 +48,10 @@
 
     <script>
         function toggleProvinceField() {
-            const role = document.getElementById('role').value;
+            const role = document.getElementById('role_id');
+            const selected = role.options[role.selectedIndex].text;
             const provinceField = document.getElementById('province-field');
-            provinceField.style.display = role === 'technieker' ? 'block' : 'none';
+            provinceField.style.display = selected === 'technieker' ? 'block' : 'none';
         }
     </script>
 </x-site-layout>
