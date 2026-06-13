@@ -37,8 +37,7 @@
                                 <form action="{{ route('winkelmandje.update', $item->id) }}" method="POST" style="display: flex; gap: 5px;">
                                     @csrf
                                     @method('PATCH')
-                                    <input type="number" name="aantal" value="{{ $item->pivot->aantal }}" min="1" style="width: 60px; text-align: center; padding: 4px;">
-                                    <button type="submit" style="background-color: #4a5568; color: white; border: none; padding: 4px 8px; cursor: pointer; border-radius: 3px;">Bijwerken</button>
+                                    <input type="number" name="aantal" value="{{ $item->pivot->aantal }}" min="1" onchange="this.form.submit()" style="width: 60px; text-align: center; padding: 4px;">
                                 </form>
                             </td>
                             <td>
