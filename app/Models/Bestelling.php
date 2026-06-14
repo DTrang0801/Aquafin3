@@ -29,6 +29,7 @@ class Bestelling extends Model
 
     protected $fillable = [
         'gebruiker_id',
+        'status',
         'gevraagde_datum',
         'gevraagde_tijd',
         'locatie',
@@ -37,6 +38,10 @@ class Bestelling extends Model
         'is_edited',
         'can_edit_until',
     ];
+
+    const STATUS_ACTIEF = 'actief';
+
+    const STATUS_GEANNULEERD = 'geannuleerd';
 
     protected static function booted(): void
     {
@@ -80,5 +85,15 @@ class Bestelling extends Model
     public function markAsEdited(): void
     {
         $this->update(['is_edited' => true]);
+    }
+
+    public function annuleer(): void
+    {
+        $this->update(['status' => self::STATUS_GEANNULEERD]);
+    }
+
+    public function isGeannuleerd(): bool
+    {
+        return $this->status === self::STATUS_GEANNULEERD;
     }
 }
