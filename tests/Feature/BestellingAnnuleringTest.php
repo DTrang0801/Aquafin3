@@ -23,7 +23,7 @@ it('stockbeheerder kan bestelling annuleren', function () {
     expect($bestelling->status)->toBe('geannuleerd');
 });
 
-it('technieker kan bestelling niet annuleren', function () {
+it('technieker kan eigen bestelling annuleren', function () {
     $technieker = User::factory()->create(['role_id' => Role::TECHNIEKER]);
 
     $bestelling = Bestelling::create([
@@ -34,6 +34,25 @@ it('technieker kan bestelling niet annuleren', function () {
     ]);
 
     $this->actingAs($technieker)
+        ->post(route('bestellingen.annuleer', $bestelling->id))
+        ->assertRedirect();
+
+    $bestelling->refresh();
+    expect($bestelling->status)->toBe('geannuleerd');
+});
+
+it('technieker kan bestelling van ander niet annuleren', function () {
+    $technieker1 = User::factory()->create(['role_id' => Role::TECHNIEKER]);
+    $technieker2 = User::factory()->create(['role_id' => Role::TECHNIEKER]);
+
+    $bestelling = Bestelling::create([
+        'gebruiker_id' => $technieker1->id,
+        'status' => 'actief',
+        'gevraagde_datum' => now()->toDateString(),
+        'locatie' => 'Test locatie',
+    ]);
+
+    $this->actingAs($technieker2)
         ->post(route('bestellingen.annuleer', $bestelling->id))
         ->assertForbidden();
 
@@ -123,4 +142,35 @@ it('overzicht toont actieve bestelling met annuleer-knop', function () {
     $this->actingAs($stockbeheerder)
         ->get(route('overzicht'))
         ->assertSee('Annuleer bestelling');
+});
+
+it('technieker ziet annuleer-knop voor eigen bestelling', function () {
+    $technieker = User::factory()->create(['role_id' => Role::TECHNIEKER]);
+
+    $bestelling = Bestelling::create([
+        'gebruiker_id' => $technieker->id,
+        'status' => 'actief',
+        'gevraagde_datum' => now()->toDateString(),
+        'locatie' => 'Test locatie',
+    ]);
+
+    $this->actingAs($technieker)
+        ->get(route('bestellingen'))
+        ->assertSee('Annuleer bestelling');
+});
+
+it('technieker ziet geen annuleer-knop voor geannuleerde bestelling', function () {
+    $technieker = User::factory()->create(['role_id' => Role::TECHNIEKER]);
+
+    $bestelling = Bestelling::create([
+        'gebruiker_id' => $technieker->id,
+        'status' => 'geannuleerd',
+        'gevraagde_datum' => now()->toDateString(),
+        'locatie' => 'Test locatie',
+    ]);
+
+    $this->actingAs($technieker)
+        ->get(route('bestellingen'))
+        ->assertSee('Geannuleerd')
+        ->assertDontSee('Annuleer bestelling');
 });
