@@ -52,7 +52,9 @@
                                         <span class="order-card__label">Bestelnummer</span>
                                         <span class="order-card__value">#{{ str_pad($bestelling->id, 5, '0', STR_PAD_LEFT) }}</span>
                                     </div>
-                                    @if($bestelling->is_edited)
+                                    @if($bestelling->isGeannuleerd())
+                                        <span class="badge-cancelled">Geannuleerd</span>
+                                    @elseif($bestelling->is_edited)
                                         <span class="badge-edited">Bewerkt</span>
                                     @endif
                                 </div>
@@ -110,6 +112,15 @@
                                 @endforeach
                             </div>
                         </div>
+
+                        @if(!$bestelling->isGeannuleerd())
+                            <footer class="order-card__footer">
+                                <form method="POST" action="{{ route('bestellingen.annuleer', $bestelling->id) }}" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?')">
+                                    @csrf
+                                    <button type="submit" class="btn-cancel-order">Annuleer bestelling</button>
+                                </form>
+                            </footer>
+                        @endif
                     </article>
                 @endforeach
             </div>
