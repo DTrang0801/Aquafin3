@@ -63,7 +63,9 @@
                                             <span class="order-card__label">Bestelnummer</span>
                                             <span class="order-card__value">#{{ str_pad($bestelling->id, 5, '0', STR_PAD_LEFT) }}</span>
                                         </div>
-                                        @if($bestelling->is_edited)
+                                        @if($bestelling->isGeannuleerd())
+                                            <span class="badge-cancelled">Geannuleerd</span>
+                                        @elseif($bestelling->is_edited)
                                             <span class="badge-edited">Bewerkt</span>
                                         @endif
                                     </div>
@@ -95,9 +97,15 @@
                         </button>
 
                         <div class="order-card__body order-card__body--hidden" id="order-body-{{ $bestelling->id }}">
-                            @if($bestelling->canStillBeEdited())
+                            @if(!$bestelling->isGeannuleerd())
                                 <div class="order-card__actions">
-                                    <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-action btn-action-edit">Bewerk bestelling</a>
+                                    @if($bestelling->canStillBeEdited())
+                                        <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-action btn-action-edit">Bewerk bestelling</a>
+                                    @endif
+                                    <form method="POST" action="{{ route('bestellingen.annuleer', $bestelling->id) }}" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?')">
+                                        @csrf
+                                        <button type="submit" class="btn-cancel-order">Annuleer bestelling</button>
+                                    </form>
                                 </div>
                             @endif
 
