@@ -45,9 +45,10 @@ class BestellingPolicy
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Bestelling $bestelling): bool
+    public function cancel(User $user, Bestelling $bestelling): bool
     {
-        return false;
+        return in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN])
+            && ! $bestelling->isGeannuleerd();
     }
 
     /**
