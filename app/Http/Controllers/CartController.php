@@ -304,7 +304,7 @@ class CartController extends Controller
 
         $route = $user->role_id === Role::TECHNIEKER ? 'bestellingen' : 'overzicht';
 
-        return redirect()->route($route)->with('success', 'Bestelling succesvol geannuleerd.');
+        return redirect()->route($route)->with('success', 'Bestelling #'.str_pad($bestelling->id, 5, '0', STR_PAD_LEFT).' succesvol geannuleerd.');
     }
 
     // Toon het formulier voor het bewerken van een bestelling
