@@ -272,13 +272,39 @@ class CartController extends Controller
     // Annuleer een bestelling als stockbeheerder
     public function annuleerBestelling(Bestelling $bestelling)
     {
-        if (! Gate::allows('cancel', $bestelling)) {
+        $user = Auth::user();
+
+        \Log::info('annuleerBestelling called', [
+            'user_id' => $user->id,
+            'user_role' => $user->role_id,
+            'bestelling_id' => $bestelling->id,
+            'gebruiker_id' => $bestelling->gebruiker_id,
+        ]);
+
+        if ($user->role_id === Role::TECHNIEKER && $bestelling->gebruiker_id !== $user->id) {
+            \Log::warning('annuleerBestelling 403 - technieker owns mismatch', [
+                'user_id' => $user->id,
+                'gebruiker_id' => $bestelling->gebruiker_id,
+            ]);
             abort(403);
+        }
+
+        if (! in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN, Role::TECHNIEKER])) {
+            \Log::warning('annuleerBestelling 403 - wrong role', [
+                'role' => $user->role_id,
+            ]);
+            abort(403);
+        }
+
+        if ($bestelling->isGeannuleerd()) {
+            return redirect()->route('overzicht')->with('error', 'Deze bestelling is al geannuleerd.');
         }
 
         $bestelling->annuleer();
 
-        return redirect()->route('overzicht')->with('success', 'Bestelling succesvol geannuleerd.');
+        $route = $user->role_id === Role::TECHNIEKER ? 'bestellingen' : 'overzicht';
+
+        return redirect()->route($route)->with('success', 'Bestelling succesvol geannuleerd.');
     }
 
     // Toon het formulier voor het bewerken van een bestelling
