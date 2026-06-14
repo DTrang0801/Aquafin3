@@ -63,6 +63,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/bestellingen/{bestelling}/bewerk', [CartController::class, 'editOrder'])->name('bestellingen.edit');
     Route::put('/bestellingen/{bestelling}', [CartController::class, 'updateOrder'])->name('bestellingen.update');
     Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
+    Route::post('/overzicht/{bestelling}/annuleer', [CartController::class, 'annuleerBestelling'])->name('bestellingen.annuleer')->middleware('role:stockbeheerder,admin');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::middleware('role:stockbeheerder')->group(function () {
