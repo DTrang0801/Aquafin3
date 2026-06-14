@@ -269,6 +269,18 @@ class CartController extends Controller
         return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode'));
     }
 
+    // Annuleer een bestelling als stockbeheerder
+    public function annuleerBestelling(Bestelling $bestelling)
+    {
+        if (! Gate::allows('cancel', $bestelling)) {
+            abort(403);
+        }
+
+        $bestelling->annuleer();
+
+        return redirect()->route('overzicht')->with('success', 'Bestelling succesvol geannuleerd.');
+    }
+
     // Toon het formulier voor het bewerken van een bestelling
     public function editOrder($id)
     {
