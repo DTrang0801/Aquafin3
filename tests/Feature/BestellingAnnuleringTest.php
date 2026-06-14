@@ -92,7 +92,10 @@ it('kan reeds geannuleerde bestelling niet opnieuw annuleren', function () {
 
     $this->actingAs($stockbeheerder)
         ->post(route('bestellingen.annuleer', $bestelling->id))
-        ->assertForbidden();
+        ->assertRedirect();
+
+    $bestelling->refresh();
+    expect($bestelling->status)->toBe('geannuleerd');
 });
 
 it('geannuleerde bestelling heeft correcte status', function () {
