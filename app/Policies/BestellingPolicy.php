@@ -47,8 +47,12 @@ class BestellingPolicy
      */
     public function cancel(User $user, Bestelling $bestelling): bool
     {
+        if ($bestelling->isGeannuleerd()) {
+            return false;
+        }
+
         return in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN])
-            && ! $bestelling->isGeannuleerd();
+            || ($user->role_id === Role::TECHNIEKER && $bestelling->gebruiker_id === $user->id);
     }
 
     /**
