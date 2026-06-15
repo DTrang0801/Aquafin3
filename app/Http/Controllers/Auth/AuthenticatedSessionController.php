@@ -30,7 +30,7 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if (Auth::user()->role_id === Role::TECHNIEKER) {
-            return redirect()->intended(route('bestellingen', absolute: false));
+            return redirect()->intended(route('materialen', absolute: false));
         }
 
         return redirect()->intended(route('home', absolute: false));
