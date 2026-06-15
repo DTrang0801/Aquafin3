@@ -129,12 +129,33 @@ test('stockbeheerder can update linked critical materials', function () {
     $this->actingAs($user)
         ->post(route('weersvoorspelling.store'), [
             'materiaal_ids' => [$materiaal->id],
+            'risk_levels' => [$materiaal->id => 'high'],
         ])
         ->assertRedirect()
         ->assertSessionHas('success');
 
     $this->assertDatabaseHas('belangrijkeItems', [
         'materiaal_id' => $materiaal->id,
+        'risk_level' => 'high',
+    ]);
+});
+
+test('stockbeheerder can update linked critical materials with default medium risk level', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role_id' => Role::STOCKBEHEERDER]);
+    $materiaal = Materiaal::query()->create(['naam' => 'Pomp B']);
+
+    $this->actingAs($user)
+        ->post(route('weersvoorspelling.store'), [
+            'materiaal_ids' => [$materiaal->id],
+        ])
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('belangrijkeItems', [
+        'materiaal_id' => $materiaal->id,
+        'risk_level' => 'medium',
     ]);
 });
 

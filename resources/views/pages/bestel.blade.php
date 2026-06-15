@@ -121,7 +121,7 @@
                                     <td>
                                         <span class="checkout-item-name">{{ $item->naam }}</span>
                                         @if($item->belangrijk)
-                                            <span class="checkout-critical-badge">Kritiek</span>
+                                            <span class="checkout-critical-badge checkout-critical-badge--{{ $item->belangrijk->value }}">{{ $item->belangrijk->label() }}</span>
                                         @endif
                                     </td>
                                     <td class="table-right checkout-item-quantity">

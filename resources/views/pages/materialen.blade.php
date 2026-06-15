@@ -121,8 +121,15 @@
                                                 style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;">
                                         @endif
 
-                                        <div>{{ $materiaal->naam }}</div>
-
+                                                        <div>{{ $materiaal->naam }}</div>
+                                        @if($materiaal->belangrijk)
+                                            @php
+                                                $level = $materiaal->belangrijk instanceof \App\Enums\FloodRiskLevel
+                                                    ? $materiaal->belangrijk
+                                                    : \App\Enums\FloodRiskLevel::from((string)$materiaal->belangrijk);
+                                            @endphp
+                                            <span class="risk-badge risk-badge--{{ $level->value }}">{{ $level->label() }}</span>
+                                        @endif
                                     </td>
                                     <td class="text-italic" style="padding: 14px 20px; color: #000000; font-style: italic;">
                                         {{ $materiaal->subcategorie->naam ?? 'N/A' }}

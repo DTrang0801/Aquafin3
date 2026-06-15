@@ -30,7 +30,7 @@
                                 <td class="font-bold" data-label="Materiaal">
                                     {{ $item->naam }}
                                     @if($item->belangrijk)
-                                        <span style="color: #e53e3e; margin-left: 5px;">⚠️</span>
+                                        <span class="checkout-critical-badge checkout-critical-badge--{{ $item->belangrijk->value }}" style="margin-left: 5px;">{{ $item->belangrijk->label() }}</span>
                                     @endif
                                 </td>
                                 <td class="text-italic" data-label="Categorie">{{ $item->subcategorie->naam ?? 'N/A' }}</td>

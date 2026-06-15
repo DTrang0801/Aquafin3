@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\FloodRiskLevel;
 use Database\Factories\MateriaalFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -37,6 +38,11 @@ class Materiaal extends Model
         'belangrijk',
         'foto',
         'order_count',
+    ];
+
+    /** @var array<string, string> */
+    protected $casts = [
+        'belangrijk' => FloodRiskLevel::class,
     ];
 
     public function categorie()

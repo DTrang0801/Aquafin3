@@ -125,7 +125,7 @@
                                         <div>
                                             <span class="order-item-name">{{ $materiaal->naam }}</span>
                                             @if($materiaal->belangrijk)
-                                                <span class="checkout-critical-badge">Kritiek</span>
+                                                <span class="checkout-critical-badge checkout-critical-badge--{{ $materiaal->belangrijk->value }}">{{ $materiaal->belangrijk->label() }}</span>
                                             @endif
                                         </div>
                                         <span class="order-item-quantity">

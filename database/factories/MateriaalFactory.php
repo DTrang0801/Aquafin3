@@ -21,7 +21,7 @@ class MateriaalFactory extends Factory
             'naam' => fake()->words(2, true),
             'beschrijving' => fake()->sentence(),
             'materiaal_subcategorie_id' => null,
-            'belangrijk' => fake()->boolean(10),
+            'belangrijk' => null,
         ];
     }
 }
