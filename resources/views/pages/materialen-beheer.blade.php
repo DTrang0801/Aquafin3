@@ -23,7 +23,7 @@
 
             <tbody>
                 @foreach($materialen as $materiaal)
-                    <tr class="{{ $materiaal->belangrijk ? 'row-important' : '' }}">
+                    <tr class="{{ $materiaal->belangrijk ? 'row-important row-important--' . $materiaal->belangrijk->value : '' }}">
                         <td class="font-bold">{{ $materiaal->naam }}</td>
 
                              <td>
@@ -39,9 +39,11 @@
                             <td>{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
                         <td>{{ Str::limit($materiaal->beschrijving, 60) ?: 'Geen beschrijving' }}</td>
                         <td>
-                         <!--   <span class="badge {{ $materiaal->belangrijk ? 'badge-important' : 'badge-normal' }}">
-                                {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
-                            </span> --> 
+                            @if($materiaal->belangrijk)
+                                <span class="risk-badge risk-badge--{{ $materiaal->belangrijk->value }}">{{ $materiaal->belangrijk->label() }}</span>
+                            @else
+                                <span style="color:#999; font-size:13px;">—</span>
+                            @endif
                         </td>
                         <td>
                             <div style="display: flex; gap: 6px; justify-content: flex-end;">

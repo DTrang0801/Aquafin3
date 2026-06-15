@@ -16,7 +16,7 @@ class MateriaalController extends Controller
     public function index(Request $request)
     {
         // Belangrijke materialen ophalen
-        $belangrijkeMaterialen = Materiaal::where('belangrijk', true)->with('subcategorie')->get();
+        $belangrijkeMaterialen = Materiaal::whereNotNull('belangrijk')->with('subcategorie')->get();
 
         // Zoekopdracht ophalen
         $search = $request->input('search');
@@ -192,7 +192,7 @@ class MateriaalController extends Controller
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
-            'belangrijk' => $request->has('belangrijk'),
+            'belangrijk' => null,
             'foto' => $fotoPad,
         ]);
 
@@ -234,7 +234,6 @@ class MateriaalController extends Controller
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
-            'belangrijk' => $request->has('belangrijk'),
         ];
 
         if ($request->has('verwijder_foto') && $materiaal->foto) {

@@ -1384,6 +1384,17 @@ body::before {
     color: #34d399;
 }
 
+.weather-alert--warning {
+    background-color: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.3);
+    color: #d97706;
+    font-weight: bold;
+}
+
+.weather-alert--warning .alert-icon {
+    color: #f59e0b;
+}
+
 .weather-alert__note {
     color: #fca5a5;
     display: block;
@@ -1583,7 +1594,8 @@ body::before {
 
 .weather-alert--large {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: space-between;
     gap: 1rem;
     padding: 1.25rem;
     font-size: 1rem;
@@ -1820,6 +1832,13 @@ body::before {
 .risk-badge--low {
     background: #dcfce7;
     color: #166534;
+}
+
+.risk-badge--large {
+    font-size: 0.9375rem;
+    padding: 0.5rem 1rem;
+    align-self: center;
+    flex-shrink: 0;
 }
 
 .seasons-container {
@@ -2686,6 +2705,79 @@ body::before {
     font-weight: 800;
     margin-left: 0.5rem;
     padding: 0.15rem 0.55rem;
+}
+
+.checkout-critical-badge--high {
+    background: #fee2e2;
+    border-color: #fecaca;
+    color: #991b1b;
+}
+
+.checkout-critical-badge--medium {
+    background: #fef3c7;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.checkout-critical-badge--low {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.risk-level-select {
+    appearance: none;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    padding: 0.25rem 0.625rem;
+    transition: border-color 0.15s;
+}
+
+.risk-level-select--high {
+    background: #fee2e2;
+    border-color: #fca5a5;
+    color: #991b1b;
+}
+
+.risk-level-select--medium {
+    background: #fef3c7;
+    border-color: #fde68a;
+    color: #92400e;
+}
+
+.risk-level-select--low {
+    background: #dcfce7;
+    border-color: #bbf7d0;
+    color: #166534;
+}
+
+.risk-level-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-shrink: 0;
+}
+
+.risk-level-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    padding: 0.75rem 1rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    color: var(--text-muted, #94a3b8);
+}
+
+.risk-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 .checkout-actions {

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\FloodRiskLevel;
 use App\Models\Neerslag;
 use Illuminate\Support\Carbon;
 
@@ -14,27 +15,11 @@ use Illuminate\Support\Carbon;
  */
 class FloodRiskAnalysisService
 {
-    /**
-     * Neerslagdrempels (in mm) per seizoen die waarschuwingen voor overstroomingsrisico activeren.
-     */
-    private const SEASON_THRESHOLDS_MM = [
-        'Winter' => 300,
-        'Lente' => 250,
-        'Zomer' => 260,
-        'Herfst' => 280,
-    ];
+    /** @var array<string, int> Neerslagdrempels gedeeld met FloodRiskService */
+    private const SEASON_THRESHOLDS_MM = FloodRiskService::SEASON_THRESHOLDS_MM;
 
-    /**
-     * Maandgroeperingen voor elk seizoen op het noordelijk halfrond.
-     *
-     * @var array<string, list<int>>
-     */
-    private const SEASON_MONTHS = [
-        'Winter' => [12, 1, 2],
-        'Lente' => [3, 4, 5],
-        'Zomer' => [6, 7, 8],
-        'Herfst' => [9, 10, 11],
-    ];
+    /** @var array<string, list<int>> Maandgroeperingen gedeeld met FloodRiskService */
+    private const SEASON_MONTHS = FloodRiskService::SEASON_MONTHS;
 
     /**
      * Genereer 5-jaar overstroomingsrisicovoorspelling met trendanalyse.
@@ -261,7 +246,7 @@ class FloodRiskAnalysisService
             $seasons[$season] = [
                 'forecast_mm' => (int) round($projectedRainfall),
                 'threshold_mm' => $threshold,
-                'risk_level' => $riskLevel,
+                'risk_level' => $riskLevel->value,
                 'exceeds_threshold' => $projectedRainfall >= $threshold,
                 'variance_percent' => (($projectedRainfall - $threshold) / $threshold) * 100,
                 'trend_based' => true,
@@ -273,11 +258,17 @@ class FloodRiskAnalysisService
             ->filter(fn ($s) => $s['exceeds_threshold'])
             ->count();
 
+        $overallRisk = match (true) {
+            $riskCount >= 2 => FloodRiskLevel::High,
+            $riskCount === 1 => FloodRiskLevel::Medium,
+            default => FloodRiskLevel::Low,
+        };
+
         return [
             'year' => $year,
             'seasons' => $seasons,
             'at_risk_seasons' => $riskCount,
-            'overall_risk' => $riskCount >= 2 ? 'high' : ($riskCount === 1 ? 'medium' : 'low'),
+            'overall_risk' => $overallRisk->value,
         ];
     }
 
@@ -315,19 +306,18 @@ class FloodRiskAnalysisService
      *
      * @param  float  $rainfall  Geprojecteerde neerslag in millimeters
      * @param  int  $threshold  Seizoensdrempel in millimeters
-     * @return 'low'|'medium'|'high' Risicokategorie
      */
-    private function calculateRiskLevel(float $rainfall, int $threshold): string
+    private function calculateRiskLevel(float $rainfall, int $threshold): FloodRiskLevel
     {
         if ($rainfall >= $threshold * 1.2) {
-            return 'high';
+            return FloodRiskLevel::High;
         }
 
         if ($rainfall >= $threshold) {
-            return 'medium';
+            return FloodRiskLevel::Medium;
         }
 
-        return 'low';
+        return FloodRiskLevel::Low;
     }
 
     /**
@@ -382,7 +372,7 @@ class FloodRiskAnalysisService
             'threshold' => $threshold,
             'months_completed' => $monthsCompleted,
             'months_in_season' => $monthsInSeason,
-            'risk_level' => $this->calculateRiskLevel($totalRainfall, $threshold),
+            'risk_level' => $this->calculateRiskLevel($totalRainfall, $threshold)->value,
             'exceeds_threshold' => $totalRainfall >= $threshold,
             'percentage' => (($totalRainfall / $threshold) * 100),
         ];

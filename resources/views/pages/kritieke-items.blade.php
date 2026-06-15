@@ -4,7 +4,8 @@
             <div class="weather-header-content">
                 <h1 class="weather-page-title">Beheer Kritieke Items</h1>
                 <p class="weather-page-subtitle">
-                    Kies welke materialen automatisch belangrijk worden wanneer er overstromingsgevaar dreigt.
+                    Kies welke materialen automatisch belangrijk worden wanneer er overstromingsgevaar dreigt,
+                    en stel per materiaal in vanaf welk risiconiveau het gemarkeerd wordt.
                 </p>
             </div>
         </div>
@@ -16,8 +17,20 @@
                         <h2 class="section-heading">Kritieke materialen</h2>
                         <p class="section-description">
                             Gekoppelde materialen worden gemarkeerd bij verhoogd overstromingsrisico.
+                            Het risiconiveau bepaalt wanneer een materiaal actief wordt gemarkeerd.
                         </p>
                     </div>
+                </div>
+
+                <div class="risk-level-legend">
+                    <span class="risk-legend-item">
+                        <span class="risk-badge risk-badge--medium">Gemiddeld</span>
+                        Materiaal wordt gemarkeerd bij ≥ 100% seizoensdrempel
+                    </span>
+                    <span class="risk-legend-item">
+                        <span class="risk-badge risk-badge--high">Hoog</span>
+                        Materiaal wordt gemarkeerd bij ≥ 120% seizoensdrempel
+                    </span>
                 </div>
 
                 @if(session('success'))
@@ -36,6 +49,12 @@
 
                             <div class="stock-list-container stock-list-container--compact">
                                 @forelse($alleMaterialen->flatten(1)->filter(fn ($item) => in_array($item->id, $gekoppeldeIds)) as $item)
+                                    @php
+                                        $currentLevel = $gekoppeldeRiskLevels[$item->id] ?? \App\Enums\FloodRiskLevel::Medium;
+                                        $currentLevelValue = $currentLevel instanceof \App\Enums\FloodRiskLevel
+                                            ? $currentLevel->value
+                                            : (string) $currentLevel;
+                                    @endphp
                                     <label class="stock-item-row material-item material-item--important" data-name="{{ strtolower($item->naam) }}">
                                         <div class="checkbox-container">
                                             <input
@@ -54,7 +73,20 @@
                                                 </span>
                                             </span>
                                         </div>
-                                        <span class="badge badge--small badge-important">Kritiek</span>
+                                        <div class="risk-level-control">
+                                            <select
+                                                name="risk_levels[{{ $item->id }}]"
+                                                class="risk-level-select risk-level-select--{{ $currentLevelValue }}"
+                                                onchange="this.className = 'risk-level-select risk-level-select--' + this.value"
+                                            >
+                                                @foreach($riskLevelOptions as $option)
+                                                    <option
+                                                        value="{{ $option->value }}"
+                                                        {{ $currentLevelValue === $option->value ? 'selected' : '' }}
+                                                    >{{ $option->label() }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
                                     </label>
                                 @empty
                                     <p class="stock-empty">Nog geen kritieke materialen gekoppeld.</p>
@@ -92,6 +124,8 @@
                                                 </span>
                                             </span>
                                         </div>
+                                        {{-- Default to medium when a new item is checked --}}
+                                        <input type="hidden" name="risk_levels[{{ $item->id }}]" value="medium">
                                     </label>
                                 @empty
                                     <p class="stock-empty">Geen beschikbare materialen gevonden.</p>
