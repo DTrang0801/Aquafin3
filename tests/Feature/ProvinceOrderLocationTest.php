@@ -6,6 +6,7 @@ use App\Models\Mandje;
 use App\Models\Materiaal;
 use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
+use App\Models\Role;
 use App\Models\User;
 
 test('technician with province gets depot location on order', function () {
@@ -22,7 +23,7 @@ test('technician with province gets depot location on order', function () {
     ]);
 
     $technician = User::factory()->create([
-        'role_id' => \App\Models\Role::TECHNIEKER,
+        'role_id' => Role::TECHNIEKER,
         'province' => Province::Antwerpen->value,
     ]);
 
@@ -56,7 +57,7 @@ test('technician can override with custom location', function () {
     ]);
 
     $technician = User::factory()->create([
-        'role_id' => \App\Models\Role::TECHNIEKER,
+        'role_id' => Role::TECHNIEKER,
         'province' => Province::VlaamsBrabant->value,
     ]);
 
@@ -89,7 +90,7 @@ test('all provinces map to correct depot addresses', function () {
 
 test('user without province gets depot location null', function () {
     $technician = User::factory()->create([
-        'role_id' => \App\Models\Role::TECHNIEKER,
+        'role_id' => Role::TECHNIEKER,
         'province' => null,
     ]);
 
