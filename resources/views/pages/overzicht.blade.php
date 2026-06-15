@@ -59,7 +59,7 @@
         @else
             <div class="orders-list">
                 @foreach($bestellingen as $bestelling)
-                    <article class="order-card order-card--collapsible {{ $bestelling->isGeannuleerd() ? 'is-geannuleerd' : '' }}">
+                    <article class="order-card order-card--collapsible {{ $bestelling->isGeannuleerd() ? 'is-geannuleerd' : '' }}" {{ $bestelling->isGeannuleerd() ? 'style="display:none"' : '' }}>
                         <button class="order-card__toggle" data-order-id="{{ $bestelling->id }}" type="button">
                             <header class="order-card__header">
                                 <div class="order-card__meta-item order-card__meta-item--number">
