@@ -2727,13 +2727,20 @@ body::before {
 
 .risk-level-select {
     appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23333' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-position: right 0.4rem center;
+    background-repeat: no-repeat;
+    background-size: 1rem;
     border: 1px solid #cbd5e1;
     border-radius: 6px;
     cursor: pointer;
-    font-size: 0.8125rem;
+    flex-shrink: 0;
+    font-size: 0.75rem;
     font-weight: 600;
-    padding: 0.25rem 0.625rem;
-    transition: border-color 0.15s;
+    min-width: 95px;
+    padding: 0.35rem 1.75rem 0.35rem 0.5rem;
+    transition: border-color 0.15s, background-color 0.15s;
+    white-space: nowrap;
 }
 
 .risk-level-select--high {
@@ -2757,8 +2764,8 @@ body::before {
 .risk-level-control {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
     flex-shrink: 0;
+    gap: 0;
 }
 
 .risk-level-legend {
@@ -2863,8 +2870,9 @@ body::before {
 .stock-management-dashboard {
     display: grid;
     gap: 1rem;
-    grid-template-columns: minmax(0, 1.65fr) minmax(280px, 0.75fr);
+    grid-template-columns: 1fr;
     margin-bottom: 1.25rem;
+    width: 100%;
 }
 
 .stock-management-dashboard .weather-card,
@@ -2935,15 +2943,18 @@ body::before {
 .material-picker {
     display: grid;
     gap: 1rem;
-    grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
 }
 
 .material-picker-panel {
     background: #f8fafc;
     border: 1px solid var(--border);
     border-radius: 12px;
+    min-height: 320px;
     min-width: 0;
-    padding: 0.75rem;
+    padding: 1rem;
+    width: 100%;
 }
 
 .material-picker-panel--active {
@@ -3001,16 +3012,31 @@ body::before {
 }
 
 .stock-management-dashboard .stock-item-row {
-    align-items: flex-start;
+    align-items: center;
     border-radius: 8px;
+    cursor: pointer;
+    display: flex;
     gap: 0.5rem;
+    justify-content: space-between;
+    min-height: 2.5rem;
     min-width: 0;
     padding: 0.5rem 0.625rem;
+    width: 100%;
 }
 
 .stock-management-dashboard .checkbox-container {
-    align-items: flex-start;
+    align-items: center;
+    display: flex;
+    flex: 1;
+    gap: 0.5rem;
     min-width: 0;
+    overflow: hidden;
+}
+
+.stock-management-dashboard .checkbox-container span {
+    flex: 1;
+    min-width: 0;
+}
 }
 
 .stock-management-dashboard .checkbox-container input {
