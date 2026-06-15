@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\FloodRiskLevel;
 use App\Models\Neerslag;
 use App\Services\FloodRiskAnalysisService;
 
@@ -55,9 +56,11 @@ test('seasonal data includes risk levels', function () {
     $forecast = $service->getFiveYearFloodRiskForecast();
     $firstYear = reset($forecast);
 
+    $validValues = array_column(FloodRiskLevel::cases(), 'value');
+
     foreach ($firstYear['seasons'] as $season => $seasonData) {
         expect($seasonData)->toHaveKeys(['forecast_mm', 'threshold_mm', 'risk_level', 'exceeds_threshold', 'variance_percent']);
-        expect($seasonData['risk_level'])->toBeIn(['low', 'medium', 'high']);
+        expect($seasonData['risk_level'])->toBeIn($validValues);
     }
 });
 
@@ -107,9 +110,11 @@ test('current year analysis returns valid data', function () {
 
     $analysis = $service->getCurrentYearAnalysis();
 
+    $validValues = array_column(FloodRiskLevel::cases(), 'value');
+
     if (! empty($analysis)) {
         expect($analysis)->toHaveKeys(['season', 'total_rainfall', 'threshold', 'risk_level', 'percentage']);
-        expect($analysis['risk_level'])->toBeIn(['low', 'medium', 'high']);
+        expect($analysis['risk_level'])->toBeIn($validValues);
         expect($analysis['total_rainfall'])->toBeInt();
         expect($analysis['threshold'])->toBeInt();
     }

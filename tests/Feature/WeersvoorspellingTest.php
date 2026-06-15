@@ -103,7 +103,8 @@ test('stockbeheerder neerslag page does not include critical item management for
         ->get(route('weersvoorspelling'))
         ->assertOk()
         ->assertSee('Actuele neerslag')
-        ->assertSee('Start simulatie')
+        ->assertSee('Simuleer Gemiddeld risico')
+        ->assertSee('Simuleer Hoog risico')
         ->assertDontSee('Kritieke materialen')
         ->assertDontSee('Snel nieuw materiaal toevoegen');
 });
@@ -116,7 +117,8 @@ test('non stockbeheerder neerslag page does not include simulation control', fun
     $this->actingAs($user)
         ->get(route('weersvoorspelling'))
         ->assertOk()
-        ->assertDontSee('Start simulatie')
+        ->assertDontSee('Simuleer Gemiddeld risico')
+        ->assertDontSee('Simuleer Hoog risico')
         ->assertDontSee('Stop simulatie');
 });
 
@@ -129,12 +131,33 @@ test('stockbeheerder can update linked critical materials', function () {
     $this->actingAs($user)
         ->post(route('weersvoorspelling.store'), [
             'materiaal_ids' => [$materiaal->id],
+            'risk_levels' => [$materiaal->id => 'high'],
         ])
         ->assertRedirect()
         ->assertSessionHas('success');
 
     $this->assertDatabaseHas('belangrijkeItems', [
         'materiaal_id' => $materiaal->id,
+        'risk_level' => 'high',
+    ]);
+});
+
+test('stockbeheerder can update linked critical materials with default medium risk level', function () {
+    fakeSuccessfulWeatherApi();
+
+    $user = User::factory()->create(['role_id' => Role::STOCKBEHEERDER]);
+    $materiaal = Materiaal::query()->create(['naam' => 'Pomp B']);
+
+    $this->actingAs($user)
+        ->post(route('weersvoorspelling.store'), [
+            'materiaal_ids' => [$materiaal->id],
+        ])
+        ->assertRedirect()
+        ->assertSessionHas('success');
+
+    $this->assertDatabaseHas('belangrijkeItems', [
+        'materiaal_id' => $materiaal->id,
+        'risk_level' => 'medium',
     ]);
 });
 

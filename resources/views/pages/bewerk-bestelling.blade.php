@@ -117,7 +117,7 @@
                                     <div class="material-info">
                                         <span class="material-name">{{ $item->naam }}</span>
                                         @if($item->belangrijk)
-                                            <span class="checkout-critical-badge">Kritiek</span>
+                                            <span class="checkout-critical-badge checkout-critical-badge--{{ $item->belangrijk->value }}">{{ $item->belangrijk->label() }}</span>
                                         @endif
                                     </div>
                                     <div class="material-controls">
@@ -194,7 +194,7 @@
                                     <td>
                                         <span class="checkout-item-name">{{ $item->naam }}</span>
                                         @if($item->belangrijk)
-                                            <span class="checkout-critical-badge">Kritiek</span>
+                                            <span class="checkout-critical-badge checkout-critical-badge--{{ $item->belangrijk->value }}">{{ $item->belangrijk->label() }}</span>
                                         @endif
                                     </td>
                                     <td class="table-right checkout-item-quantity">
@@ -279,10 +279,11 @@
                 return matchesSearch && notAlreadyAdded && notRemoved;
             });
 
+            const riskLabels = { medium: 'Gemiddeld', high: 'Hoog', low: 'Laag' };
             list.innerHTML = filtered.map(material => `
                 <div style="padding: 0.75rem; border-bottom: 1px solid #e5e7eb; cursor: pointer;" 
-                     onclick="addMaterial(${material.id}, '${material.naam.replace(/'/g, "\\'")}', ${material.belangrijk ? 'true' : 'false'})">
-                    <div style="font-weight: 600; color: #1f2937;">${material.naam}</div>
+                     onclick="addMaterial(${material.id}, '${material.naam.replace(/'/g, "\\'")}', ${material.belangrijk ? `'${material.belangrijk}'` : 'null'})">
+                    <div style="font-weight: 600; color: #1f2937;">${material.naam}${material.belangrijk ? ` <span class="checkout-critical-badge checkout-critical-badge--${material.belangrijk}">${riskLabels[material.belangrijk] || material.belangrijk}</span>` : ''}</div>
                     <div style="font-size: 0.875rem; color: #666;">${material.subcategorie?.naam || ''}</div>
                 </div>
             `).join('');
@@ -292,7 +293,12 @@
             }
         }
 
-        function addMaterial(materialId, materialName, isCritical) {
+        function addMaterial(materialId, materialName, criticalLevel) {
+            const isCritical = criticalLevel && criticalLevel !== 'null';
+            const riskLabels = { medium: 'Gemiddeld', high: 'Hoog', low: 'Laag' };
+            const criticalBadge = isCritical
+                ? `<span class="checkout-critical-badge checkout-critical-badge--${criticalLevel}">${riskLabels[criticalLevel] || criticalLevel}</span>`
+                : '';
             const materialsList = document.getElementById('materials-list');
             const overviewBody = document.getElementById('materials-overview-body');
             const existingItem = materialsList.querySelector(`[data-material-id="${materialId}"]`);
@@ -307,7 +313,7 @@
                     <div class="material-edit-row">
                         <div class="material-info">
                             <span class="material-name">${materialName}</span>
-                            ${isCritical ? '<span class="checkout-critical-badge">Kritiek</span>' : ''}
+                            ${criticalBadge}
                         </div>
                         <div class="material-controls">
                             <input 
@@ -336,7 +342,7 @@
                 <tr data-material-id="${materialId}">
                     <td>
                         <span class="checkout-item-name">${materialName}</span>
-                        ${isCritical ? '<span class="checkout-critical-badge">Kritiek</span>' : ''}
+                        ${criticalBadge}
                     </td>
                     <td class="table-right checkout-item-quantity">
                         <span id="qty-${materialId}">1</span>x
