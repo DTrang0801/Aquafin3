@@ -3136,16 +3136,28 @@ body::before {
 }
 
 .weather-simulation-control {
-    align-items: center;
+    align-items: flex-start;
     background: #fffbeb;
     border: 1px solid #fde68a;
     border-left: 4px solid var(--warning);
     border-radius: 14px;
     display: flex;
+    flex-wrap: wrap;
     gap: 1rem;
     justify-content: space-between;
     margin-bottom: 1rem;
     padding: 0.875rem 1rem;
+}
+
+.simulation-buttons {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.sim-form {
+    display: inline-block;
+    margin: 0;
 }
 
 .weather-simulation-control__title {

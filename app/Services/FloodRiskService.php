@@ -102,16 +102,25 @@ class FloodRiskService
     }
 
     /**
-     * Simuleer overstroomingsrisico door alle gekoppelde materialen te markeren als hoog risico.
+     * Simuleer overstroomingsrisico door alle gekoppelde materialen te markeren met het opgegeven risiconiveau.
      * Gebruikt voor test- en demonstratiedoeleinden.
      *
-     * @return FloodRiskLevel Geeft altijd High terug (simulatie is actief)
+     * @param  FloodRiskLevel|string|null  $level  Het risiconiveau om te simuleren (FloodRiskLevel, string, of null)
+     * @return FloodRiskLevel|null Het gesimuleerde risiconiveau of null als simulatie is uitgeschakeld
      */
-    public function applySimulation(): FloodRiskLevel
+    public function applySimulation(FloodRiskLevel|string|null $level = null): ?FloodRiskLevel
     {
-        $this->applyMaterialFlags(FloodRiskLevel::High);
+        if ($level === null || (is_string($level) && $level === 'none')) {
+            // Clear simulation
+            $this->applyMaterialFlags(FloodRiskLevel::Low);
 
-        return FloodRiskLevel::High;
+            return null;
+        }
+
+        $simulationLevel = is_string($level) ? FloodRiskLevel::from($level) : $level;
+        $this->applyMaterialFlags($simulationLevel);
+
+        return $simulationLevel;
     }
 
     /**
