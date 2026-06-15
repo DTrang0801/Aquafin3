@@ -57,9 +57,9 @@
                 <p>Nog geen bestellingen van techniekers.</p>
             </div>
         @else
-            <div class="orders-list">
+            <div class="orders-list" id="ordersList">
                 @foreach($bestellingen as $bestelling)
-                    <article class="order-card order-card--collapsible {{ $bestelling->isGeannuleerd() ? 'is-geannuleerd' : '' }}" {{ $bestelling->isGeannuleerd() ? 'style="display:none"' : '' }}>
+                    <article class="order-card order-card--collapsible {{ $bestelling->isGeannuleerd() ? 'is-geannuleerd' : '' }}">
                         <button class="order-card__toggle" data-order-id="{{ $bestelling->id }}" type="button">
                             <header class="order-card__header">
                                 <div class="order-card__meta-item order-card__meta-item--number">
@@ -165,19 +165,13 @@
 
             const toggleBtn = document.getElementById('toggleCancelled');
             if (toggleBtn) {
-                let cancelledVisible = false;
-                const cancelledCards = document.querySelectorAll('.is-geannuleerd');
-                const activeCards = document.querySelectorAll('.order-card--collapsible:not(.is-geannuleerd)');
+                const ordersList = document.getElementById('ordersList');
                 const toggleText = document.getElementById('toggleText');
+                let cancelledVisible = false;
 
                 toggleBtn.addEventListener('click', function() {
                     cancelledVisible = !cancelledVisible;
-                    cancelledCards.forEach(card => {
-                        card.style.display = cancelledVisible ? '' : 'none';
-                    });
-                    activeCards.forEach(card => {
-                        card.style.display = cancelledVisible ? 'none' : '';
-                    });
+                    ordersList.classList.toggle('show-cancelled', cancelledVisible);
                     toggleText.textContent = cancelledVisible ? 'Verberg geannuleerde' : 'Toon geannuleerde';
                 });
             }
@@ -231,6 +225,18 @@
 
         .order-card--collapsible {
             overflow: visible;
+        }
+
+        .orders-list .is-geannuleerd {
+            display: none;
+        }
+
+        .orders-list.show-cancelled .is-geannuleerd {
+            display: block;
+        }
+
+        .orders-list.show-cancelled .order-card--collapsible:not(.is-geannuleerd) {
+            display: none;
         }
 
         .order-card__toggle {
