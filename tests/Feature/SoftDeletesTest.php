@@ -4,6 +4,7 @@ use App\Models\Bestelling;
 use App\Models\Materiaal;
 use App\Models\Materiaalcategorie;
 use App\Models\MateriaalSubcategorie;
+use App\Models\Role;
 use App\Models\User;
 
 it('soft deletes materiaal and excludes it from queries', function () {
@@ -126,7 +127,7 @@ it('soft deleted materials do not appear in queries', function () {
 
 it('only stockbeheerder can soft delete materials', function () {
     $user = User::factory()->create(['role_id' => null]);
-    $stockbeheerder = User::factory()->create(['role_id' => \App\Models\Role::STOCKBEHEERDER]);
+    $stockbeheerder = User::factory()->create(['role_id' => Role::STOCKBEHEERDER]);
     $materiaal = Materiaal::create([
         'naam' => 'Test Material',
     ]);
