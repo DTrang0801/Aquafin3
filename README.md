@@ -72,6 +72,15 @@ Hier kan de stockbeheerder de huidige neerslag bekijken, de neerslag van de afge
 <img width="1915" height="988" alt="image" src="https://github.com/user-attachments/assets/02a7dd04-3d5c-4c28-9f1a-0d766a3a7c6a" />
 Hier kan de stockbeheerder alle bestellingen bekijken die de techniekers hebben geplaatst. Hij kan zoeken of filteren op periode.
 
+### Bestelling annuleren
+**TECHNIEKER** + **STOCKBEHEERDER** + **ADMIN**
+- Een **technieker** kan enkel zijn eigen bestellingen annuleren.
+- Een **stockbeheerder** of **admin** kan elke bestelling annuleren.
+- Bij annuleren krijg je een bevestigingspop-up en daarna een succesmelding: *"Bestelling #00001 succesvol geannuleerd."*
+- Geannuleerde bestellingen worden **standaard verborgen**.
+- Via een knop met een oogicoon en een **rood cijfer** (`$`) kan je ze **tonen of verbergen**.
+- Als je op de knop klikt, worden enkel de geannuleerde bestellingen getoond.
+
 ### Beheer materiaal
 **STOCKBEHEERDER**
 <img width="1919" height="986" alt="image" src="https://github.com/user-attachments/assets/2a993c2a-b4ba-4b1a-8d26-45d4d416634a" />
