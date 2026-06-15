@@ -107,7 +107,7 @@ Op deze pagina ziet de admin alle gebruikers, hij kan een nieuwe gebruiker toevo
 
 
 
-## Overstromings voorspelling
+## Overstromings voorspelling & Risicobeheer
 
 ### Hoe werkt het?
 
@@ -139,7 +139,7 @@ Voor elk jaar in de 5-jaarsperiode wordt de verwachte neerslag berekend op basis
 
 **Formule**: `Projectie = Gemiddelde + (Trend × JarenInToekomst) + Variance`
 
-#### Stap 5: Risico
+#### Stap 5: Risico-niveaus
 Elke seizoen wordt vergeleken met een drempelwaarde voor overstromingsgevaar:
 - Winter: 300 mm
 - Lente: 250 mm
@@ -147,15 +147,22 @@ Elke seizoen wordt vergeleken met een drempelwaarde voor overstromingsgevaar:
 - Herfst: 280 mm
 
 Afhankelijk van het verschil met de drempel krijgt de seizoen een risiconiveau:
-- Laag: onder de drempel
-- Gemiddeld: gelijk aan drempel tot 20% boven
-- Hoog: 20% of meer boven de drempel
+- **Laag**: onder de drempel
+- **Gemiddeld**: gelijk aan drempel tot 20% boven (100% - 119%)
+- **Hoog**: 20% of meer boven de drempel (≥ 120%)
 
 #### Stap 6: Jaarlijks risico berekenen
 Voor elk jaar in de 5-jaarsperiode wordt het totale risico bepaald door het aantal seizoenen met verhoogd risico:
-- 0-1 seizoen: Laag risico
-- 2-3 seizoenen: Gemiddeld risico
-- 4 seizoenen: Hoog risico
+- 0 seizoenen: Laag risico
+- 1 seizoen: Gemiddeld risico
+- 2+ seizoenen: Hoog risico
+
+#### Stap 7: Graduele materiaal markering
+Het systeem kent elk materiaal een minimum risiconiveau toe (Gemiddeld of Hoog):
+- **Gemiddeld**: Materiaal wordt gemarkeerd bij Gemiddeld risico of hoger
+- **Hoog**: Materiaal wordt alleen gemarkeerd bij Hoog risico
+
+Dit stelt stockbeheerders in staat essentieel materiaal vroeg in te plannen, terwijl ze luxe items kunnen uitstellen tot ernstig overstromingsgevaar.
 
 ### Commands
 - php artisan app:fetch-all-missing-months
@@ -186,13 +193,23 @@ Neerslag en overstromingsrisicobeheersing. Toont huidige/voorspelde neerslag, 5-
 ### StockDashboardController
 Stockdashboard voor beheerders. Toont top 20 meest bestelde materialen met ordergeschiedenis.
 
+## Enums
+
+### FloodRiskLevel
+Vertegenwoordigt de drie risiconiveaus van het overstroomingssysteem:
+- `Low` ('laag'): Neerslag onder 100% van seizoensdrempel
+- `Medium` ('gemiddeld'): Neerslag 100-119% van seizoensdrempel
+- `High` ('hoog'): Neerslag 120% of meer van seizoensdrempel
+
+Wordt gebruikt in `Materiaal.belangrijk` en `Belangrijk.risk_level` voor graduele risicobeheer.
+
 ## Services
 
 ### OpenMeteoService
 Integratie met Open-Meteo API voor weersgegevens. Haalt huidige en historische neerslag op, parsed voorspellingen voor weergave, berekent maandelijkse neerslagtotalen.
 
 ### FloodRiskService
-Detecteert overstromingsrisico door seizoensgebonden neerslag te vergelijken met drempels. Markeert kritieke materialen als risico actief, beheerd gekoppelde materialen, archiveert historische neerslag.
+Detecteert overstromingsrisico door seizoensgebonden neerslag te vergelijken met drempels. Retourneert een `FloodRiskLevel` (Laag/Gemiddeld/Hoog). Markeert kritieke materialen op basis van hun minimale risiconiveau: een materiaal met niveau "Hoog" wordt alleen gemarkeerd bij Hoog risico, terwijl "Gemiddeld" materiaal al bij Gemiddeld risico wordt gemarkeerd. Beheert gekoppelde materialen, archiveert historische neerslag.
 
 ### FloodRiskAnalysisService
 5-jaars trendanalyse met lineaire regressie. Projecteert toekomstige neerslag per seizoen, berekent risiconiveaus, analyseert huidge seizoenvoortgang tegen drempels.
