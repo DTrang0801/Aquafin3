@@ -137,9 +137,12 @@
 
                             @if(!$bestelling->isGeannuleerd())
                                 <footer class="order-card__footer">
+                                    @can('update', $bestelling)
+                                        <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-action btn-action-edit">Bewerk bestelling</a>
+                                    @endcan
                                     <form method="POST" action="{{ route('bestellingen.annuleer', $bestelling->id) }}" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?')">
                                         @csrf
-                                        <button type="submit" class="btn-cancel-order">Annuleer bestelling</button>
+                                        <button type="submit" class="btn-action btn-action-delete">Annuleer bestelling</button>
                                     </form>
                                 </footer>
                             @endif
