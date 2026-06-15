@@ -103,7 +103,8 @@ test('stockbeheerder neerslag page does not include critical item management for
         ->get(route('weersvoorspelling'))
         ->assertOk()
         ->assertSee('Actuele neerslag')
-        ->assertSee('Start simulatie')
+        ->assertSee('Simuleer Gemiddeld risico')
+        ->assertSee('Simuleer Hoog risico')
         ->assertDontSee('Kritieke materialen')
         ->assertDontSee('Snel nieuw materiaal toevoegen');
 });
@@ -116,7 +117,8 @@ test('non stockbeheerder neerslag page does not include simulation control', fun
     $this->actingAs($user)
         ->get(route('weersvoorspelling'))
         ->assertOk()
-        ->assertDontSee('Start simulatie')
+        ->assertDontSee('Simuleer Gemiddeld risico')
+        ->assertDontSee('Simuleer Hoog risico')
         ->assertDontSee('Stop simulatie');
 });
 

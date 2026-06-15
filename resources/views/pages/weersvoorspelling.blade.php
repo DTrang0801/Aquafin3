@@ -67,12 +67,29 @@
                     </p>
                 </div>
 
-                <form action="{{ route('weersvoorspelling.simulate') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="sim-btn {{ $isSimulated ? 'active' : '' }}">
-                        {{ $isSimulated ? 'Stop simulatie' : 'Start simulatie' }}
-                    </button>
-                </form>
+                <div class="simulation-buttons">
+                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" class="sim-form">
+                        @csrf
+                        <input type="hidden" name="level" value="medium">
+                        <button type="submit" class="sim-btn {{ $isSimulated && session('simulate_level') === 'medium' ? 'active' : '' }}">
+                            Simuleer Gemiddeld risico
+                        </button>
+                    </form>
+                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" class="sim-form">
+                        @csrf
+                        <input type="hidden" name="level" value="high">
+                        <button type="submit" class="sim-btn {{ $isSimulated && session('simulate_level') === 'high' ? 'active' : '' }}">
+                            Simuleer Hoog risico
+                        </button>
+                    </form>
+                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" class="sim-form">
+                        @csrf
+                        <input type="hidden" name="level" value="none">
+                        <button type="submit" class="sim-btn {{ !$isSimulated ? 'active' : '' }}">
+                            Stop simulatie
+                        </button>
+                    </form>
+                </div>
             </div>
         @endif
 

@@ -107,7 +107,7 @@ Op deze pagina ziet de admin alle gebruikers, hij kan een nieuwe gebruiker toevo
 
 
 
-## Overstromings voorspelling & Risicobeheer
+## Overstromings voorspelling & Risico
 
 ### Hoe werkt het?
 
@@ -162,8 +162,6 @@ Het systeem kent elk materiaal een minimum risiconiveau toe (Gemiddeld of Hoog):
 - **Gemiddeld**: Materiaal wordt gemarkeerd bij Gemiddeld risico of hoger
 - **Hoog**: Materiaal wordt alleen gemarkeerd bij Hoog risico
 
-Dit stelt stockbeheerders in staat essentieel materiaal vroeg in te plannen, terwijl ze luxe items kunnen uitstellen tot ernstig overstromingsgevaar.
-
 ### Commands
 - php artisan app:fetch-all-missing-months
       Haalt alle neerslag gegevens op van de maanden die nog niet in de huidige database zitten en slaat deze op in de database.
@@ -197,11 +195,9 @@ Stockdashboard voor beheerders. Toont top 20 meest bestelde materialen met order
 
 ### FloodRiskLevel
 Vertegenwoordigt de drie risiconiveaus van het overstroomingssysteem:
-- `Low` ('laag'): Neerslag onder 100% van seizoensdrempel
-- `Medium` ('gemiddeld'): Neerslag 100-119% van seizoensdrempel
-- `High` ('hoog'): Neerslag 120% of meer van seizoensdrempel
-
-Wordt gebruikt in `Materiaal.belangrijk` en `Belangrijk.risk_level` voor graduele risicobeheer.
+- 'laag': Neerslag onder 100% van seizoensdrempel
+- 'gemiddeld': Neerslag 100-119% van seizoensdrempel
+- 'hoog': Neerslag 120% of meer van seizoensdrempel
 
 ## Services
 

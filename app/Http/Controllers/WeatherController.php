@@ -67,7 +67,7 @@ class WeatherController extends Controller
         $parsed = $this->openMeteo->parseForecastForDisplay($forecast);
 
         $currentRiskLevel = $isSimulated
-            ? $this->floodRisk->applySimulation()
+            ? $this->floodRisk->applySimulation(session('simulate_level'))
             : $this->floodRisk->checkAndFlagItems($latitude, $longitude, $parsed['daily'], $parsed['timezone']);
 
         return view('pages.weersvoorspelling', $this->baseViewData(
@@ -113,11 +113,15 @@ class WeatherController extends Controller
         ));
     }
 
-    public function toggleSimulation(): RedirectResponse
+    public function toggleSimulation(Request $request): RedirectResponse
     {
-        $wasSimulated = (bool) session('simulate_flood', false);
+        $level = $request->string('level', 'none');
 
-        session(['simulate_flood' => ! $wasSimulated]);
+        if ($level === 'none') {
+            session(['simulate_flood' => false, 'simulate_level' => null]);
+        } else {
+            session(['simulate_flood' => true, 'simulate_level' => $level]);
+        }
 
         $this->recalculateFloodRiskFromSession();
 
@@ -202,7 +206,7 @@ class WeatherController extends Controller
     private function recalculateFloodRiskFromSession(): void
     {
         if (session('simulate_flood', false)) {
-            $this->floodRisk->applySimulation();
+            $this->floodRisk->applySimulation(session('simulate_level'));
 
             return;
         }
