@@ -167,12 +167,16 @@
             if (toggleBtn) {
                 let cancelledVisible = false;
                 const cancelledCards = document.querySelectorAll('.is-geannuleerd');
+                const activeCards = document.querySelectorAll('.order-card--collapsible:not(.is-geannuleerd)');
                 const toggleText = document.getElementById('toggleText');
 
                 toggleBtn.addEventListener('click', function() {
                     cancelledVisible = !cancelledVisible;
                     cancelledCards.forEach(card => {
                         card.style.display = cancelledVisible ? '' : 'none';
+                    });
+                    activeCards.forEach(card => {
+                        card.style.display = cancelledVisible ? 'none' : '';
                     });
                     toggleText.textContent = cancelledVisible ? 'Verberg geannuleerde' : 'Toon geannuleerde';
                 });
