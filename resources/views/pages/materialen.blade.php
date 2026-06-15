@@ -124,11 +124,15 @@
                                                         <div>{{ $materiaal->naam }}</div>
                                         @if($materiaal->belangrijk)
                                             @php
-                                                $level = $materiaal->belangrijk instanceof \App\Enums\FloodRiskLevel
-                                                    ? $materiaal->belangrijk
-                                                    : \App\Enums\FloodRiskLevel::from((string)$materiaal->belangrijk);
+                                                try {
+                                                    $level = $materiaal->belangrijk instanceof \App\Enums\FloodRiskLevel
+                                                        ? $materiaal->belangrijk
+                                                        : \App\Enums\FloodRiskLevel::from((string)$materiaal->belangrijk);
+                                                    echo '<span class="risk-badge risk-badge--' . $level->value . '">' . $level->label() . '</span>';
+                                                } catch (\Exception $e) {
+                                                    // Silently ignore invalid values
+                                                }
                                             @endphp
-                                            <span class="risk-badge risk-badge--{{ $level->value }}">{{ $level->label() }}</span>
                                         @endif
                                     </td>
                                     <td class="text-italic" style="padding: 14px 20px; color: #000000; font-style: italic;">

@@ -42,7 +42,7 @@ class Materiaal extends Model
 
     /** @var array<string, string> */
     protected $casts = [
-        'belangrijk' => FloodRiskLevel::class,
+        'belangrijk' => NullableFloodRiskLevelCast::class,
     ];
 
     public function categorie()
