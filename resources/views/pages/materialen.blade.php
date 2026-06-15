@@ -92,7 +92,7 @@
                         <button type="submit" class="search-button" style="width: 100%; height: 42px;">Zoek</button>
                         @if(request('search') || request('category_id') || request('subcategory_id'))
                             <a href="{{ route('materialen') }}" class="btn-reset" style="height: 42px; display: inline-flex; align-items: center; justify-content: center; background-color: #475569; color: white; text-decoration: none; padding: 0 16px; border-radius: 6px; font-weight: 600; font-size: 13px;">
-                                Reset
+                                X
                             </a>
                         @endif
                     </div>
@@ -359,10 +359,10 @@
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto;
             gap: 16px;
-            background-color: #e5e5e5;
+            background-color:rgb(255, 255, 255);
             padding: 20px;
             border-radius: 12px;
-            border: 1px solid #334155;
+            /* border: 2px solid rgb(77, 77, 77); */
             align-items: flex-end;
         }
 
@@ -384,10 +384,10 @@
             width: 100%;
             height: 42px;
             padding: 8px 12px;
-            background-color: #ececec;
+            background-color:rgb(251, 251, 251);
             border: 1px solid #475569;
             border-radius: 6px;
-            color: #4b4b4b;
+            color:rgb(17, 17, 17);
             font-size: 14px;
             outline: none;
             transition: border-color 0.2s ease;
@@ -398,8 +398,8 @@
         }
 
         .filter-select:disabled {
-            background-color: #1e293b;
-            color: #64748b;
+            background-color:rgb(200, 200, 200);
+            color:rgb(65, 65, 65);
             border-color: #334155;
             cursor: not-allowed;
         }
