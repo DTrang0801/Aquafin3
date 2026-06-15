@@ -1526,6 +1526,16 @@ body::before {
     text-align: right;
 }
 
+.text-danger {
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.text-lighter {
+    color: var(--text-lighter);
+}
+
 .empty-state {
     text-align: center;
     padding: 2.5rem;
