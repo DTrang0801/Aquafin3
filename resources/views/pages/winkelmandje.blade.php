@@ -38,8 +38,7 @@
                                     <form action="{{ route('winkelmandje.update', $item->id) }}" method="POST" class="quantity-form">
                                         @csrf
                                         @method('PATCH')
-                                        <input type="number" name="aantal" value="{{ $item->pivot->aantal }}" min="1" class="quantity-input">
-                                        <button type="submit" class="quantity-submit">Bijwerken</button>
+                                        <input type="number" name="aantal" value="{{ $item->pivot->aantal }}" min="1" class="quantity-input" data-item-id="{{ $item->id }}">
                                     </form>
                                 </td>
                                 <td data-label="Acties">
@@ -96,21 +95,10 @@
             height: 34px;
         }
 
-        .quantity-submit {
-            background-color: #4a5568;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            height: 34px;
-            white-space: nowrap;
-        }
-
-        .quantity-submit:hover {
-            background-color: #2d3748;
+        .quantity-input:focus {
+            outline: none;
+            border-color: #3182ce;
+            box-shadow: 0 0 0 2px rgba(49, 130, 206, 0.1);
         }
 
         .delete-form {
@@ -189,7 +177,6 @@
                 height: 32px;
             }
 
-            .quantity-submit,
             .delete-button {
                 padding: 4px 8px;
                 font-size: 11px;
@@ -282,12 +269,6 @@
                 font-size: 14px;
             }
 
-            .quantity-submit {
-                flex: 1;
-                padding: 8px 12px;
-                font-size: 12px;
-            }
-
             .delete-form {
                 display: block;
                 width: 100%;
@@ -312,4 +293,15 @@
             }
         }
     </style>
+
+    <script>
+        document.querySelectorAll('.quantity-input').forEach(input => {
+            input.addEventListener('change', function() {
+                const form = this.closest('.quantity-form');
+                if (form) {
+                    form.submit();
+                }
+            });
+        });
+    </script>
 </x-site-layout>

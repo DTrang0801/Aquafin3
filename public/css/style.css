@@ -1046,6 +1046,7 @@ body::before {
     transition: all 0.2s;
     border: none;
     cursor: pointer;
+    margin: 0.25rem 0;
 }
 
 .btn-action-edit {
@@ -1523,6 +1524,16 @@ body::before {
 
 .table-right {
     text-align: right;
+}
+
+.text-danger {
+    color: var(--danger);
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+.text-lighter {
+    color: var(--text-lighter);
 }
 
 .empty-state {

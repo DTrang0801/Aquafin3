@@ -37,9 +37,14 @@ class BestellingPolicy
      */
     public function update(User $user, Bestelling $bestelling): bool
     {
-        return $user->role_id === Role::TECHNIEKER
-            && $bestelling->gebruiker_id === $user->id
-            && $bestelling->canStillBeEdited();
+        if ($bestelling->isGeannuleerd()) {
+            return false;
+        }
+
+        return in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN])
+            || ($user->role_id === Role::TECHNIEKER
+                && $bestelling->gebruiker_id === $user->id
+                && $bestelling->canStillBeEdited());
     }
 
     /**
