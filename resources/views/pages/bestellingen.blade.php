@@ -30,18 +30,33 @@
                     <a href="{{ route('bestellingen') }}" class="search-clear">Wis</a>
                 @endif
             </form>
-            <div class="orders-periodes">
-                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'vandaag'])) }}"
-                    class="periode-btn {{ ($periode ?? '') === 'vandaag' ? 'periode-btn--actief' : '' }}">Vandaag</a>
-                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'week'])) }}"
-                    class="periode-btn {{ ($periode ?? '') === 'week' ? 'periode-btn--actief' : '' }}">Deze week</a>
-                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'maand'])) }}"
-                    class="periode-btn {{ ($periode ?? '') === 'maand' ? 'periode-btn--actief' : '' }}">Deze maand</a>
-                <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => '3maanden'])) }}"
-                    class="periode-btn {{ ($periode ?? '') === '3maanden' ? 'periode-btn--actief' : '' }}">Afgelopen 3 maanden</a>
-                @if($periode ?? '')
-                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null])) }}"
-                        class="periode-btn periode-btn--wis">Alle</a>
+            <div class="orders-filter-row">
+                <div class="orders-periodes">
+                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'vandaag'])) }}"
+                        class="periode-btn {{ ($periode ?? '') === 'vandaag' ? 'periode-btn--actief' : '' }}">Vandaag</a>
+                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'week'])) }}"
+                        class="periode-btn {{ ($periode ?? '') === 'week' ? 'periode-btn--actief' : '' }}">Deze week</a>
+                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => 'maand'])) }}"
+                        class="periode-btn {{ ($periode ?? '') === 'maand' ? 'periode-btn--actief' : '' }}">Deze maand</a>
+                    <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null, 'periode' => '3maanden'])) }}"
+                        class="periode-btn {{ ($periode ?? '') === '3maanden' ? 'periode-btn--actief' : '' }}">Afgelopen 3 maanden</a>
+                    @if($periode ?? '')
+                        <a href="{{ route('bestellingen', array_filter(['zoekterm' => $zoekterm ?? null])) }}"
+                            class="periode-btn periode-btn--wis">Alle</a>
+                    @endif
+                </div>
+                @php
+                    $geannuleerdCount = $bestellingen->filter->isGeannuleerd()->count();
+                @endphp
+                @if($geannuleerdCount > 0)
+                    <button type="button" class="btn-filter-cancelled" id="toggleCancelled">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <span id="toggleText">Toon geannuleerde</span>
+                        <span class="filter-count">{{ $geannuleerdCount }}</span>
+                    </button>
                 @endif
             </div>
         </div>
@@ -52,9 +67,9 @@
                 <a href="{{ route('winkelmandje.index') }}">Naar mijn winkelmandje</a>
             </div>
         @else
-            <div class="orders-list">
+            <div class="orders-list" id="ordersList">
                 @foreach($bestellingen as $bestelling)
-                    <article class="order-card order-card--collapsible">
+                    <article class="order-card order-card--collapsible {{ $bestelling->isGeannuleerd() ? 'is-geannuleerd' : '' }}">
                         <button class="order-card__toggle" data-order-id="{{ $bestelling->id }}" type="button">
                             <header class="order-card__header">
                                 <div class="order-card__meta-item order-card__meta-item--number">
@@ -155,12 +170,81 @@
                     icon.style.transform = icon.style.transform === 'rotate(180deg)' ? 'rotate(0deg)' : 'rotate(180deg)';
                 });
             });
+
+            const toggleBtn = document.getElementById('toggleCancelled');
+            if (toggleBtn) {
+                const ordersList = document.getElementById('ordersList');
+                const toggleText = document.getElementById('toggleText');
+                let cancelledVisible = false;
+
+                toggleBtn.addEventListener('click', function() {
+                    cancelledVisible = !cancelledVisible;
+                    ordersList.classList.toggle('show-cancelled', cancelledVisible);
+                    toggleText.textContent = cancelledVisible ? 'Verberg geannuleerde' : 'Toon geannuleerde';
+                });
+            }
         </script>
     </div>
 
     <style>
+        .orders-filter-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .btn-filter-cancelled {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+            color: var(--text-medium);
+            background: var(--bg-white);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .btn-filter-cancelled:hover {
+            border-color: var(--danger);
+            color: var(--danger);
+            background: var(--danger-light);
+        }
+
+        .filter-count {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 1.25rem;
+            height: 1.25rem;
+            padding: 0 0.35rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: white;
+            background: var(--danger);
+            border-radius: 999px;
+        }
+
         .order-card--collapsible {
             overflow: visible;
+        }
+
+        .orders-list .is-geannuleerd {
+            display: none;
+        }
+
+        .orders-list.show-cancelled .is-geannuleerd {
+            display: block;
+        }
+
+        .orders-list.show-cancelled .order-card--collapsible:not(.is-geannuleerd) {
+            display: none;
         }
 
         .order-card__toggle {
@@ -216,6 +300,15 @@
         }
 
         @media (max-width: 768px) {
+            .orders-filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-filter-cancelled {
+                justify-content: center;
+            }
+
             .order-card__header {
                 grid-template-columns: 1fr 2rem;
                 gap: 0.75rem;
