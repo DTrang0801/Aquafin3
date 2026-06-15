@@ -168,3 +168,31 @@ De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
 - De toekomst volgt niet altijd het verleden
 - Onvoorziene klimaatveranderingen kunnen het patroon verstoren
 - Korte-termijn extrema kunnen niet worden voorspeld
+
+## Controllers
+
+### CartController
+Beheert het winkelmandje en bestellingen. Voegt materiaal toe/verwijdert het, verwerkt bestellingen, geeft suggesties, en beheerd de bestelgeschiedenis. Administratoren kunnen bestellingen annuleren en bewerken.
+
+### MateriaalController
+Beheer van materialen. Toont materiaaloverzicht met zoeken en filters, maakt materiaal aan/bewerkt/verwijdert. Voor stockbeheerders: beheer van alle materialen en hun eigenschappen.
+
+### HomeController
+Startpagina logica. Toont weersvoorspelling (7 dagen) en herinneringen voor techniekers. Cacht gegevens 30 minuten voor performance. Refresh-functionaliteit beschikbaar.
+
+### WeatherController
+Neerslag en overstromingsrisicobeheersing. Toont huidige/voorspelde neerslag, 5-jaarprognose, en historische data. Beheert kritieke materialen gekoppeld aan overstromingsgevaar. Simulatiemodus voor testen.
+
+### StockDashboardController
+Stockdashboard voor beheerders. Toont top 20 meest bestelde materialen met ordergeschiedenis.
+
+## Services
+
+### OpenMeteoService
+Integratie met Open-Meteo API voor weersgegevens. Haalt huidige en historische neerslag op, parsed voorspellingen voor weergave, berekent maandelijkse neerslagtotalen.
+
+### FloodRiskService
+Detecteert overstromingsrisico door seizoensgebonden neerslag te vergelijken met drempels. Markeert kritieke materialen als risico actief, beheerd gekoppelde materialen, archiveert historische neerslag.
+
+### FloodRiskAnalysisService
+5-jaars trendanalyse met lineaire regressie. Projecteert toekomstige neerslag per seizoen, berekent risiconiveaus, analyseert huidge seizoenvoortgang tegen drempels.
