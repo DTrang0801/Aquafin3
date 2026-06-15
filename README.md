@@ -172,13 +172,13 @@ De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
 ## Controllers
 
 ### CartController
-Beheert het winkelmandje en bestellingen. Voegt materiaal toe/verwijdert het, verwerkt bestellingen, geeft suggesties, en beheerd de bestelgeschiedenis. Administratoren kunnen bestellingen annuleren en bewerken.
+Beheert het winkelmandje en bestellingen. Voegt materiaal toe/verwijdert het, verwerkt bestellingen, geeft suggesties, en beheerd de bestelgeschiedenis. Stockbeheerders kunnen bestellingen annuleren en bewerken.
 
 ### MateriaalController
 Beheer van materialen. Toont materiaaloverzicht met zoeken en filters, maakt materiaal aan/bewerkt/verwijdert. Voor stockbeheerders: beheer van alle materialen en hun eigenschappen.
 
 ### HomeController
-Startpagina logica. Toont weersvoorspelling (7 dagen) en herinneringen voor techniekers. Cacht gegevens 30 minuten voor performance. Refresh-functionaliteit beschikbaar.
+Startpagina logica. Toont weersvoorspelling (7 dagen) en herinneringen voor techniekers. Cached gegevens 30 minuten voor performance. Refresh-functionaliteit beschikbaar.
 
 ### WeatherController
 Neerslag en overstromingsrisicobeheersing. Toont huidige/voorspelde neerslag, 5-jaarprognose, en historische data. Beheert kritieke materialen gekoppeld aan overstromingsgevaar. Simulatiemodus voor testen.
