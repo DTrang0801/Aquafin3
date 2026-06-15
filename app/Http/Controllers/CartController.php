@@ -389,6 +389,8 @@ class CartController extends Controller
 
         $bestelling->markAsEdited();
 
-        return redirect()->route('bestellingen')->with('success', 'Bestelling succesvol bijgewerkt!');
+        $route = $user->role_id === Role::TECHNIEKER ? 'bestellingen' : 'overzicht';
+
+        return redirect()->route($route)->with('success', 'Bestelling succesvol bijgewerkt!');
     }
 }
