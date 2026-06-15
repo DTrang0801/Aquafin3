@@ -91,7 +91,6 @@ class MateriaalController extends Controller
             return true;
         });
 
-
         return view('pages.materialen', compact(
             'belangrijkeMaterialen',
             'categorieen',
