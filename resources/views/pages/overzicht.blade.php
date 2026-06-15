@@ -7,8 +7,8 @@
             </div>
         </div>
 
-        @if (session('succes'))
-            <div class="alert-success">{{ session('succes') }}</div>
+        @if (session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
         @endif
 
         <div class="orders-search-wrapper">
