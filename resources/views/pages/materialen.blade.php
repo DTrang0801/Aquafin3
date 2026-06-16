@@ -562,8 +562,9 @@
             <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
         </div>
         <div class="suggestions-popup-content" id="suggestions-content"></div>
-        <div style="padding: 12px 16px; text-align: center; border-top: 1px solid var(--border, #e5e7eb);">
+        <div style="padding: 12px 16px; text-align: center; border-top: 1px solid var(--border, #e5e7eb); display: flex; gap: 12px; justify-content: center;">
             <button onclick="closeSuggestionsPopup()" style="padding: 8px 24px; border-radius: 6px; border: none; background: #6b7280; color: #fff; font-weight: 700; cursor: pointer;">Nee, bedankt</button>
+            <a href="{{ route('winkelmandje.index') }}" style="padding: 8px 24px; border-radius: 6px; border: none; background: #2563eb; color: #fff; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block;">Verder naar winkelmandje</a>
         </div>
     </div>
 
