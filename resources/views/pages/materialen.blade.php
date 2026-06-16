@@ -559,12 +559,12 @@
     <div id="suggestions-popup" class="suggestions-popup" style="display: none;">
         <div class="suggestions-popup-header">
             <h2 class="suggestions-popup-title">Aanbevolen Producten</h2>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button onclick="closeSuggestionsPopup()" style="padding: 6px 16px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: #fff; color: var(--text, #374151); font-weight: 500; cursor: pointer;">Nee, bedankt</button>
-                <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
-            </div>
+            <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
         </div>
         <div class="suggestions-popup-content" id="suggestions-content"></div>
+        <div style="padding: 12px 16px; text-align: center; border-top: 1px solid var(--border, #e5e7eb);">
+            <button onclick="closeSuggestionsPopup()" style="padding: 8px 24px; border-radius: 6px; border: none; background: #6b7280; color: #fff; font-weight: 700; cursor: pointer;">Nee, bedankt</button>
+        </div>
     </div>
 
     <div id="success-toast" class="toast-success" style="display: none;"></div>
