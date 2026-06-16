@@ -216,7 +216,7 @@
             @if(request('search') && !$openCategoryIds->contains($categorie->id))
                 @continue
             @endif
-            <details class="category-block">
+            <details class="category-block" {{ request('search') ? 'open' : '' }}>
                 
                 <summary class="category-header" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">
                     <span>{{ $categorie->naam }}</span>
@@ -228,7 +228,7 @@
                         @if(request('search') && !$openSubcategoryIds->contains($subcategorie->id))
                             @continue
                         @endif
-                            <details class="subcategory-block" style="margin-bottom: 15px;">
+                            <details class="subcategory-block" style="margin-bottom: 15px;" {{ request('search') ? 'open' : '' }}>
                             
                             <summary class="subcategory-title" style="cursor: pointer; user-select: none; list-style: none;">
                                 <strong>{{ $subcategorie->naam }}</strong>
