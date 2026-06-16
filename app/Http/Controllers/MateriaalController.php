@@ -113,7 +113,16 @@ class MateriaalController extends Controller
         $haystack = mb_strtolower(trim($haystack));
         $needle = mb_strtolower(trim($needle));
 
-        // Exact substring match check
+        // Normalize by removing spaces and hyphens for flexible matching
+        $normalizedHaystack = preg_replace('/[\s\-]/', '', $haystack);
+        $normalizedNeedle = preg_replace('/[\s\-]/', '', $needle);
+
+        // Exact substring match check (normalized)
+        if (str_contains($normalizedHaystack, $normalizedNeedle)) {
+            return true;
+        }
+
+        // Also check original for exact match
         if (str_contains($haystack, $needle)) {
             return true;
         }
