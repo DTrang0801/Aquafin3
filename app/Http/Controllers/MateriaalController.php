@@ -70,8 +70,8 @@ class MateriaalController extends Controller
                     return false;
                 }
 
-                // Open de subcategorie alleen bij suggestie-klik
-                if (request('suggestie') && $search) {
+                // Open de subcategorie alleen bij suggestie-klik of als er matching materialen zijn
+                if ($search && $sub->materialen->isNotEmpty()) {
                     $openSubcategoryIds->push($sub->id);
                 }
 
@@ -83,8 +83,8 @@ class MateriaalController extends Controller
                 return false;
             }
 
-            // Open de categorie alleen bij suggestie-klik
-            if (request('suggestie') && ($search || request('category_id') || request('subcategory_id'))) {
+            // Open de categorie alleen bij suggestie-klik of als er matching subcategorieën zijn
+            if ($search && $cat->subcategorieen->isNotEmpty()) {
                 $openCategoryIds->push($cat->id);
             }
 
