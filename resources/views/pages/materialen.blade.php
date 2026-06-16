@@ -2,7 +2,11 @@
     <div class="container">
         <h1 class="page-title">Materialen</h1>
 
-            <form action="{{ route('materialen') }}" method="GET" id="search-filter-form" style="margin-bottom: 30px;">
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+
+        <form action="{{ route('materialen') }}" method="GET" id="search-filter-form" style="margin-bottom: 30px;">
                 <div class="search-filter-grid">
                     
                     <div class="filter-group keyword-search"
