@@ -247,6 +247,49 @@ class FloodRiskService
     }
 
     /**
+     * Calculate the current rainfall as a percentage of the seasonal threshold.
+     * Returns the percentage (0-100+ where 100% = medium risk threshold, 120% = high risk threshold).
+     *
+     * @param  float  $latitude  Locatiebreedte
+     * @param  float  $longitude  Locatielengte
+     * @param  array<string, mixed>|null  $forecastDaily  Optionele voorspellingsgegevens
+     * @param  string  $timezone  Tijdzone voor berekeningen
+     * @return float Percentage of seasonal threshold
+     */
+    public function calculateRiskPercentage(
+        float $latitude = OpenMeteoService::DEFAULT_LATITUDE,
+        float $longitude = OpenMeteoService::DEFAULT_LONGITUDE,
+        ?array $forecastDaily = null,
+        string $timezone = 'Europe/Berlin',
+    ): float {
+        $now = Carbon::now('Europe/Berlin');
+        $currentMonth = $now->month;
+        $currentYear = $now->year;
+        $currentSeason = $this->seasonForMonth($currentMonth);
+
+        if ($currentSeason === null) {
+            return 0;
+        }
+
+        $totalRainfall = $this->accumulatedSeasonRainfall(
+            $currentSeason,
+            $currentMonth,
+            $currentYear,
+        );
+
+        if ($forecastDaily === null) {
+            $forecast = $this->openMeteo->fetchForecast($latitude, $longitude);
+            $forecastDaily = $forecast['daily'] ?? null;
+            $timezone = $forecast['timezone'] ?? $timezone;
+        }
+
+        $totalRainfall += $this->openMeteo->sumRainfallForMonth($forecastDaily, $currentMonth, $timezone);
+        $threshold = self::SEASON_THRESHOLDS_MM[$currentSeason];
+
+        return ($totalRainfall / $threshold) * 100;
+    }
+
+    /**
      * Bereken opgehoopte neerslag voor voltooide maanden in het huidige seizoen.
      * Sluit de huidige maand uit (die wordt afgehandeld door voorspellingsgegevens).
      *

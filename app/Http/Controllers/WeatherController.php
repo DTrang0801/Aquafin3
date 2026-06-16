@@ -54,8 +54,10 @@ class WeatherController extends Controller
                     'error' => 'Kon de neerslaggegevens niet ophalen.',
                     'currentRain' => 0,
                     'pastMonthTotal' => 0,
+                    'pastThreeMonthsTotal' => 0,
                     'dailyRainForecast' => [],
                     'currentRiskLevel' => FloodRiskLevel::Low,
+                    'riskPercentage' => 0,
                     'floodAlarmTriggered' => false,
                     'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
                     'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),
@@ -70,6 +72,13 @@ class WeatherController extends Controller
             ? $this->floodRisk->applySimulation(session('simulate_level'))
             : $this->floodRisk->checkAndFlagItems($latitude, $longitude, $parsed['daily'], $parsed['timezone']);
 
+        $riskPercentage = $this->floodRisk->calculateRiskPercentage(
+            $latitude,
+            $longitude,
+            $parsed['daily'],
+            $parsed['timezone'],
+        );
+
         return view('pages.weersvoorspelling', $this->baseViewData(
             latitude: $latitude,
             longitude: $longitude,
@@ -78,8 +87,10 @@ class WeatherController extends Controller
             extra: [
                 'currentRain' => $parsed['currentRain'],
                 'pastMonthTotal' => $parsed['pastMonthTotal'],
+                'pastThreeMonthsTotal' => $parsed['pastThreeMonthsTotal'],
                 'dailyRainForecast' => $parsed['dailyRainForecast'],
                 'currentRiskLevel' => $currentRiskLevel,
+                'riskPercentage' => $riskPercentage,
                 'floodAlarmTriggered' => $currentRiskLevel !== FloodRiskLevel::Low,
                 'fiveYearForecast' => $this->floodAnalysis->getFiveYearFloodRiskForecast(),
                 'currentYearAnalysis' => $this->floodAnalysis->getCurrentYearAnalysis(),

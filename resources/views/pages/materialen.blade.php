@@ -100,15 +100,14 @@
             </form>
 
         @if($belangrijkeMaterialen->isNotEmpty())
-            <details class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
+            <details class="category-block" style="margin-bottom: 25px; border-color: #ef4444;">
                 
-             <!--   <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
+                <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 18px;">⚠️</span>
                         <span style="color: #3d3d3d; font-weight: bold; letter-spacing: 0.05em;">Belangrijk materiaal</span>
                     </div>
                     <span class="arrow" style="color: #fca5a5;">▼</span>
-                </summary> -->
+                </summary>
 
                 <div class="category-content" style="padding: 0; background-color: rgba(15, 23, 42, 0.2);">
                     <table class="custom-table table-important" style="width: 100%; margin: 0;">

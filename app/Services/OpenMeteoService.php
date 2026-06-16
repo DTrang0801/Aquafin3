@@ -36,7 +36,7 @@ class OpenMeteoService
 
     /**
      * Haal weersvoorspelling op van de Open-Meteo API.
-     * Retourneert zowel huidige neerslag als een 14-daagse voorspelling met historische gegevens (afgelopen 30 dagen).
+     * Retourneert zowel huidige neerslag als een 14-daagse voorspelling met historische gegevens (afgelopen 90 dagen).
      *
      * @return array<string, mixed>|null Neerslaggegevens of null als API-aanroep mislukt
      */
@@ -49,7 +49,7 @@ class OpenMeteoService
                 'daily' => 'rain_sum',
                 'current' => 'rain,precipitation',
                 'timezone' => 'auto',
-                'past_days' => 30,
+                'past_days' => 90,
                 'forecast_days' => 14,
             ]);
 
@@ -136,13 +136,14 @@ class OpenMeteoService
 
     /**
      * Parse voorspellings-API-antwoord voor weergave in de UI.
-     * Scheidt historische neerslag (afgelopen maand) van toekomstige voorspellingen.
+     * Scheidt historische neerslag (afgelopen 1 en 3 maanden) van toekomstige voorspellingen.
      * Formatteert dagnamen.
      *
      * @param  array<string, mixed>  $data  Ruwe voorspellingsgegevens van Open-Meteo API
      * @return array{
      *     currentRain: float,
      *     pastMonthTotal: float,
+     *     pastThreeMonthsTotal: float,
      *     dailyRainForecast: list<array{day_name: string, amount: float}>,
      *     timezone: string,
      *     daily: array<string, mixed>|null
@@ -155,19 +156,27 @@ class OpenMeteoService
         $timezone = $data['timezone'] ?? 'Europe/Berlin';
 
         $pastMonthTotal = 0.0;
+        $pastThreeMonthsTotal = 0.0;
         $dailyRainForecast = [];
 
         if ($daily && isset($daily['time'])) {
             $today = Carbon::today($timezone);
+            $oneMonthAgo = $today->copy()->subMonths(1);
+            $threeMonthsAgo = $today->copy()->subMonths(3);
 
             foreach ($daily['time'] as $index => $dateString) {
                 $date = Carbon::parse($dateString, $timezone);
                 $amount = (float) ($daily['rain_sum'][$index] ?? 0);
 
-                // Verzamel historische neerslaggegevens voor de afgelopen maand
-                if ($date->isBefore($today)) {
+                // Verzamel neerslag van de afgelopen 1 maand
+                if ($date->isBefore($today) && $date->gte($oneMonthAgo)) {
                     $pastMonthTotal += $amount;
-                } else {
+                }
+
+                // Verzamel neerslag van de afgelopen 3 maanden
+                if ($date->isBefore($today) && $date->gte($threeMonthsAgo)) {
+                    $pastThreeMonthsTotal += $amount;
+                } elseif ($date->gte($today)) {
                     // Bouw toekomstige voorspellingsinvoeren op
                     $dailyRainForecast[] = [
                         'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
@@ -180,6 +189,7 @@ class OpenMeteoService
         return [
             'currentRain' => (float) ($current['precipitation'] ?? 0),
             'pastMonthTotal' => round($pastMonthTotal, 1),
+            'pastThreeMonthsTotal' => round($pastThreeMonthsTotal, 1),
             'dailyRainForecast' => $dailyRainForecast,
             'timezone' => $timezone,
             'daily' => $daily,

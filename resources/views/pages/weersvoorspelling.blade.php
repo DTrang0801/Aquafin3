@@ -128,10 +128,33 @@
                                 </span>
                             </div>
 
-                            <div class="stat-box highlighted">
+                            <div class="stat-box">
                                 <span class="stat-label">Afgelopen maand</span>
                                 <span class="stat-value value-history">
                                     {{ $pastMonthTotal }}<span class="unit">mm</span>
+                                </span>
+                            </div>
+
+                            <div class="stat-box highlighted">
+                                <span class="stat-label">Afgelopen 3 maanden</span>
+                                <span class="stat-value value-history">
+                                    {{ $pastThreeMonthsTotal }}<span class="unit">mm</span>
+                                </span>
+                            </div>
+
+                            <div class="stat-box">
+                                <span class="stat-label">Risico percentage</span>
+                                <span class="stat-value value-risk" style="color: {{ $riskPercentage >= 120 ? '#dc2626' : ($riskPercentage >= 100 ? '#d97706' : '#16a34a') }};">
+                                    {{ number_format($riskPercentage, 1) }}<span class="unit">%</span>
+                                </span>
+                                <span class="risk-sublabel">
+                                    @if($riskPercentage < 100)
+                                        {{ number_format(100 - $riskPercentage, 1) }}% van medium risico
+                                    @elseif($riskPercentage < 120)
+                                        {{ number_format(120 - $riskPercentage, 1) }}% van hoog risico
+                                    @else
+                                        Boven hoog risico drempel
+                                    @endif
                                 </span>
                             </div>
                         </div>

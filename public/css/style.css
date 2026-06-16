@@ -1258,11 +1258,24 @@ body::before {
     color: #22d3ee; 
 }
 
+.value-risk {
+    font-size: 1.75rem;
+    font-weight: 900;
+}
+
 .unit {
     font-size: 0.875rem;
     font-weight: 400;
     color: #cbd5e1;
     margin-left: 0.25rem;
+}
+
+.risk-sublabel {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--slate-400);
+    margin-top: 0.5rem;
+    font-weight: 500;
 }
 
 .forecast-container {
@@ -1704,6 +1717,7 @@ body::before {
 
 .important-items-section {
     margin-bottom: 1.5rem;
+    background-color: rgba(239, 68, 68, 0.1);
 }
 
 .important-items-title {
