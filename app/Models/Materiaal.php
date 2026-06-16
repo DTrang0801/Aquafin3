@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use App\Casts\NullableFloodRiskLevelCast;
-use App\Enums\FloodRiskLevel;
 use Database\Factories\MateriaalFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
