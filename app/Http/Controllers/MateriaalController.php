@@ -153,7 +153,8 @@ class MateriaalController extends Controller
             return response()->json([]);
         }
 
-        $likePattern = strlen($query) === 1 ? $query.'%' : '%'.$query.'%';
+        // Always use "starts with" pattern for consistent behavior
+        $likePattern = $query.'%';
 
         $exact = Materiaal::where('naam', 'like', $likePattern)
             ->limit(100)
@@ -163,7 +164,8 @@ class MateriaalController extends Controller
         $exactIds = $exact->pluck('id');
 
         $typo = collect();
-        if (strlen($query) > 1) {
+        // Only use typo-tolerant matching for queries with 3+ characters
+        if (strlen($query) >= 3) {
             $typoQuery = $exactIds->isNotEmpty()
                 ? Materiaal::whereNotIn('id', $exactIds)
                 : Materiaal::query();
