@@ -165,6 +165,7 @@
                                                     
                                                     if (response.ok) {
                                                         this.quantidade = 1;
+                                                        showSuccessToast('Materiaal is toegevoegd aan je mandje!');
                                                         // Update cart badge
                                                         this.updateCartBadge();
                                                         // Show suggestions popup
@@ -285,6 +286,7 @@
                                                     
                                                     if (response.ok) {
                                                         this.quantidade = 1;
+                                                        showSuccessToast('Materiaal is toegevoegd aan je mandje!');
                                                         // Update cart badge
                                                         this.updateCartBadge();
                                                         // Show suggestions popup
@@ -532,17 +534,52 @@
         }
     </style>
 
+    <style>
+        .toast-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--success, #16a34a);
+            color: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
     <!-- Suggestions Popup Modal -->
     <div id="suggestions-overlay" class="suggestions-popup-overlay" style="display: none;"></div>
     <div id="suggestions-popup" class="suggestions-popup" style="display: none;">
         <div class="suggestions-popup-header">
             <h2 class="suggestions-popup-title">Aanbevolen Producten</h2>
-            <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button onclick="closeSuggestionsPopup()" style="padding: 6px 16px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: #fff; color: var(--text, #374151); font-weight: 500; cursor: pointer;">Nee, bedankt</button>
+                <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+            </div>
         </div>
         <div class="suggestions-popup-content" id="suggestions-content"></div>
     </div>
 
+    <div id="success-toast" class="toast-success" style="display: none;"></div>
+
     <script>
+        function showSuccessToast(message) {
+            const toast = document.getElementById('success-toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            clearTimeout(toast._hideTimeout);
+            toast._hideTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 2500);
+        }
+
         function showSuggestionsPopup(materiaalId) {
             const overlay = document.getElementById('suggestions-overlay');
             const popup = document.getElementById('suggestions-popup');
@@ -606,6 +643,7 @@
             })
             .then(r => {
                 if (r.ok) {
+                    showSuccessToast('Materiaal is toegevoegd aan je mandje!');
                     button.textContent = '✓ Toegevoegd';
                     button.style.background = 'var(--success)';
                     setTimeout(() => {
