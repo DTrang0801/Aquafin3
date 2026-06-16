@@ -50,12 +50,13 @@ class MateriaalController extends Controller
         $openSubcategoryIds = collect();
 
         // Filter de categorieën en subcategorieën op basis van de zoekopdracht
-        $categorieen = $rawCategories->filter(function ($cat) use ($search, $openCategoryIds, $openSubcategoryIds) {
+        $categorieen = $rawCategories->filter(function ($cat) use ($search, $selectedCatId, $openCategoryIds, $openSubcategoryIds, $request) {
             $catMatch = $search ? $this->isTypoTolerantMatch($cat->naam, $search) : true;
 
             // Filter de subcategorieën binnen deze categorie
-            $cat->setRelation('subcategorieen', $cat->subcategorieen->filter(function ($sub) use ($search, $catMatch, $openSubcategoryIds) {
+            $cat->setRelation('subcategorieen', $cat->subcategorieen->filter(function ($sub) use ($search, $catMatch, $openSubcategoryIds, $request) {
                 $subMatch = $search ? $this->isTypoTolerantMatch($sub->naam, $search) : true;
+                $selectedSubcatId = $request->input('subcategory_id');
 
                 // Filter de materialen binnen deze subcategorie
                 if (! $subMatch && ! $catMatch && $search) {
@@ -70,8 +71,8 @@ class MateriaalController extends Controller
                     return false;
                 }
 
-                // Open de subcategorie alleen bij suggestie-klik of als er matching materialen zijn
-                if ($search && $sub->materialen->isNotEmpty()) {
+                // Open de subcategorie bij zoeken, filter, of als er matching materialen zijn
+                if (($search || $selectedSubcatId) && $sub->materialen->isNotEmpty()) {
                     $openSubcategoryIds->push($sub->id);
                 }
 
@@ -83,8 +84,8 @@ class MateriaalController extends Controller
                 return false;
             }
 
-            // Open de categorie alleen bij suggestie-klik of als er matching subcategorieën zijn
-            if ($search && $cat->subcategorieen->isNotEmpty()) {
+            // Open de categorie bij zoeken, filter, of als er matching subcategorieën zijn
+            if (($search || $selectedCatId) && $cat->subcategorieen->isNotEmpty()) {
                 $openCategoryIds->push($cat->id);
             }
 
