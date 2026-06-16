@@ -559,7 +559,10 @@
     <div id="suggestions-popup" class="suggestions-popup" style="display: none;">
         <div class="suggestions-popup-header">
             <h2 class="suggestions-popup-title">Aanbevolen Producten</h2>
-            <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+            <div style="display: flex; gap: 8px; align-items: center;">
+                <button onclick="closeSuggestionsPopup()" style="padding: 6px 16px; border-radius: 6px; border: 1px solid var(--border, #d1d5db); background: #fff; color: var(--text, #374151); font-weight: 500; cursor: pointer;">Nee, bedankt</button>
+                <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+            </div>
         </div>
         <div class="suggestions-popup-content" id="suggestions-content"></div>
     </div>
