@@ -201,7 +201,7 @@ class MateriaalController extends Controller
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
-            'belangrijk' => null,
+            'belangrijk' => false,
             'foto' => $fotoPad,
         ]);
 

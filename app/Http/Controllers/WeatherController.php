@@ -147,7 +147,7 @@ class WeatherController extends Controller
             'naam' => $request->string('naam'),
             'beschrijving' => $request->string('beschrijving'),
             'materiaal_subcategorie_id' => $request->integer('materiaal_subcategorie_id'),
-            'belangrijk' => null,
+            'belangrijk' => false,
         ]);
 
         if ($request->boolean('link_as_critical')) {
