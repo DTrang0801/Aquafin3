@@ -62,19 +62,24 @@ Je kunt via deze pagina een overzicht krijgen van al uw vorige bestellingen. Je 
 Hier kan de technieker de items uit zijn winkelmandje bestellen. Hij kan hier nog extra info toevoegen zoals een aangepaste leverlocatie, datum of een opmerking.
 Je kan ook zien welk materiaal je zal bestellen.
 
+### Bestelling bewerken
+**TECHNIEKER** + **STOCKBEHEERDER**
+<img width="1920" height="1513" alt="image" src="https://github.com/user-attachments/assets/93f4cd69-e3f4-4c10-ae91-fd16eda1b1f8" />
+Hier kan een technieker zijn eigen bestelling bewerken of kan de stockbeheerder eenders welke bestelling bewerken.
+
 ### Neerslag
 **STOCKBEHEERDER**  +  **ADMIN**
-<img width="1914" height="992" alt="image" src="https://github.com/user-attachments/assets/dc193afd-17eb-44be-9772-5c885505e284" />
-Hier kan de stockbeheerder de huidige neerslag bekijken, de neerslag van de afgelopen maand en de neerslag voor de komende 14 dagen. Ook kan hij kijken naar een overzich van overstomingsrisicos per seizoen voor de komende 5 jaar.
+<img width="1920" height="3875" alt="image" src="https://github.com/user-attachments/assets/b243e77c-f4dd-4cfd-99bb-44178dd12a3f" />
+Hier kan de stockbeheerder de huidige neerslag bekijken, de neerslag van de afgelopen maand en de neerslag voor de komende 14 dagen. Ook kan hij kijken naar een overzich van overstomingsrisicos per seizoen voor de komende 5 jaar. Ook kan hij de neerslag van de laatste 3 en 1 maand bekijken en het huidig risico op overstroming
 
 ### Overzicht bestellingen
 **STOCKBEHEERDER**
-<img width="1915" height="988" alt="image" src="https://github.com/user-attachments/assets/02a7dd04-3d5c-4c28-9f1a-0d766a3a7c6a" />
+<img width="1920" height="1034" alt="image" src="https://github.com/user-attachments/assets/42b7bb02-2c01-41e4-bece-c7c327a9ab2c" />
 Hier kan de stockbeheerder alle bestellingen bekijken die de techniekers hebben geplaatst. Hij kan zoeken of filteren op periode.
 
 ### Bestelling annuleren
 **TECHNIEKER** + **STOCKBEHEERDER** + **ADMIN**
-- Een **technieker** kan enkel zijn eigen bestellingen annuleren.
+- Een **technieker** kan enkel zijn eigen bestellingen annuleren tot 1 dag na het plaatsen.
 - Een **stockbeheerder** of **admin** kan elke bestelling annuleren.
 - Bij annuleren krijg je een bevestigingspop-up en daarna een succesmelding: *"Bestelling #00001 succesvol geannuleerd."*
 - Geannuleerde bestellingen worden **standaard verborgen**.
@@ -103,8 +108,8 @@ Hier kan de stockbeheerder bekijken welk materiaal er het meest bestelt word.
 
 ### Kritieke items beheren
 **STOCKBEHEERDER**
-<img width="1914" height="990" alt="image" src="https://github.com/user-attachments/assets/d659f92b-01f8-494a-a157-1f95a89822e7" />
-Hier kan de stockbeheerder beslissen welk materiaal er belagrijk is tijdens een perioode van overstromingsrisico.
+<img width="1920" height="1033" alt="image" src="https://github.com/user-attachments/assets/261ea4e3-08af-4655-a019-4a9eda6eef77" />
+Hier kan de stockbeheerder beslissen welk materiaal er belagrijk is tijdens een perioode van hoog of gemmideld overstromingsrisico.
 
 ### Materielen
 <img width="1900" height="827" alt="image" src="https://github.com/user-attachments/assets/7fca00fe-f82a-4ed2-a15e-4a1fbf27c01e" />
