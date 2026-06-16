@@ -16,7 +16,8 @@ Frontend en backend is laravel + blade. Verbonden met een sql database.
 
 ## Database
 ### ERD
-<img width="1304" height="949" alt="Diagram" src="https://github.com/user-attachments/assets/09455c3c-70eb-480f-b856-52626bf0733b" />
+<img width="1304" height="1588" alt="ERD-AQUAFIN" src="https://github.com/user-attachments/assets/829a8efa-d452-4297-9615-4201e664cb52" />
+
 
 ## Folderstructuur
 <img width="307" height="954" alt="image" src="https://github.com/user-attachments/assets/9d5b4e0b-8d8e-4821-aedb-b9170e60ecae" />
