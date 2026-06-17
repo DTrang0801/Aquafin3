@@ -119,7 +119,7 @@
                                     @endif
                                     <form method="POST" action="{{ route('bestellingen.reorder', $bestelling->id) }}" style="display:inline;">
                                         @csrf
-                                        <button type="submit" class="btn-action btn-action-edit" style="background: var(--primary, #2563eb); color: #fff;">Herbestellen</button>
+                                        <button type="submit" class="btn-cancel-order" style="background: var(--primary, #2563eb);">Herbestellen</button>
                                     </form>
                                     <form method="POST" action="{{ route('bestellingen.annuleer', $bestelling->id) }}" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?')">
                                         @csrf
