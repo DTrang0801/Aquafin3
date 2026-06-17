@@ -3753,3 +3753,52 @@ body::before {
     background: #7f1d1d;
     color: #fca5a5;
 }
+
+/* ==================== DARK MODE - WEATHER PAGE ==================== */
+.dark .weather-page-container {
+    background: rgba(15, 23, 42, 0.96);
+    border-color: var(--border);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .stat-box {
+    background: linear-gradient(180deg, #1e293b 0%, #1e3a5f 100%);
+    border-color: #334155;
+}
+
+.dark .stat-box.highlighted {
+    background: linear-gradient(180deg, #164e63 0%, #1e3a5f 100%);
+    border-color: #0e7490;
+}
+
+.dark .forecast-container::-webkit-scrollbar-track {
+    background: #334155;
+}
+
+.dark .forecast-container::-webkit-scrollbar-thumb {
+    background: #64748b;
+}
+
+.dark .forecast-item {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .forecast-item:hover {
+    background: #1e3a5f;
+    border-color: var(--primary);
+}
+
+.dark .badge.rain {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+}
+
+.dark .badge.dry {
+    background: rgba(107, 114, 128, 0.25);
+    color: #d1d5db;
+}
+
+.dark .year-summary {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
