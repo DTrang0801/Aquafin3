@@ -3802,3 +3802,46 @@ body::before {
 .dark .year-summary {
     border-top-color: rgba(255, 255, 255, 0.1);
 }
+
+/* ==================== DARK MODE - CHECKOUT PAGE ==================== */
+.dark .checkout-card {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .checkout-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #164e63 100%);
+}
+
+.dark .checkout-errors {
+    background: #450a0a;
+    border-color: #991b1b;
+    color: #fca5a5;
+}
+
+.dark .checkout-page .form-input {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .checkout-items-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.dark .checkout-critical-badge {
+    background: #7f1d1d;
+    border-color: #991b1b;
+    color: #fca5a5;
+}
+
+.dark .btn-secondary {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-medium);
+}
+
+.dark .btn-secondary:hover {
+    background: #334155;
+    color: var(--text-dark);
+}
