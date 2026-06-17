@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Role;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -17,7 +18,7 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->beforeEach(function () {
-        \App\Models\Role::insert([
+        Role::insert([
             ['id' => 1, 'name' => 'admin'],
             ['id' => 2, 'name' => 'stockbeheerder'],
             ['id' => 3, 'name' => 'technieker'],

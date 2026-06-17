@@ -113,11 +113,6 @@ class CartController extends Controller
         $cart = $this->getOrCreateCart();
         $cart->materialen()->updateExistingPivot($id, ['aantal' => $request->aantal]);
 
-        // Geef een JSON-response terug bij AJAX-verzoeken (voor inline quantity updates)
-        if ($request->wantsJson() || $request->ajax()) {
-            return response()->json(['success' => true, 'aantal' => $request->aantal]);
-        }
-
         return redirect()->route('winkelmandje.index')->with('success', 'Winkelmandje bijgewerkt!');
     }
 
@@ -234,6 +229,23 @@ class CartController extends Controller
         return view('pages.bestellingen', compact('bestellingen', 'zoekterm', 'periode'));
     }
 
+    // Herbestel een vorige bestelling
+    public function reorder(Bestelling $bestelling)
+    {
+        if ($bestelling->gebruiker_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $cart = $this->getOrCreateCart();
+        $cart->materialen()->detach();
+
+        foreach ($bestelling->materialen as $materiaal) {
+            $cart->materialen()->attach($materiaal->id, ['aantal' => $materiaal->pivot->aantal]);
+        }
+
+        return redirect()->route('winkelmandje.checkout')->with('success', 'Bestelling #'.str_pad($bestelling->id, 5, '0', STR_PAD_LEFT).' in mandje geplaatst. Pas aan indien nodig en bevestig.');
+    }
+
     // Toon het overzicht van de bestellingen voor de stockbeheerder
     public function overzicht(Request $request)
     {
@@ -271,7 +283,49 @@ class CartController extends Controller
             })
             ->orderBy('created_at', 'desc')->get();
 
-        return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode'));
+        $todayOrderCount = Bestelling::whereHas('gebruiker', function ($q) {
+            $q->where('role_id', Role::TECHNIEKER);
+        })->whereDate('created_at', today())->count();
+
+        return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode', 'todayOrderCount'));
+    }
+
+    // Annuleer een bestelling als stockbeheerder
+    public function annuleerBestelling(Bestelling $bestelling)
+    {
+        $user = Auth::user();
+
+        \Log::info('annuleerBestelling called', [
+            'user_id' => $user->id,
+            'user_role' => $user->role_id,
+            'bestelling_id' => $bestelling->id,
+            'gebruiker_id' => $bestelling->gebruiker_id,
+        ]);
+
+        if ($user->role_id === Role::TECHNIEKER && $bestelling->gebruiker_id !== $user->id) {
+            \Log::warning('annuleerBestelling 403 - technieker owns mismatch', [
+                'user_id' => $user->id,
+                'gebruiker_id' => $bestelling->gebruiker_id,
+            ]);
+            abort(403);
+        }
+
+        if (! in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN, Role::TECHNIEKER])) {
+            \Log::warning('annuleerBestelling 403 - wrong role', [
+                'role' => $user->role_id,
+            ]);
+            abort(403);
+        }
+
+        if ($bestelling->isGeannuleerd()) {
+            return redirect()->route('overzicht')->with('error', 'Deze bestelling is al geannuleerd.');
+        }
+
+        $bestelling->annuleer();
+
+        $route = $user->role_id === Role::TECHNIEKER ? 'bestellingen' : 'overzicht';
+
+        return redirect()->route($route)->with('success', 'Bestelling #'.str_pad($bestelling->id, 5, '0', STR_PAD_LEFT).' succesvol geannuleerd.');
     }
 
     // Toon het formulier voor het bewerken van een bestelling
@@ -356,6 +410,8 @@ class CartController extends Controller
 
         $bestelling->markAsEdited();
 
-        return redirect()->route('bestellingen')->with('success', 'Bestelling succesvol bijgewerkt!');
+        $route = $user->role_id === Role::TECHNIEKER ? 'bestellingen' : 'overzicht';
+
+        return redirect()->route($route)->with('success', 'Bestelling succesvol bijgewerkt!');
     }
 }

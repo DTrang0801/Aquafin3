@@ -3,12 +3,14 @@
         <h1 class="page-title">Gebruikersbeheer</h1>
 
         @if (session('succes'))
-            <p style="color:green">{{ session('succes') }}</p>   
+            <div class="weather-alert weather-alert--ok">
+                {{ session('succes') }}
+            </div>
         @endif
 
-        <a href="{{ route('gebruikers.create') }}">+ Nieuwe gebruiker</a>
+        <a href="{{ route('gebruikers.create') }}" class="btn-add-user">+ Nieuwe gebruiker</a>
 
-        <table border="1" cellpadding="8" style="margin-top: 16px; width: 100%">
+        <table class="users-table">
             <thead>
                 <tr>
                     <th>Naam</th>
@@ -30,10 +32,10 @@
                                     {{ $user->province ?? 'Niet ingesteld' }}
                                 </span>
                             @else
-                                <span style="color: #999;">—</span>
+                                <span class="text-lighter">—</span>
                             @endif
                         </td>
-                        <td>
+                        <td class="table-right">
                             <div class="actions-cell">
                                 <a href="{{ route('gebruikers.edit', $user) }}" class="btn-action btn-action-edit">Bewerken</a>
                                 @if(auth()->id() !== $user->id)

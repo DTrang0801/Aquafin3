@@ -37,17 +37,27 @@ class BestellingPolicy
      */
     public function update(User $user, Bestelling $bestelling): bool
     {
-        return $user->role_id === Role::TECHNIEKER
-            && $bestelling->gebruiker_id === $user->id
-            && $bestelling->canStillBeEdited();
+        if ($bestelling->isGeannuleerd()) {
+            return false;
+        }
+
+        return in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN])
+            || ($user->role_id === Role::TECHNIEKER
+                && $bestelling->gebruiker_id === $user->id
+                && $bestelling->canStillBeEdited());
     }
 
     /**
      * Determine whether the user can delete the model.
      */
-    public function delete(User $user, Bestelling $bestelling): bool
+    public function cancel(User $user, Bestelling $bestelling): bool
     {
-        return false;
+        if ($bestelling->isGeannuleerd()) {
+            return false;
+        }
+
+        return in_array($user->role_id, [Role::STOCKBEHEERDER, Role::ADMIN])
+            || ($user->role_id === Role::TECHNIEKER && $bestelling->gebruiker_id === $user->id);
     }
 
     /**

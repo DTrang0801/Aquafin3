@@ -16,7 +16,7 @@ class MateriaalController extends Controller
     public function index(Request $request)
     {
         // Belangrijke materialen ophalen
-        $belangrijkeMaterialen = Materiaal::where('belangrijk', true)->with('subcategorie')->get();
+        $belangrijkeMaterialen = Materiaal::whereNotNull('belangrijk')->with('subcategorie')->get();
 
         // Zoekopdracht ophalen
         $search = $request->input('search');
@@ -50,12 +50,13 @@ class MateriaalController extends Controller
         $openSubcategoryIds = collect();
 
         // Filter de categorieën en subcategorieën op basis van de zoekopdracht
-        $categorieen = $rawCategories->filter(function ($cat) use ($search, $openCategoryIds, $openSubcategoryIds) {
+        $categorieen = $rawCategories->filter(function ($cat) use ($search, $selectedCatId, $openCategoryIds, $openSubcategoryIds, $request) {
             $catMatch = $search ? $this->isTypoTolerantMatch($cat->naam, $search) : true;
 
             // Filter de subcategorieën binnen deze categorie
-            $cat->setRelation('subcategorieen', $cat->subcategorieen->filter(function ($sub) use ($search, $catMatch, $openSubcategoryIds) {
+            $cat->setRelation('subcategorieen', $cat->subcategorieen->filter(function ($sub) use ($search, $catMatch, $openSubcategoryIds, $request) {
                 $subMatch = $search ? $this->isTypoTolerantMatch($sub->naam, $search) : true;
+                $selectedSubcatId = $request->input('subcategory_id');
 
                 // Filter de materialen binnen deze subcategorie
                 if (! $subMatch && ! $catMatch && $search) {
@@ -70,8 +71,8 @@ class MateriaalController extends Controller
                     return false;
                 }
 
-                // Open de subcategorie alleen bij suggestie-klik
-                if (request('suggestie') && $search) {
+                // Open de subcategorie bij zoeken, filter, of als er matching materialen zijn
+                if (($search || $selectedSubcatId) && $sub->materialen->isNotEmpty()) {
                     $openSubcategoryIds->push($sub->id);
                 }
 
@@ -83,14 +84,13 @@ class MateriaalController extends Controller
                 return false;
             }
 
-            // Open de categorie alleen bij suggestie-klik
-            if (request('suggestie') && ($search || request('category_id') || request('subcategory_id'))) {
+            // Open de categorie bij zoeken, filter, of als er matching subcategorieën zijn
+            if (($search || $selectedCatId) && $cat->subcategorieen->isNotEmpty()) {
                 $openCategoryIds->push($cat->id);
             }
 
             return true;
         });
-
 
         return view('pages.materialen', compact(
             'belangrijkeMaterialen',
@@ -114,7 +114,16 @@ class MateriaalController extends Controller
         $haystack = mb_strtolower(trim($haystack));
         $needle = mb_strtolower(trim($needle));
 
-        // Exact substring match check
+        // Normalize by removing spaces and hyphens for flexible matching
+        $normalizedHaystack = preg_replace('/[\s\-]/', '', $haystack);
+        $normalizedNeedle = preg_replace('/[\s\-]/', '', $needle);
+
+        // Exact substring match check (normalized)
+        if (str_contains($normalizedHaystack, $normalizedNeedle)) {
+            return true;
+        }
+
+        // Also check original for exact match
         if (str_contains($haystack, $needle)) {
             return true;
         }
@@ -145,7 +154,8 @@ class MateriaalController extends Controller
             return response()->json([]);
         }
 
-        $likePattern = strlen($query) === 1 ? $query.'%' : '%'.$query.'%';
+        // Always use "starts with" pattern for consistent behavior
+        $likePattern = $query.'%';
 
         $exact = Materiaal::where('naam', 'like', $likePattern)
             ->limit(100)
@@ -155,7 +165,8 @@ class MateriaalController extends Controller
         $exactIds = $exact->pluck('id');
 
         $typo = collect();
-        if (strlen($query) > 1) {
+        // Only use typo-tolerant matching for queries with 3+ characters
+        if (strlen($query) >= 3) {
             $typoQuery = $exactIds->isNotEmpty()
                 ? Materiaal::whereNotIn('id', $exactIds)
                 : Materiaal::query();
@@ -193,7 +204,7 @@ class MateriaalController extends Controller
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
-            'belangrijk' => $request->has('belangrijk'),
+            'belangrijk' => false,
             'foto' => $fotoPad,
         ]);
 
@@ -235,7 +246,6 @@ class MateriaalController extends Controller
             'naam' => $request->naam,
             'beschrijving' => $request->beschrijving,
             'materiaal_subcategorie_id' => $request->materiaal_subcategorie_id,
-            'belangrijk' => $request->has('belangrijk'),
         ];
 
         if ($request->has('verwijder_foto') && $materiaal->foto) {

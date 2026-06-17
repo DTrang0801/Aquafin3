@@ -16,16 +16,35 @@
 
         <!-- Status Alert -->
         <div class="weather-page-alerts">
-            @if($floodAlarmTriggered ?? false)
+            @php
+                $riskLevel = $currentRiskLevel ?? \App\Enums\FloodRiskLevel::Low;
+                $riskValue = $riskLevel instanceof \App\Enums\FloodRiskLevel ? $riskLevel->value : (string) $riskLevel;
+                $riskLabel = $riskLevel instanceof \App\Enums\FloodRiskLevel ? $riskLevel->label() : ucfirst($riskValue);
+            @endphp
+
+            @if($riskValue === 'high')
                 <div class="weather-alert weather-alert--danger weather-alert--large">
                     <span class="alert-icon">!</span>
                     <div>
-                        <strong>ALARM: Overstromingsgevaar gedetecteerd!</strong>
-                        <p>Gekoppelde voorraad is gemarkeerd als BELANGRIJK.</p>
+                        <strong>ALARM: Ernstig overstromingsgevaar gedetecteerd!</strong>
+                        <p>Neerslag overschrijdt 120% van de seizoensdrempel. Alle kritieke materialen zijn gemarkeerd.</p>
                         @if($isSimulated)
                             <span class="weather-alert__note">(GESIMULEERDE MODUS)</span>
                         @endif
                     </div>
+                    <span class="risk-badge risk-badge--high risk-badge--large">Hoog risico</span>
+                </div>
+            @elseif($riskValue === 'medium')
+                <div class="weather-alert weather-alert--warning weather-alert--large">
+                    <span class="alert-icon">⚠</span>
+                    <div>
+                        <strong>WAARSCHUWING: Verhoogd overstromingsrisico</strong>
+                        <p>Neerslag bereikt de seizoensdrempel. Materialen met drempel Gemiddeld of lager zijn gemarkeerd.</p>
+                        @if($isSimulated)
+                            <span class="weather-alert__note">(GESIMULEERDE MODUS)</span>
+                        @endif
+                    </div>
+                    <span class="risk-badge risk-badge--medium risk-badge--large">Gemiddeld risico</span>
                 </div>
             @else
                 <div class="weather-alert weather-alert--ok weather-alert--large">
@@ -34,6 +53,7 @@
                         <strong>Status stabiel</strong>
                         <p>Geen verhoogd overstromingsrisico op basis van neerslagdrempels.</p>
                     </div>
+                    <span class="risk-badge risk-badge--low risk-badge--large">Laag risico</span>
                 </div>
             @endif
         </div>
@@ -47,12 +67,29 @@
                     </p>
                 </div>
 
-                <form action="{{ route('weersvoorspelling.simulate') }}" method="POST">
-                    @csrf
-                    <button type="submit" class="sim-btn {{ $isSimulated ? 'active' : '' }}">
-                        {{ $isSimulated ? 'Stop simulatie' : 'Start simulatie' }}
-                    </button>
-                </form>
+                <div class="simulation-buttons">
+                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" class="sim-form">
+                        @csrf
+                        <input type="hidden" name="level" value="medium">
+                        <button type="submit" class="sim-btn {{ $isSimulated && session('simulate_level') === 'medium' ? 'active' : '' }}">
+                            Simuleer Gemiddeld risico
+                        </button>
+                    </form>
+                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" class="sim-form">
+                        @csrf
+                        <input type="hidden" name="level" value="high">
+                        <button type="submit" class="sim-btn {{ $isSimulated && session('simulate_level') === 'high' ? 'active' : '' }}">
+                            Simuleer Hoog risico
+                        </button>
+                    </form>
+                    <form action="{{ route('weersvoorspelling.simulate') }}" method="POST" class="sim-form">
+                        @csrf
+                        <input type="hidden" name="level" value="none">
+                        <button type="submit" class="sim-btn {{ !$isSimulated ? 'active' : '' }}">
+                            Stop simulatie
+                        </button>
+                    </form>
+                </div>
             </div>
         @endif
 
@@ -91,10 +128,33 @@
                                 </span>
                             </div>
 
-                            <div class="stat-box highlighted">
+                            <div class="stat-box">
                                 <span class="stat-label">Afgelopen maand</span>
                                 <span class="stat-value value-history">
                                     {{ $pastMonthTotal }}<span class="unit">mm</span>
+                                </span>
+                            </div>
+
+                            <div class="stat-box highlighted">
+                                <span class="stat-label">Afgelopen 3 maanden</span>
+                                <span class="stat-value value-history">
+                                    {{ $pastThreeMonthsTotal }}<span class="unit">mm</span>
+                                </span>
+                            </div>
+
+                            <div class="stat-box">
+                                <span class="stat-label">Risico percentage</span>
+                                <span class="stat-value value-risk" style="color: {{ $riskPercentage >= 120 ? '#dc2626' : ($riskPercentage >= 100 ? '#d97706' : '#16a34a') }};">
+                                    {{ number_format($riskPercentage, 1) }}<span class="unit">%</span>
+                                </span>
+                                <span class="risk-sublabel">
+                                    @if($riskPercentage < 100)
+                                        {{ number_format(100 - $riskPercentage, 1) }}% van medium risico
+                                    @elseif($riskPercentage < 120)
+                                        {{ number_format(120 - $riskPercentage, 1) }}% van hoog risico
+                                    @else
+                                        Boven hoog risico drempel
+                                    @endif
                                 </span>
                             </div>
                         </div>

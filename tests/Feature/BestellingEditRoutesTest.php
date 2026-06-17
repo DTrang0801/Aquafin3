@@ -143,13 +143,56 @@ test('order update validates location length', function () {
     $response->assertSessionHasErrors('locatie');
 });
 
-test('non-technieker cannot update orders', function () {
-    $user = User::factory()->create(['role_id' => Role::STOCKBEHEERDER]);
+test('stockbeheerder can update any order', function () {
+    $stockbeheerder = User::factory()->create(['role_id' => Role::STOCKBEHEERDER]);
     $bestelling = Bestelling::factory()->create([
         'can_edit_until' => now()->addDay(),
+        'is_edited' => false,
     ]);
 
-    $response = $this->actingAs($user)
+    $response = $this->actingAs($stockbeheerder)
+        ->put(route('bestellingen.update', $bestelling->id), [
+            'gevraagde_datum' => now()->addDays(5)->format('Y-m-d'),
+            'locatie' => 'New Location',
+            'use_custom_location' => false,
+        ]);
+
+    $response->assertRedirect(route('overzicht'));
+
+    $bestelling->refresh();
+    expect($bestelling->locatie)->toBe('New Location');
+    expect($bestelling->is_edited)->toBeTrue();
+});
+
+test('admin can update any order', function () {
+    $admin = User::factory()->create(['role_id' => Role::ADMIN]);
+    $bestelling = Bestelling::factory()->create([
+        'can_edit_until' => now()->addDay(),
+        'is_edited' => false,
+    ]);
+
+    $response = $this->actingAs($admin)
+        ->put(route('bestellingen.update', $bestelling->id), [
+            'gevraagde_datum' => now()->addDays(5)->format('Y-m-d'),
+            'locatie' => 'New Location',
+            'use_custom_location' => false,
+        ]);
+
+    $response->assertRedirect(route('overzicht'));
+
+    $bestelling->refresh();
+    expect($bestelling->locatie)->toBe('New Location');
+    expect($bestelling->is_edited)->toBeTrue();
+});
+
+test('user cannot update cancelled order', function () {
+    $stockbeheerder = User::factory()->create(['role_id' => Role::STOCKBEHEERDER]);
+    $bestelling = Bestelling::factory()->create([
+        'can_edit_until' => now()->addDay(),
+        'status' => Bestelling::STATUS_GEANNULEERD,
+    ]);
+
+    $response = $this->actingAs($stockbeheerder)
         ->put(route('bestellingen.update', $bestelling->id), [
             'gevraagde_datum' => now()->addDays(5)->format('Y-m-d'),
             'locatie' => 'New Location',

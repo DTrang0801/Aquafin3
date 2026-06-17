@@ -60,9 +60,11 @@ Route::middleware('auth')->group(function () {
     });
 
     Route::get('/bestellingen', [CartController::class, 'indexOrders'])->name('bestellingen');
+    Route::post('/bestellingen/{bestelling}/herbestel', [CartController::class, 'reorder'])->name('bestellingen.reorder');
     Route::get('/bestellingen/{bestelling}/bewerk', [CartController::class, 'editOrder'])->name('bestellingen.edit');
     Route::put('/bestellingen/{bestelling}', [CartController::class, 'updateOrder'])->name('bestellingen.update');
     Route::get('/overzicht', [CartController::class, 'overzicht'])->name('overzicht')->middleware('role:stockbeheerder,admin');
+    Route::post('/overzicht/{bestelling}/annuleer', [CartController::class, 'annuleerBestelling'])->name('bestellingen.annuleer');
 
     Route::get('/weersvoorspelling', [WeatherController::class, 'index'])->name('weersvoorspelling');
     Route::middleware('role:stockbeheerder')->group(function () {
