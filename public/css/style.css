@@ -3963,3 +3963,44 @@ body::before {
 .dark .row-important:hover {
     background-color: #78350f !important;
 }
+
+/* ==================== DARK MODE - BORDERS & INPUTS ==================== */
+.dark .forecast-item:hover {
+    border-color: var(--primary);
+}
+
+.dark .checkout-errors {
+    border-color: #991b1b;
+}
+
+.dark .checkout-critical-badge {
+    border-color: #991b1b;
+}
+
+.dark .btn-secondary {
+    border-color: var(--border);
+}
+
+.dark .material-picker-panel--active {
+    border-color: #991b1b;
+}
+
+.dark .material-search-input {
+    border-color: var(--border);
+}
+
+.dark .weather-simulation-control {
+    border-color: #92400e;
+}
+
+.dark .order-card__meta-item--number {
+    border-right-color: #334155;
+}
+
+.dark .order-location {
+    border-color: #334155;
+}
+
+.dark .home-weather-card__link {
+    border-color: #334155;
+}
