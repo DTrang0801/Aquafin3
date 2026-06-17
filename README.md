@@ -52,6 +52,11 @@ Hier kan de technieker het materiaal bekijken dat in zijn winkelmandje zit, en d
 <img width="1880" height="884" alt="image" src="https://github.com/user-attachments/assets/869970c2-bd05-43f4-aa8a-b634071f958c" />
 Hier kan de technieker materiaal kiezen om te bestellen door het toe te voegen aan zijn mandje. Hij kan ook materiaal opzoeken via de zoekbalk of filteren op categorie.
 
+### Suggesties
+**TECHNIEKER**
+<img width="1920" height="1034" alt="image" src="https://github.com/user-attachments/assets/1a1a2dc7-cc83-4c6e-9ea8-5f78a738af5f" />
+Toont materiaal dat gerelateerd is aan het materiaal dat net is toegevoegd aan het winkelmandje.
+
 ### Vorige bestellingen
 **TECNIEKER**
 <img width="1905" height="879" alt="image" src="https://github.com/user-attachments/assets/4a81c8ae-ff86-4bba-9d1a-3ecd69eb758f" />
