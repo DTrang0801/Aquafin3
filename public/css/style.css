@@ -800,6 +800,41 @@ body::before {
     padding: 0.25rem 0.5rem;
 }
 
+.dark .alert-box {
+    background: #450a0a;
+    border-color: var(--danger);
+}
+
+.dark .alert-title {
+    color: #fca5a5;
+}
+
+.dark .alert-success {
+    background: #052e16;
+    border-color: var(--success);
+    color: #86efac;
+}
+
+.dark .badge-normal {
+    background: rgba(22, 163, 74, 0.25);
+    color: #86efac;
+}
+
+.dark .badge-important {
+    background: rgba(220, 38, 38, 0.25);
+    color: #fca5a5;
+}
+
+.dark .badge.rain {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+}
+
+.dark .badge.dry {
+    background: rgba(107, 114, 128, 0.25);
+    color: #d1d5db;
+}
+
 /* ==================== CATEGORY & MATERIALS ==================== */
 .category-block {
     margin-bottom: 1.5rem;
@@ -834,6 +869,20 @@ body::before {
 .subcategory-block {
     margin-bottom: 1.25rem;
     margin-left: 1rem;
+}
+
+.dark .category-block {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.dark .category-header {
+    background: var(--primary-dark);
+}
+
+.dark .subcategory-title {
+    color: var(--text-dark);
 }
 
 /* ==================== SEARCH & FILTER ==================== */
