@@ -3845,3 +3845,62 @@ body::before {
     background: #334155;
     color: var(--text-dark);
 }
+
+/* ==================== DARK MODE - ORDERS PAGE ==================== */
+.dark .orders-header {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.dark .orders-empty {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.dark .periode-btn {
+    background: #1e293b;
+    color: var(--text-medium);
+}
+
+.dark .periode-btn:hover {
+    background: #334155;
+    color: var(--text-dark);
+}
+
+.dark .periode-btn--wis:hover {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+.dark .order-card {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.4);
+}
+
+.dark .order-card__header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+}
+
+.dark .order-card__meta-item--number {
+    border-right-color: #334155;
+}
+
+.dark .order-location {
+    background: #1e293b;
+    border-color: #334155;
+    color: #93c5fd;
+}
+
+.dark .order-note {
+    background: #1e293b;
+}
+
+.dark .order-item-row:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+@media (max-width: 800px) {
+    .dark .order-card__meta-item--number {
+        border-bottom-color: #334155;
+    }
+}
