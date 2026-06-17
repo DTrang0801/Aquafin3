@@ -115,7 +115,7 @@
                             @if(!$bestelling->isGeannuleerd())
                                 <div class="order-card__actions">
                                     @if($bestelling->canStillBeEdited())
-                                        <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-action btn-action-edit">Bewerk bestelling</a>
+                                        <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-cancel-order" style="background: var(--primary, #2563eb); text-decoration: none;">Bewerk bestelling</a>
                                     @endif
                                     <form method="POST" action="{{ route('bestellingen.reorder', $bestelling->id) }}" style="display:inline;">
                                         @csrf
