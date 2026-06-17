@@ -53,10 +53,19 @@
                 @guest
                     <a href="{{ route('login') }}" class="nav-link">Inloggen</a>
                 @endguest
+                <button class="dark-mode-toggle-mobile" id="dark-mode-toggle-mobile" aria-label="Toggle dark mode">
+                    <span class="dark-mode-icon-sun">&#9728;</span>
+                    <span class="dark-mode-icon-moon">&#9790;</span>
+                    <span>Dark mode</span>
+                </button>
             </div>
         </div>
 
         <div class="nav-right" id="nav-right">
+            <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle dark mode" title="Toggle dark mode">
+                <span class="dark-mode-icon-sun">&#9728;</span>
+                <span class="dark-mode-icon-moon">&#9790;</span>
+            </button>
             @auth
                 <span class="nav-user">{{ Auth::user()->name }}</span>
                 <form method="POST" action="{{ route('logout') }}" class="inline-form">
@@ -97,6 +106,22 @@
                     }
                 });
             });
+        }
+
+        function toggleDarkMode() {
+            const html = document.documentElement;
+            const isDark = html.classList.toggle('dark');
+            localStorage.setItem('darkMode', isDark ? 'true' : 'false');
+        }
+
+        const desktopToggle = document.getElementById('dark-mode-toggle');
+        if (desktopToggle) {
+            desktopToggle.addEventListener('click', toggleDarkMode);
+        }
+
+        const mobileToggle = document.getElementById('dark-mode-toggle-mobile');
+        if (mobileToggle) {
+            mobileToggle.addEventListener('click', toggleDarkMode);
         }
     });
 </script>
