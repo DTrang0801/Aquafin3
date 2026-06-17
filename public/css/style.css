@@ -3904,3 +3904,33 @@ body::before {
         border-bottom-color: #334155;
     }
 }
+
+/* ==================== DARK MODE - HOME WEATHER CARD ==================== */
+.dark .home-weather-card {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.dark .home-weather-card__link {
+    background: #1e3a5f;
+    border-color: #334155;
+    color: #93c5fd;
+}
+
+.dark .home-weather-card__link:hover {
+    background: #1e40af;
+}
+
+.dark .home-forecast-item {
+    background: #1e293b;
+}
+
+.dark .home-forecast-item__status--rain {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+}
+
+.dark .home-forecast-item__status--dry {
+    background: rgba(107, 114, 128, 0.25);
+    color: #d1d5db;
+}
