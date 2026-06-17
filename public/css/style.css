@@ -684,6 +684,30 @@ body::before {
     background: rgba(37, 99, 235, 0.05);
 }
 
+.dark .custom-table,
+.dark .users-table {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.dark .custom-table th,
+.dark .users-table th {
+    background: #0f172a;
+    color: var(--text-dark);
+}
+
+.dark .custom-table td,
+.dark .users-table td {
+    border-bottom-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .custom-table tbody tr:hover,
+.dark .users-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
 /* ==================== ALERTS & BADGES ==================== */
 .alert-box {
     border-left: 4px solid var(--danger);
