@@ -2,15 +2,140 @@
 # Aquafin | Programming project | Groep 3
 Dit is een tool voor Aquafin waarin techniekers materiaal kunnen bestellen op basis van de voorspelde neerslag van het huidig seizoen en waar stockbeheerders het materiaal kunnen beheren.
 
+## Inhoudsopgave
+- [Teamleden](#teamleden)
+- [Tech-stack](#tech-stack)
+- [Documentatie](#documentatie)
+  - [Database](#database)
+  - [Folderstructuur](#folderstructuur)
+  - [User rollen en permissies](#user-rollen-en-permissies)
+  - [Gebruik API](#gebruik-api)
+  - [Paginas](#paginas)
+  - [Overstromings voorspelling & Risico](#overstromings-voorspelling--risico)
+  - [Controllers](#controllers)
+  - [Enums](#enums)
+  - [Services](#services)
+
 ## Teamleden
 - **Jouhri Assia** - Frontend, Backend, Afbeeldingen, User-Stories
 - **Filali Yassine** - Loginsysteem, Frontend, Backend
 - **Nguyen Trang** - User-Stories, Frontend, Backend, Prototype
-- **Nguyen Thien** Y - Frontend, User-roles, User-stories, Prototype
+- **Nguyen Thien Y**  - Frontend, User-roles, User-stories, Prototype
 - **Tanghe Niels** - Database, API, Frontend, Backend, Hosting, Trello
 
 ## Tech-stack
-Frontend en backend is laravel + blade. Verbonden met een sql database.
+
+**Backend:**
+- **PHP** 8.4
+- **Laravel Framework** 13
+
+**Frontend:**
+- **Blade Templates** - Server-side templating
+- **Alpine.js** 3 - JavaScript framework
+- **Tailwind CSS** 3 - CSS framework
+- **Vite** - Frontend build tool
+
+**Database:**
+- **SQLite** - Database
+
+**Testen & Ontwikkeling:**
+- **Pest** 4 - PHP testing framework
+- **PHPUnit** 12 - Unit testing framework
+
+**API Integratie:**
+- **Open-Meteo API** - Gratis weer- en neerslaggegevens API
+
+## Setup
+
+### Vereisten
+- PHP 8.4 of hoger
+- Composer
+- Node.js & npm
+- SQLite support
+
+### Installatie
+
+1. **Clone de repository**
+   ```bash
+   git clone https://github.com/DTrang0801/Aquafin3
+   cd aquafin
+   ```
+
+2. **Installeer PHP dependencies**
+   ```bash
+   composer install
+   ```
+
+3. **Installeer Node.js dependencies**
+   ```bash
+   npm install
+   ```
+
+4. **Stel omgevingsvariabelen in**
+   ```bash
+   cp .env.example .env
+   ```
+
+5. **Genereer applicatiesleutel**
+   ```bash
+   php artisan key:generate
+   ```
+
+6. **Voer database migraties uit**
+   ```bash
+   php artisan migrate
+   ```
+
+7. **Seed de database (optioneel)**
+   ```bash
+   php artisan db:seed
+   ```
+
+8. **Build frontend**
+   ```bash
+   npm run build
+   ```
+
+### De applicatie uitvoeren
+
+**Dev mode:**
+```bash
+php artisan serve
+npm run dev
+```
+
+**Production:**
+```bash
+npm run build
+```
+
+### Tests uitvoeren
+
+```bash
+php artisan test --compact
+```
+
+Een specifiek testbestand uitvoeren:
+```bash
+php artisan test --compact tests/Feature/YourFeatureTest.php
+```
+
+### Commando's
+
+Haal ontbrekende neerslaggegevens op van Open-Meteo:
+```bash
+php artisan app:fetch-all-missing-months
+```
+
+Archiveer de neerslaggegevens van de vorige maand:
+```bash
+php artisan app:archive-past-month
+```
+
+Bekijk alle routes:
+```bash
+php artisan route:list
+```
 
 # Documentatie
 
@@ -181,12 +306,6 @@ Voor elk jaar in de 5-jaarsperiode wordt het totale risico bepaald door het aant
 Het systeem kent elk materiaal een minimum risiconiveau toe (Gemiddeld of Hoog):
 - **Gemiddeld**: Materiaal wordt gemarkeerd bij Gemiddeld risico of hoger
 - **Hoog**: Materiaal wordt alleen gemarkeerd bij Hoog risico
-
-### Commands
-- php artisan app:fetch-all-missing-months
-      Haalt alle neerslag gegevens op van de maanden die nog niet in de huidige database zitten en slaat deze op in de database.
-- php artisan app:archive-past-month
-      Haalt de neerslaggegevens op van de vorige maand uit open meteo en slaagt deze op in de database.
 
 ### Beperkingen
 De voorspelling is gebaseerd op historische patronen en trends. Dit betekent:
