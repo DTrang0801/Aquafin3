@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Casts\NullableFloodRiskLevelCast;
+use Database\Factories\MateriaalFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
@@ -23,7 +26,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Materiaal extends Model
 {
-    use SoftDeletes;
+    /** @use HasFactory<MateriaalFactory> */
+    use HasFactory, SoftDeletes;
 
     protected $table = 'materialen';
 
@@ -34,6 +38,11 @@ class Materiaal extends Model
         'belangrijk',
         'foto',
         'order_count',
+    ];
+
+    /** @var array<string, string> */
+    protected $casts = [
+        'belangrijk' => NullableFloodRiskLevelCast::class,
     ];
 
     public function categorie()

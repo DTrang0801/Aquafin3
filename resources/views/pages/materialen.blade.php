@@ -2,7 +2,11 @@
     <div class="container">
         <h1 class="page-title">Materialen</h1>
 
-            <form action="{{ route('materialen') }}" method="GET" id="search-filter-form" style="margin-bottom: 30px;">
+        @if(session('success'))
+            <div class="alert-success">{{ session('success') }}</div>
+        @endif
+
+        <form action="{{ route('materialen') }}" method="GET" id="search-filter-form" style="margin-bottom: 30px;">
                 <div class="search-filter-grid">
                     
                     <div class="filter-group keyword-search"
@@ -26,9 +30,7 @@
                                  }
                              },
                              select(name) {
-                                 this.query = name;
-                                 this.show = false;
-                                 $el.closest('form').submit();
+                                 window.location.href = '{{ route('materialen') }}?search=' + encodeURIComponent(name) + '&suggestie=1';
                              },
                              hide() { setTimeout(() => this.show = false, 200) }
                          }">
@@ -47,8 +49,8 @@
 
                             <div x-show="show" x-cloak
                                  style="position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
-                                        background: #fff; border: 1px solid #475569; border-radius: 6px;
-                                        margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                                         background: #fff; border: 1px solid #475569; border-radius: 6px;
+                                         margin-top: 4px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                                 <template x-for="item in suggestions" :key="item.id">
                                     <button type="button" @click="select(item.naam)"
                                             style="display: block; width: 100%; text-align: left; padding: 10px 12px;
@@ -94,7 +96,7 @@
                         <button type="submit" class="search-button" style="width: 100%; height: 42px;">Zoek</button>
                         @if(request('search') || request('category_id') || request('subcategory_id'))
                             <a href="{{ route('materialen') }}" class="btn-reset" style="height: 42px; display: inline-flex; align-items: center; justify-content: center; background-color: #475569; color: white; text-decoration: none; padding: 0 16px; border-radius: 6px; font-weight: 600; font-size: 13px;">
-                                Reset
+                                X
                             </a>
                         @endif
                     </div>
@@ -102,15 +104,14 @@
             </form>
 
         @if($belangrijkeMaterialen->isNotEmpty())
-            <details open class="category-block important-collapsible-block" style="margin-bottom: 25px; border-color: #ef4444;">
+            <details class="category-block" style="margin-bottom: 25px; border-color: #ef4444;">
                 
-             <!--   <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
+                <summary class="category-header" style="background: #ffd755; border-bottom: 1px solid #ef4444; cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; padding: 14px 20px;">
                     <div style="display: flex; align-items: center; gap: 8px;">
-                        <span style="font-size: 18px;">⚠️</span>
                         <span style="color: #3d3d3d; font-weight: bold; letter-spacing: 0.05em;">Belangrijk materiaal</span>
                     </div>
                     <span class="arrow" style="color: #fca5a5;">▼</span>
-                </summary> -->
+                </summary>
 
                 <div class="category-content" style="padding: 0; background-color: rgba(15, 23, 42, 0.2);">
                     <table class="custom-table table-important" style="width: 100%; margin: 0;">
@@ -123,8 +124,19 @@
                                                 style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;">
                                         @endif
 
-                                        <div>{{ $materiaal->naam }}</div>
-
+                                                        <div>{{ $materiaal->naam }}</div>
+                                        @if($materiaal->belangrijk)
+                                            @php
+                                                try {
+                                                    $level = $materiaal->belangrijk instanceof \App\Enums\FloodRiskLevel
+                                                        ? $materiaal->belangrijk
+                                                        : \App\Enums\FloodRiskLevel::from((string)$materiaal->belangrijk);
+                                                    echo '<span class="risk-badge risk-badge--' . $level->value . '">' . $level->label() . '</span>';
+                                                } catch (\Exception $e) {
+                                                    // Silently ignore invalid values
+                                                }
+                                            @endphp
+                                        @endif
                                     </td>
                                     <td class="text-italic" style="padding: 14px 20px; color: #000000; font-style: italic;">
                                         {{ $materiaal->subcategorie->naam ?? 'N/A' }}
@@ -134,12 +146,67 @@
                                     </td>
                                     <td>
                                         @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
-                                        <form action="{{ route('winkelmandje.add') }}" method="POST">
-                                            @csrf
-                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
-                                            <input type="number" name="aantal" value="1" min="1">
-                                            <button type="submit" class="btn-primary">🛒 Voeg toe</button>
-                                        </form>
+                                        <div class="add-to-cart-form" x-data="{
+                                            quantidade: 1,
+                                            isSubmitting: false,
+                                            async addToCart(e) {
+                                                e.preventDefault();
+                                                this.isSubmitting = true;
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('materiaal_id', {{ $materiaal->id }});
+                                                    formData.append('aantal', this.quantidade);
+                                                    formData.append('_token', '{{ csrf_token() }}');
+                                                    
+                                                    const response = await fetch('{{ route('winkelmandje.add') }}', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    
+                                                    if (response.ok) {
+                                                        this.quantidade = 1;
+                                                        showSuccessToast('Materiaal is toegevoegd aan je mandje!');
+                                                        // Update cart badge
+                                                        this.updateCartBadge();
+                                                        // Show suggestions popup
+                                                        showSuggestionsPopup({{ $materiaal->id }});
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error adding to cart:', error);
+                                                } finally {
+                                                    this.isSubmitting = false;
+                                                }
+                                            },
+                                            updateCartBadge() {
+                                                fetch('{{ route('winkelmandje.count') }}')
+                                                    .then(r => r.json())
+                                                    .then(data => {
+                                                        const badges = document.querySelectorAll('.nav-cart-badge');
+                                                        const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                                        
+                                                        if (data.count > 0) {
+                                                            badges.forEach(badge => badge.textContent = data.count);
+                                                            // If no badge exists, create one
+                                                            if (badges.length === 0) {
+                                                                links.forEach(link => {
+                                                                    const badge = document.createElement('span');
+                                                                    badge.className = 'nav-cart-badge';
+                                                                    badge.textContent = data.count;
+                                                                    link.appendChild(badge);
+                                                                });
+                                                            }
+                                                        } else {
+                                                            // Remove all badges if count is 0
+                                                            badges.forEach(badge => badge.remove());
+                                                        }
+                                                    });
+                                            }
+                                        }">
+                                            <form @submit="addToCart" style="display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                                <input type="number" x-model.number="quantidade" min="1" :disabled="isSubmitting">
+                                                <button type="submit" class="btn-primary" :disabled="isSubmitting" x-text="isSubmitting ? '🔄' : '🛒 Voeg toe'"></button>
+                                            </form>
+                                        </div>
                                         @endif
                                     </td>
                                 </tr>
@@ -154,7 +221,7 @@
             @if(request('search') && !$openCategoryIds->contains($categorie->id))
                 @continue
             @endif
-            <details {{ $openCategoryIds->contains($categorie->id) ? 'open' : '' }} class="category-block">
+            <details class="category-block" {{ (request('search') || request('category_id')) ? 'open' : '' }}>
                 
                 <summary class="category-header" style="cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center;">
                     <span>{{ $categorie->naam }}</span>
@@ -166,10 +233,12 @@
                         @if(request('search') && !$openSubcategoryIds->contains($subcategorie->id))
                             @continue
                         @endif
-                            <details {{ $openSubcategoryIds->contains($subcategorie->id) ? 'open' : '' }} class="subcategory-block" style="margin-bottom: 15px;">
+                            <details class="subcategory-block" style="margin-bottom: 15px;" {{ (request('search') || request('subcategory_id')) ? 'open' : '' }}>
                             
                             <summary class="subcategory-title" style="cursor: pointer; user-select: none; list-style: none;">
                                 <strong>{{ $subcategorie->naam }}</strong>
+                                <span class="arrow">▼</span>
+
                             </summary>
 
                             <div style="margin-top: 10px;">
@@ -196,16 +265,71 @@
                                                             {{ $materiaal->belangrijk ? 'Ja' : 'Nee' }}
                                                         </span> -->
                                                     </td>
-                                                    <td>
-                                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
-                                                        <form action="{{ route('winkelmandje.add') }}" method="POST">
-                                                            @csrf
-                                                            <input type="hidden" name="materiaal_id" value="{{ $materiaal->id }}">
-                                                            <input type="number" name="aantal" value="1" min="1">
-                                                            <button type="submit" class="btn-primary">🛒 Voeg toe</button>
-                                                        </form>
-                                                        @endif
-                                                    </td>
+                                    <td>
+                                        @if(Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
+                                        <div class="add-to-cart-form" x-data="{
+                                            quantidade: 1,
+                                            isSubmitting: false,
+                                            async addToCart(e) {
+                                                e.preventDefault();
+                                                this.isSubmitting = true;
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('materiaal_id', {{ $materiaal->id }});
+                                                    formData.append('aantal', this.quantidade);
+                                                    formData.append('_token', '{{ csrf_token() }}');
+                                                    
+                                                    const response = await fetch('{{ route('winkelmandje.add') }}', {
+                                                        method: 'POST',
+                                                        body: formData
+                                                    });
+                                                    
+                                                    if (response.ok) {
+                                                        this.quantidade = 1;
+                                                        showSuccessToast('Materiaal is toegevoegd aan je mandje!');
+                                                        // Update cart badge
+                                                        this.updateCartBadge();
+                                                        // Show suggestions popup
+                                                        showSuggestionsPopup({{ $materiaal->id }});
+                                                    }
+                                                } catch (error) {
+                                                    console.error('Error adding to cart:', error);
+                                                } finally {
+                                                    this.isSubmitting = false;
+                                                }
+                                            },
+                                            updateCartBadge() {
+                                                fetch('{{ route('winkelmandje.count') }}')
+                                                    .then(r => r.json())
+                                                    .then(data => {
+                                                        const badges = document.querySelectorAll('.nav-cart-badge');
+                                                        const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                                        
+                                                        if (data.count > 0) {
+                                                            badges.forEach(badge => badge.textContent = data.count);
+                                                            // If no badge exists, create one
+                                                            if (badges.length === 0) {
+                                                                links.forEach(link => {
+                                                                    const badge = document.createElement('span');
+                                                                    badge.className = 'nav-cart-badge';
+                                                                    badge.textContent = data.count;
+                                                                    link.appendChild(badge);
+                                                                });
+                                                            }
+                                                        } else {
+                                                            // Remove all badges if count is 0
+                                                            badges.forEach(badge => badge.remove());
+                                                        }
+                                                    });
+                                            }
+                                        }">
+                                            <form @submit="addToCart" style="display: flex; gap: 6px; align-items: center; justify-content: flex-end;">
+                                                <input type="number" x-model.number="quantidade" min="1" :disabled="isSubmitting">
+                                                <button type="submit" class="btn-primary" :disabled="isSubmitting" x-text="isSubmitting ? '🔄' : '🛒 Voeg toe'"></button>
+                                            </form>
+                                        </div>
+                                        @endif
+                                    </td>
                                                 </tr>
                                             @endforeach
                                         </tbody>
@@ -240,10 +364,10 @@
             display: grid;
             grid-template-columns: 2fr 1fr 1fr auto;
             gap: 16px;
-            background-color: #e5e5e5;
+            background-color:rgb(255, 255, 255);
             padding: 20px;
             border-radius: 12px;
-            border: 1px solid #334155;
+            /* border: 2px solid rgb(77, 77, 77); */
             align-items: flex-end;
         }
 
@@ -265,10 +389,10 @@
             width: 100%;
             height: 42px;
             padding: 8px 12px;
-            background-color: #ececec;
+            background-color:rgb(251, 251, 251);
             border: 1px solid #475569;
             border-radius: 6px;
-            color: #4b4b4b;
+            color:rgb(17, 17, 17);
             font-size: 14px;
             outline: none;
             transition: border-color 0.2s ease;
@@ -279,8 +403,8 @@
         }
 
         .filter-select:disabled {
-            background-color: #1e293b;
-            color: #64748b;
+            background-color:rgb(200, 200, 200);
+            color:rgb(65, 65, 65);
             border-color: #334155;
             cursor: not-allowed;
         }
@@ -409,4 +533,182 @@
             }
         }
     </style>
+
+    <style>
+        #toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+        .toast-success {
+            background: #16a34a;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 6px 20px rgba(22,163,74,0.35);
+            animation: toastIn 0.3s ease;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 360px;
+        }
+        .toast-success.toast-exit {
+            animation: toastOut 0.3s ease forwards;
+        }
+        .toast-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
+        }
+    </style>
+
+    <div id="toast-container"></div>
+
+    <!-- Suggestions Popup Modal -->
+    <div id="suggestions-overlay" class="suggestions-popup-overlay" style="display: none;"></div>
+    <div id="suggestions-popup" class="suggestions-popup" style="display: none;">
+        <div class="suggestions-popup-header">
+            <h2 class="suggestions-popup-title">Aanbevolen Producten</h2>
+            <button class="suggestions-popup-close" onclick="closeSuggestionsPopup()">✕</button>
+        </div>
+        <div class="suggestions-popup-content" id="suggestions-content"></div>
+        <div style="padding: 12px 16px; text-align: center; border-top: 1px solid var(--border, #e5e7eb); display: flex; gap: 12px; justify-content: center;">
+            <button onclick="closeSuggestionsPopup()" style="padding: 8px 24px; border-radius: 6px; border: none; background: #6b7280; color: #fff; font-weight: 700; cursor: pointer;">Nee, bedankt</button>
+            <a href="{{ route('winkelmandje.index') }}" style="padding: 8px 24px; border-radius: 6px; border: none; background: #2563eb; color: #fff; font-weight: 700; cursor: pointer; text-decoration: none; display: inline-block;">Verder naar winkelmandje</a>
+        </div>
+    </div>
+
+    <script>
+        function showSuccessToast(message) {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-success';
+            toast.innerHTML = '<span class="toast-icon">&#10003;</span> ' + message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showSuggestionsPopup(materiaalId) {
+            const overlay = document.getElementById('suggestions-overlay');
+            const popup = document.getElementById('suggestions-popup');
+            
+            fetch('/winkelmandje/suggestions/' + materiaalId)
+                .then(r => r.json())
+                .then(suggestions => {
+                    const content = document.getElementById('suggestions-content');
+                    content.innerHTML = '';
+                    
+                    if (suggestions.length === 0) {
+                        content.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-light); padding: 1rem;">Geen aanbevelingen beschikbaar</p>';
+                    } else {
+                        suggestions.forEach(item => {
+                            const card = document.createElement('div');
+                            card.className = 'suggestion-card';
+                            
+                            let imageHtml = '';
+                            if (item.foto) {
+                                imageHtml = `<img src="/storage/${item.foto}" alt="${item.naam}" class="suggestion-card-image">`;
+                            }
+                            
+                            card.innerHTML = `
+                                ${imageHtml}
+                                <div class="suggestion-card-name">${item.naam}</div>
+                                <div class="suggestion-card-actions">
+                                    <input type="number" value="1" min="1" class="suggestion-quantity" data-id="${item.id}">
+                                    <button type="button" onclick="addSuggestionToCart(${item.id}, this)" class="suggestion-add-btn">Voeg toe</button>
+                                </div>
+                            `;
+                            
+                            content.appendChild(card);
+                        });
+                    }
+                    
+                    overlay.style.display = 'block';
+                    popup.style.display = 'block';
+                });
+        }
+        
+        function closeSuggestionsPopup() {
+            const overlay = document.getElementById('suggestions-overlay');
+            const popup = document.getElementById('suggestions-popup');
+            overlay.style.display = 'none';
+            popup.style.display = 'none';
+        }
+        
+        function addSuggestionToCart(materiaalId, button) {
+            const quantity = button.parentElement.querySelector('.suggestion-quantity').value;
+            button.disabled = true;
+            button.textContent = '🔄';
+            
+            const formData = new FormData();
+            formData.append('materiaal_id', materiaalId);
+            formData.append('aantal', quantity);
+            formData.append('_token', '{{ csrf_token() }}');
+            
+            fetch('{{ route('winkelmandje.add') }}', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => {
+                if (r.ok) {
+                    showSuccessToast('Materiaal is toegevoegd aan je mandje!');
+                    button.textContent = '✓ Toegevoegd';
+                    button.style.background = 'var(--success)';
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.textContent = 'Voeg toe';
+                        button.style.background = '';
+                        // Update cart badge
+                        fetch('{{ route('winkelmandje.count') }}')
+                            .then(r => r.json())
+                            .then(data => {
+                                const badges = document.querySelectorAll('.nav-cart-badge');
+                                const links = document.querySelectorAll('.nav-cart-link, .nav-cart-link-mobile');
+                                
+                                if (data.count > 0) {
+                                    badges.forEach(badge => badge.textContent = data.count);
+                                    if (badges.length === 0) {
+                                        links.forEach(link => {
+                                            const badge = document.createElement('span');
+                                            badge.className = 'nav-cart-badge';
+                                            badge.textContent = data.count;
+                                            link.appendChild(badge);
+                                        });
+                                    }
+                                }
+                            });
+                    }, 1500);
+                } else {
+                    button.disabled = false;
+                    button.textContent = 'Voeg toe';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                button.disabled = false;
+                button.textContent = 'Voeg toe';
+            });
+        }
+        
+        // Close popup when clicking on overlay
+        document.getElementById('suggestions-overlay').addEventListener('click', closeSuggestionsPopup);
+    </script>
 </x-site-layout>

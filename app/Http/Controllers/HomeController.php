@@ -15,21 +15,24 @@ class HomeController extends Controller
 
     public function index(OpenMeteoService $openMeteo): View
     {
-        $techniekerRainForecast = []; // standaardwaarden instellen voor niet-techniekers
+        $techniekerRainForecast = [];
         $homeForecastUpdatedAt = null;
+        $forecastError = null;
 
         if (auth()->user()?->role_id === Role::TECHNIEKER) {
             $forecastData = Cache::remember(self::FORECAST_CACHE_KEY, now()->addMinutes(30), function () use ($openMeteo): array {
-                return $this->buildTechniekerForecast($openMeteo); // Forecastgegevens ophalen en cachen voor 30 minuten
+                return $this->buildTechniekerForecast($openMeteo);
             });
 
             $techniekerRainForecast = $forecastData['techniekerRainForecast'];
-            $homeForecastUpdatedAt = $forecastData['updatedAt']; // Tijdstip van de laatste update van de forecast
+            $homeForecastUpdatedAt = $forecastData['updatedAt'];
+            $forecastError = $forecastData['error'] ?? null;
         }
 
         return view('home', [
-            'techniekerRainForecast' => $techniekerRainForecast, // Neerslagvoorspelling voor techniekers, leeg voor anderen
+            'techniekerRainForecast' => $techniekerRainForecast,
             'homeForecastUpdatedAt' => $homeForecastUpdatedAt,
+            'forecastError' => $forecastError,
         ]);
     }
 
@@ -42,27 +45,29 @@ class HomeController extends Controller
             ->with('success', 'Neerslaggegevens vernieuwd.');
     }
 
-    // @return array{techniekerRainForecast: list<array{day_name: string, amount: float}>, updatedAt: string}
+    // @return array{techniekerRainForecast: list<array{day_name: string, amount: float}>, updatedAt: string, error?: string|null}
 
     private function buildTechniekerForecast(OpenMeteoService $openMeteo): array
     {
-        $forecast = $openMeteo->fetchForecast( // Weerdat ophalen voor de standaardlocatie
+        $forecast = $openMeteo->fetchForecast(
             OpenMeteoService::DEFAULT_LATITUDE,
             OpenMeteoService::DEFAULT_LONGITUDE,
         );
 
         if ($forecast === null) {
             return [
-                'techniekerRainForecast' => [], // Lege forecast teruggeven als er een fout is bij het ophalen van de gegevens
-                'updatedAt' => Carbon::now('Europe/Brussels')->format('d-m-Y H:i'), // Geef toch het huidige tijdstip mee, zodat pagina niet crasht
+                'techniekerRainForecast' => [],
+                'updatedAt' => Carbon::now('Europe/Brussels')->format('d-m-Y H:i'),
+                'error' => 'Kon de neerslaggegevens niet ophalen. De weerservice is momenteel niet beschikbaar.',
             ];
         }
 
-        $parsedForecast = $openMeteo->parseForecastForDisplay($forecast); // Zet ruwe API-data naar een nette structuur voor de view
+        $parsedForecast = $openMeteo->parseForecastForDisplay($forecast);
 
         return [
-            'techniekerRainForecast' => array_slice($parsedForecast['dailyRainForecast'], 0, 7), // Alleen de neerslagvoorspelling voor de komende 7 dagen teruggeven
-            'updatedAt' => Carbon::now('Europe/Brussels')->format('d-m-Y H:i'), // Sla het huidige tijdstip op in Belgische tijd
+            'techniekerRainForecast' => array_slice($parsedForecast['dailyRainForecast'], 0, 7),
+            'updatedAt' => Carbon::now('Europe/Brussels')->format('d-m-Y H:i'),
+            'error' => null,
         ];
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\FloodRiskLevel;
 use App\Models\Belangrijk;
 use App\Models\Materiaal;
 use App\Models\Neerslag;
@@ -19,9 +20,9 @@ class FloodRiskService
 {
     /**
      * Neerslagdrempels (in mm) per seizoen die overstroomingsrisico aangeven.
-     * Als seizoensgebonden neerslag deze drempels overschrijdt, worden materialen gemarkeerd als belangrijk.
+     * Gedeeld met FloodRiskAnalysisService voor consistente drempelwaarden.
      */
-    private const SEASON_THRESHOLDS_MM = [
+    public const SEASON_THRESHOLDS_MM = [
         'Winter' => 300,
         'Lente' => 250,
         'Zomer' => 260,
@@ -33,7 +34,7 @@ class FloodRiskService
      *
      * @var array<string, list<int>>
      */
-    private const SEASON_MONTHS = [
+    public const SEASON_MONTHS = [
         'Winter' => [12, 1, 2],
         'Lente' => [3, 4, 5],
         'Zomer' => [6, 7, 8],
@@ -56,7 +57,6 @@ class FloodRiskService
         float $latitude = OpenMeteoService::DEFAULT_LATITUDE,
         float $longitude = OpenMeteoService::DEFAULT_LONGITUDE,
     ): void {
-        // Sla over als gegevens voor deze maand al bestaan
         $exists = Neerslag::query()
             ->where('jaar', $year)
             ->where('maand', $month)
@@ -72,7 +72,6 @@ class FloodRiskService
             return;
         }
 
-        // Sla afgeronde maandelijkse totale neerslag op
         Neerslag::query()->create([
             'jaar' => $year,
             'maand' => $month,
@@ -81,65 +80,74 @@ class FloodRiskService
     }
 
     /**
-     * Evalueer huidige overstroomingsrisico en markeer gekoppelde materialen.
+     * Evalueer huidig overstroomingsrisico en markeer gekoppelde materialen op basis van hun risicodniveau.
+     * Materialen worden alleen gemarkeerd als het actuele risico hun minimale drempel bereikt of overschrijdt.
      *
      * @param  float  $latitude  Locatiebreedte (standaard naar Brussel)
      * @param  float  $longitude  Locatielengte (standaard naar Brussel)
      * @param  array<string, mixed>|null  $forecastDaily  Optionele voorspellingsgegevens om dubbele API-aanroepen te vermijden
      * @param  string  $timezone  Tijdzone voor datumberekeningen
-     * @return bool Waar als overstroomingsrisico momenteel actief is
+     * @return FloodRiskLevel Huidige graduele risicostatus
      */
     public function checkAndFlagItems(
         float $latitude = OpenMeteoService::DEFAULT_LATITUDE,
         float $longitude = OpenMeteoService::DEFAULT_LONGITUDE,
         ?array $forecastDaily = null,
         string $timezone = 'Europe/Berlin',
-    ): bool {
-        $isFloodRiskActive = $this->evaluateFloodRisk($latitude, $longitude, $forecastDaily, $timezone);
-        $this->applyMaterialFlags($isFloodRiskActive);
+    ): FloodRiskLevel {
+        $currentLevel = $this->evaluateFloodRisk($latitude, $longitude, $forecastDaily, $timezone);
+        $this->applyMaterialFlags($currentLevel);
 
-        return $isFloodRiskActive;
+        return $currentLevel;
     }
 
     /**
-     * Simuleer overstroomingsrisico door alle gekoppelde materialen als belangrijk in te stellen.
+     * Simuleer overstroomingsrisico door alle gekoppelde materialen te markeren met het opgegeven risiconiveau.
      * Gebruikt voor test- en demonstratiedoeleinden.
      *
-     * @return bool Geeft altijd waar terug (simulatie is actief)
+     * @param  FloodRiskLevel|string|null  $level  Het risiconiveau om te simuleren (FloodRiskLevel, string, of null)
+     * @return FloodRiskLevel|null Het gesimuleerde risiconiveau of null als simulatie is uitgeschakeld
      */
-    public function applySimulation(): bool
+    public function applySimulation(FloodRiskLevel|string|null $level = null): ?FloodRiskLevel
     {
-        $this->applyMaterialFlags(true);
+        if ($level === null || (is_string($level) && $level === 'none')) {
+            // Clear simulation
+            $this->applyMaterialFlags(FloodRiskLevel::Low);
 
-        return true;
+            return null;
+        }
+
+        $simulationLevel = is_string($level) ? FloodRiskLevel::from($level) : $level;
+        $this->applyMaterialFlags($simulationLevel);
+
+        return $simulationLevel;
     }
 
     /**
-     * Synchroniseer gekoppelde materialen met de Belangrijk-tabel.
-     * Wist bestaande koppelingen en maakt nieuwe aan op basis van verstrekte ID's.
-     * Dit stelt beheerders in staat om in te stellen welke materialen worden gecontroleerd bij risicobeoordelingen van overstromingen.
+     * Synchroniseer gekoppelde materialen met de Belangrijk-tabel inclusief hun risicodniveaus.
+     * Wist bestaande koppelingen en maakt nieuwe aan op basis van verstrekte ID's en risiconiveaus.
      *
-     * @param  list<int>  $materiaalIds  Array van materiaal-ID's om aan te koppelen voor controle van overstroomingsrisico
+     * @param  array<int|string, string>  $materialRiskLevels  Associatieve array van materiaal_id => risk_level string
      */
-    public function syncLinkedMaterials(array $materiaalIds): void
+    public function syncLinkedMaterials(array $materialRiskLevels): void
     {
-        // Wis bestaande koppelingen
         Belangrijk::query()->delete();
 
-        if ($materiaalIds === []) {
+        if ($materialRiskLevels === []) {
             return;
         }
 
         $now = now();
 
-        // Maak nieuwe koppelingen met tijdstempels
         Belangrijk::query()->insert(
-            collect($materiaalIds)
-                ->map(fn (int $id): array => [
-                    'materiaal_id' => $id,
+            collect($materialRiskLevels)
+                ->map(fn (string $riskLevel, int|string $id): array => [
+                    'materiaal_id' => (int) $id,
+                    'risk_level' => $riskLevel,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ])
+                ->values()
                 ->all()
         );
     }
@@ -158,49 +166,127 @@ class FloodRiskService
     }
 
     /**
-     * Evalueer overstroomingsrisico voor het huidige seizoen.
-     * Combineert historische seizoensgebonden neerslag met voorspelde neerslag om te bepalen of drempels worden overschreden.
+     * Verkrijg gekoppelde materialen als een map van materiaal-ID naar risiconiveau.
+     *
+     * @return array<int, FloodRiskLevel> Associatieve array van materiaal_id => FloodRiskLevel
+     */
+    public function linkedMaterialsWithRiskLevels(): array
+    {
+        return Belangrijk::query()
+            ->get()
+            ->mapWithKeys(fn (Belangrijk $item): array => [
+                $item->materiaal_id => $item->risk_level ?? FloodRiskLevel::Medium,
+            ])
+            ->all();
+    }
+
+    /**
+     * Evalueer het graduele overstroomingsrisico voor het huidige seizoen.
+     * Combineert historische seizoensgebonden neerslag met voorspelde neerslag.
+     *
+     * Risicobepaling:
+     * - Low:    < 100 % van seizoensdrempel
+     * - Medium: >= 100 % en < 120 % van seizoensdrempel
+     * - High:   >= 120 % van seizoensdrempel
      *
      * @param  float  $latitude  Locatiebreedte
      * @param  float  $longitude  Locatielengte
      * @param  array<string, mixed>|null  $forecastDaily  Optionele voorspellingsgegevens
      * @param  string  $timezone  Tijdzone voor berekeningen
-     * @return bool Waar als opgehoopte neerslag de seizoendrempel overschrijdt
      */
     private function evaluateFloodRisk(
         float $latitude,
         float $longitude,
         ?array $forecastDaily = null,
         string $timezone = 'Europe/Berlin',
-    ): bool {
+    ): FloodRiskLevel {
         $now = Carbon::now('Europe/Berlin');
         $currentMonth = $now->month;
         $currentYear = $now->year;
         $currentSeason = $this->seasonForMonth($currentMonth);
 
         if ($currentSeason === null) {
-            return false;
+            return FloodRiskLevel::Low;
         }
 
-        // Verkrijg opgehoopte neerslag uit vorige maanden in dit seizoen
         $totalRainfall = $this->accumulatedSeasonRainfall(
             $currentSeason,
             $currentMonth,
             $currentYear,
         );
 
-        // Haal voorspelling op als deze niet is opgegeven
         if ($forecastDaily === null) {
             $forecast = $this->openMeteo->fetchForecast($latitude, $longitude);
             $forecastDaily = $forecast['daily'] ?? null;
             $timezone = $forecast['timezone'] ?? $timezone;
         }
 
-        // Voeg verwachte neerslag voor de huidige maand toe
         $totalRainfall += $this->openMeteo->sumRainfallForMonth($forecastDaily, $currentMonth, $timezone);
 
-        // Controleer of totaal seizoendrempel overschrijdt
-        return $totalRainfall >= self::SEASON_THRESHOLDS_MM[$currentSeason];
+        return $this->calculateRiskLevel($totalRainfall, self::SEASON_THRESHOLDS_MM[$currentSeason]);
+    }
+
+    /**
+     * Bepaal het graduele risiconiveau op basis van neerslag versus drempel.
+     * Gedeelde logica met FloodRiskAnalysisService.
+     *
+     * @param  float  $rainfall  Opgehoopte neerslag in millimeters
+     * @param  int  $threshold  Seizoensdrempel in millimeters
+     */
+    public function calculateRiskLevel(float $rainfall, int $threshold): FloodRiskLevel
+    {
+        if ($rainfall >= $threshold * 1.2) {
+            return FloodRiskLevel::High;
+        }
+
+        if ($rainfall >= $threshold) {
+            return FloodRiskLevel::Medium;
+        }
+
+        return FloodRiskLevel::Low;
+    }
+
+    /**
+     * Calculate the current rainfall as a percentage of the seasonal threshold.
+     * Returns the percentage (0-100+ where 100% = medium risk threshold, 120% = high risk threshold).
+     *
+     * @param  float  $latitude  Locatiebreedte
+     * @param  float  $longitude  Locatielengte
+     * @param  array<string, mixed>|null  $forecastDaily  Optionele voorspellingsgegevens
+     * @param  string  $timezone  Tijdzone voor berekeningen
+     * @return float Percentage of seasonal threshold
+     */
+    public function calculateRiskPercentage(
+        float $latitude = OpenMeteoService::DEFAULT_LATITUDE,
+        float $longitude = OpenMeteoService::DEFAULT_LONGITUDE,
+        ?array $forecastDaily = null,
+        string $timezone = 'Europe/Berlin',
+    ): float {
+        $now = Carbon::now('Europe/Berlin');
+        $currentMonth = $now->month;
+        $currentYear = $now->year;
+        $currentSeason = $this->seasonForMonth($currentMonth);
+
+        if ($currentSeason === null) {
+            return 0;
+        }
+
+        $totalRainfall = $this->accumulatedSeasonRainfall(
+            $currentSeason,
+            $currentMonth,
+            $currentYear,
+        );
+
+        if ($forecastDaily === null) {
+            $forecast = $this->openMeteo->fetchForecast($latitude, $longitude);
+            $forecastDaily = $forecast['daily'] ?? null;
+            $timezone = $forecast['timezone'] ?? $timezone;
+        }
+
+        $totalRainfall += $this->openMeteo->sumRainfallForMonth($forecastDaily, $currentMonth, $timezone);
+        $threshold = self::SEASON_THRESHOLDS_MM[$currentSeason];
+
+        return ($totalRainfall / $threshold) * 100;
     }
 
     /**
@@ -221,7 +307,6 @@ class FloodRiskService
                 continue;
             }
 
-            // Behandel het Winterseizoen dat de jaargrens kruist (December is vorig jaar)
             $queryYear = ($season === 'Winter' && $month === 12)
                 ? $currentYear - 1
                 : $currentYear;
@@ -257,31 +342,46 @@ class FloodRiskService
     }
 
     /**
-     * Pas overstroomingsrisicomarkeringen toe op materialen in het magazijn.
-     * Werkt het veld "belangrijk" bij op basis van of materialen zijn gekoppeld voor controle
-     * en of overstroomingsrisico momenteel actief is.
+     * Pas graduele overstroomingsrisicomarkeringen toe op materialen in het magazijn.
+     * Een materiaal wordt gemarkeerd als het actuele risiconiveau het minimale drempelniveau
+     * van dat materiaal bereikt of overschrijdt. Bij laag risico worden geen materialen gemarkeerd.
      *
-     * @param  bool  $isFloodRiskActive  Of overstroomingsrisicoaandoeningen momenteel aanwezig zijn
+     * @param  FloodRiskLevel  $currentLevel  Huidig gradueel risiconiveau
      */
-    private function applyMaterialFlags(bool $isFloodRiskActive): void
+    private function applyMaterialFlags(FloodRiskLevel $currentLevel): void
     {
-        $linkedIds = $this->linkedMaterialIds();
+        $linkedItems = Belangrijk::query()->get();
 
-        if ($linkedIds === []) {
-            // Als geen materialen zijn gekoppeld, wis alle markeringen
-            Materiaal::query()->update(['belangrijk' => false]);
+        if ($linkedItems->isEmpty()) {
+            Materiaal::query()->update(['belangrijk' => null]);
 
             return;
         }
 
-        // Markeer alleen gekoppelde materialen op basis van overstroomingsrisicostatus
-        Materiaal::query()
-            ->whereIn('id', $linkedIds)
-            ->update(['belangrijk' => $isFloodRiskActive]);
+        $linkedIds = $linkedItems->pluck('materiaal_id')->map(fn ($id): int => (int) $id)->all();
 
-        // Verwijder markeringen van alle niet-gekoppelde materialen
+        // Clear non-linked materials
         Materiaal::query()
             ->whereNotIn('id', $linkedIds)
-            ->update(['belangrijk' => false]);
+            ->update(['belangrijk' => null]);
+
+        // At Low risk nothing gets flagged; clear all linked materials too
+        if ($currentLevel === FloodRiskLevel::Low) {
+            Materiaal::query()
+                ->whereIn('id', $linkedIds)
+                ->update(['belangrijk' => null]);
+
+            return;
+        }
+
+        // Flag each linked material based on whether the current risk meets its threshold
+        foreach ($linkedItems as $item) {
+            $requiredLevel = $item->risk_level ?? FloodRiskLevel::Medium;
+            $isFlagged = $currentLevel->meetsOrExceeds($requiredLevel);
+
+            Materiaal::query()
+                ->where('id', $item->materiaal_id)
+                ->update(['belangrijk' => $isFlagged ? $currentLevel->value : null]);
+        }
     }
 }

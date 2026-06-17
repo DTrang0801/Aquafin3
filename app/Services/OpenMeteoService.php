@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Service voor de Open-Meteo weerinformatie API.
@@ -35,27 +36,45 @@ class OpenMeteoService
 
     /**
      * Haal weersvoorspelling op van de Open-Meteo API.
-     * Retourneert zowel huidige neerslag als een 14-daagse voorspelling met historische gegevens (afgelopen 30 dagen).
+     * Retourneert zowel huidige neerslag als een 14-daagse voorspelling met historische gegevens (afgelopen 90 dagen).
      *
      * @return array<string, mixed>|null Neerslaggegevens of null als API-aanroep mislukt
      */
     public function fetchForecast(float $latitude, float $longitude): ?array
     {
-        $response = Http::get('https://api.open-meteo.com/v1/forecast', [
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'daily' => 'rain_sum',
-            'current' => 'rain,precipitation',
-            'timezone' => 'auto',
-            'past_days' => 30,
-            'forecast_days' => 14,
-        ]);
+        try {
+            $response = Http::timeout(10)->get('https://api.open-meteo.com/v1/forecast', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'daily' => 'rain_sum',
+                'current' => 'rain,precipitation',
+                'timezone' => 'auto',
+                'past_days' => 90,
+                'forecast_days' => 14,
+            ]);
 
-        if ($response->failed()) {
+            if ($response->failed()) {
+                Log::warning('Open-Meteo API request failed', [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'status_code' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                return null;
+            }
+
+            return $response->json();
+        } catch (\Exception $e) {
+            Log::error('Open-Meteo API exception', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'error' => $e->getMessage(),
+                'exception' => get_class($e),
+            ]);
+
             return null;
         }
-
-        return $response->json();
     }
 
     /**
@@ -74,36 +93,57 @@ class OpenMeteoService
         int $year,
         int $month,
     ): ?float {
-        $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->format('Y-m-d');
-        $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
+        try {
+            $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth()->format('Y-m-d');
+            $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth()->format('Y-m-d');
 
-        $response = Http::get('https://archive-api.open-meteo.com/v1/archive', [
-            'latitude' => $latitude,
-            'longitude' => $longitude,
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'daily' => 'rain_sum',
-            'timezone' => 'Europe/Berlin',
-        ]);
+            $response = Http::timeout(10)->get('https://archive-api.open-meteo.com/v1/archive', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'start_date' => $startDate,
+                'end_date' => $endDate,
+                'daily' => 'rain_sum',
+                'timezone' => 'Europe/Berlin',
+            ]);
 
-        if ($response->failed()) {
+            if ($response->failed()) {
+                Log::warning('Open-Meteo Archive API request failed', [
+                    'latitude' => $latitude,
+                    'longitude' => $longitude,
+                    'year' => $year,
+                    'month' => $month,
+                    'status_code' => $response->status(),
+                ]);
+
+                return null;
+            }
+
+            $dailyRain = $response->json()['daily']['rain_sum'] ?? [];
+
+            return (float) array_sum($dailyRain);
+        } catch (\Exception $e) {
+            Log::error('Open-Meteo Archive API exception', [
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+                'year' => $year,
+                'month' => $month,
+                'error' => $e->getMessage(),
+            ]);
+
             return null;
         }
-
-        $dailyRain = $response->json()['daily']['rain_sum'] ?? [];
-
-        return (float) array_sum($dailyRain);
     }
 
     /**
      * Parse voorspellings-API-antwoord voor weergave in de UI.
-     * Scheidt historische neerslag (afgelopen maand) van toekomstige voorspellingen.
+     * Scheidt historische neerslag (afgelopen 1 en 3 maanden) van toekomstige voorspellingen.
      * Formatteert dagnamen.
      *
      * @param  array<string, mixed>  $data  Ruwe voorspellingsgegevens van Open-Meteo API
      * @return array{
      *     currentRain: float,
      *     pastMonthTotal: float,
+     *     pastThreeMonthsTotal: float,
      *     dailyRainForecast: list<array{day_name: string, amount: float}>,
      *     timezone: string,
      *     daily: array<string, mixed>|null
@@ -116,19 +156,27 @@ class OpenMeteoService
         $timezone = $data['timezone'] ?? 'Europe/Berlin';
 
         $pastMonthTotal = 0.0;
+        $pastThreeMonthsTotal = 0.0;
         $dailyRainForecast = [];
 
         if ($daily && isset($daily['time'])) {
             $today = Carbon::today($timezone);
+            $oneMonthAgo = $today->copy()->subMonths(1);
+            $threeMonthsAgo = $today->copy()->subMonths(3);
 
             foreach ($daily['time'] as $index => $dateString) {
                 $date = Carbon::parse($dateString, $timezone);
                 $amount = (float) ($daily['rain_sum'][$index] ?? 0);
 
-                // Verzamel historische neerslaggegevens voor de afgelopen maand
-                if ($date->isBefore($today)) {
+                // Verzamel neerslag van de afgelopen 1 maand
+                if ($date->isBefore($today) && $date->gte($oneMonthAgo)) {
                     $pastMonthTotal += $amount;
-                } else {
+                }
+
+                // Verzamel neerslag van de afgelopen 3 maanden
+                if ($date->isBefore($today) && $date->gte($threeMonthsAgo)) {
+                    $pastThreeMonthsTotal += $amount;
+                } elseif ($date->gte($today)) {
                     // Bouw toekomstige voorspellingsinvoeren op
                     $dailyRainForecast[] = [
                         'day_name' => $date->locale('nl')->isoFormat('dddd D MMM'),
@@ -141,6 +189,7 @@ class OpenMeteoService
         return [
             'currentRain' => (float) ($current['precipitation'] ?? 0),
             'pastMonthTotal' => round($pastMonthTotal, 1),
+            'pastThreeMonthsTotal' => round($pastThreeMonthsTotal, 1),
             'dailyRainForecast' => $dailyRainForecast,
             'timezone' => $timezone,
             'daily' => $daily,
