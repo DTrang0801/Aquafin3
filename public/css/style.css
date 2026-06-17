@@ -493,6 +493,28 @@ body::before {
     display: inline;
 }
 
+.dark .form-input,
+.dark .search-input,
+.dark .user-form input,
+.dark .user-form select {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .form-input:focus,
+.dark .search-input:focus,
+.dark .user-form input:focus,
+.dark .user-form select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .form-input::placeholder,
+.dark .search-input::placeholder {
+    color: var(--text-lighter);
+}
+
 /* ==================== HERO & PAGE TITLES ==================== */
 .hero-title {
     font-size: 3rem;
