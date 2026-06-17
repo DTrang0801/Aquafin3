@@ -546,7 +546,7 @@
             font-weight: 600;
             z-index: 9999;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: fadeIn 0.3s ease;
+            animation: fadeIn 0.1s ease;
         }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
