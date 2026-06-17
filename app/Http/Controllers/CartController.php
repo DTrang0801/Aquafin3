@@ -113,6 +113,11 @@ class CartController extends Controller
         $cart = $this->getOrCreateCart();
         $cart->materialen()->updateExistingPivot($id, ['aantal' => $request->aantal]);
 
+        // Geef een JSON-response terug bij AJAX-verzoeken (voor inline quantity updates)
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json(['success' => true, 'aantal' => $request->aantal]);
+        }
+
         return redirect()->route('winkelmandje.index')->with('success', 'Winkelmandje bijgewerkt!');
     }
 
