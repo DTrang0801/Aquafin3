@@ -3934,3 +3934,32 @@ body::before {
     background: rgba(107, 114, 128, 0.25);
     color: #d1d5db;
 }
+
+/* ==================== DARK MODE - MISC ELEMENTS ==================== */
+.dark .material-picker-panel {
+    background: #1e293b;
+}
+
+.dark .material-picker-panel--active {
+    background: #450a0a;
+    border-color: #991b1b;
+}
+
+.dark .material-search-input {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .weather-simulation-control {
+    background: #451a03;
+    border-color: #92400e;
+}
+
+.dark .weather-simulation-control__title {
+    color: #fde68a;
+}
+
+.dark .row-important:hover {
+    background-color: #78350f !important;
+}
