@@ -340,6 +340,25 @@ body::before {
     transform: translateY(-1px);
 }
 
+.dark .btn-primary,
+.dark .btn-logout,
+.dark .btn-login,
+.dark .btn-add-user,
+.dark .btn-save,
+.dark .search-button,
+.dark .submit-btn,
+.dark .btn-add-material {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.dark .btn-cancel {
+    color: var(--text-light);
+}
+
+.dark .btn-cancel:hover {
+    color: var(--text-dark);
+}
+
 /* ==================== CONTENT & LAYOUT ==================== */
 .container {
     max-width: 1200px;
