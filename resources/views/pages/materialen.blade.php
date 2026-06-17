@@ -535,24 +535,49 @@
     </style>
 
     <style>
-        .toast-success {
+        #toast-container {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: var(--success, #16a34a);
-            color: #fff;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 600;
             z-index: 9999;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            animation: fadeIn 0.1s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .toast-success {
+            background: #16a34a;
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            box-shadow: 0 6px 20px rgba(22,163,74,0.35);
+            animation: toastIn 0.3s ease;
+            pointer-events: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            max-width: 360px;
+        }
+        .toast-success.toast-exit {
+            animation: toastOut 0.3s ease forwards;
+        }
+        .toast-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateX(40px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(40px); }
         }
     </style>
+
+    <div id="toast-container"></div>
 
     <!-- Suggestions Popup Modal -->
     <div id="suggestions-overlay" class="suggestions-popup-overlay" style="display: none;"></div>
@@ -568,17 +593,17 @@
         </div>
     </div>
 
-    <div id="success-toast" class="toast-success" style="display: none;"></div>
-
     <script>
         function showSuccessToast(message) {
-            const toast = document.getElementById('success-toast');
-            toast.textContent = message;
-            toast.style.display = 'block';
-            clearTimeout(toast._hideTimeout);
-            toast._hideTimeout = setTimeout(() => {
-                toast.style.display = 'none';
-            }, 2500);
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = 'toast-success';
+            toast.innerHTML = '<span class="toast-icon">&#10003;</span> ' + message;
+            container.appendChild(toast);
+            setTimeout(() => {
+                toast.classList.add('toast-exit');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
         }
 
         function showSuggestionsPopup(materiaalId) {
