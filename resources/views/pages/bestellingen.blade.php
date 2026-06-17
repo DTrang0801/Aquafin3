@@ -121,10 +121,12 @@
                                         @csrf
                                         <button type="submit" class="btn-cancel-order" style="background: var(--primary, #2563eb);">Herbestellen</button>
                                     </form>
-                                    <form method="POST" action="{{ route('bestellingen.annuleer', $bestelling->id) }}" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?')">
-                                        @csrf
-                                        <button type="submit" class="btn-cancel-order">Annuleer bestelling</button>
-                                    </form>
+                                    @if($bestelling->kanNogGeannuleerdWorden())
+                                        <form method="POST" action="{{ route('bestellingen.annuleer', $bestelling->id) }}" onsubmit="return confirm('Weet je zeker dat je deze bestelling wilt annuleren?')">
+                                            @csrf
+                                            <button type="submit" class="btn-cancel-order">Annuleer bestelling</button>
+                                        </form>
+                                    @endif
                                 </div>
                             @endif
 

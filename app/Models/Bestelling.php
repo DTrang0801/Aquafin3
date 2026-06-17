@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\BestellingFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -95,5 +96,18 @@ class Bestelling extends Model
     public function isGeannuleerd(): bool
     {
         return $this->status === self::STATUS_GEANNULEERD;
+    }
+
+    public function kanNogGeannuleerdWorden(): bool
+    {
+        if ($this->isGeannuleerd()) {
+            return false;
+        }
+
+        if (! $this->gevraagde_datum) {
+            return true;
+        }
+
+        return now()->isBefore(Carbon::parse($this->gevraagde_datum));
     }
 }

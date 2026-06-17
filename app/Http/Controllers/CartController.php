@@ -321,6 +321,10 @@ class CartController extends Controller
             return redirect()->route('overzicht')->with('error', 'Deze bestelling is al geannuleerd.');
         }
 
+        if ($user->role_id === Role::TECHNIEKER && ! $bestelling->kanNogGeannuleerdWorden()) {
+            return redirect()->route('bestellingen')->with('error', 'Deze bestelling kan niet meer geannuleerd worden omdat de gewenste levertijd al verstreken is.');
+        }
+
         $bestelling->annuleer();
 
         $route = $user->role_id === Role::TECHNIEKER ? 'bestellingen' : 'overzicht';

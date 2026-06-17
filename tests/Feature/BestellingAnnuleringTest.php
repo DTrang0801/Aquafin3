@@ -11,7 +11,7 @@ it('stockbeheerder kan bestelling annuleren', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -29,7 +29,7 @@ it('technieker kan eigen bestelling annuleren', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -48,7 +48,7 @@ it('technieker kan bestelling van ander niet annuleren', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker1->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -67,7 +67,7 @@ it('admin kan bestelling annuleren', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -86,7 +86,7 @@ it('kan reeds geannuleerde bestelling niet opnieuw annuleren', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'geannuleerd',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -102,7 +102,7 @@ it('geannuleerde bestelling heeft correcte status', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => User::factory()->create()->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -121,7 +121,7 @@ it('overzicht toont geannuleerde bestelling met badge', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'geannuleerd',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -138,7 +138,7 @@ it('overzicht toont actieve bestelling met annuleer-knop', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -153,7 +153,7 @@ it('technieker ziet annuleer-knop voor eigen bestelling', function () {
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'actief',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
@@ -168,12 +168,27 @@ it('technieker ziet geen annuleer-knop voor geannuleerde bestelling', function (
     $bestelling = Bestelling::create([
         'gebruiker_id' => $technieker->id,
         'status' => 'geannuleerd',
-        'gevraagde_datum' => now()->toDateString(),
+        'gevraagde_datum' => now()->addDay()->toDateString(),
         'locatie' => 'Test locatie',
     ]);
 
     $this->actingAs($technieker)
         ->get(route('bestellingen'))
         ->assertSee('Geannuleerd')
+        ->assertDontSee('Annuleer bestelling');
+});
+
+it('technieker ziet geen annuleer-knop wanneer levertijd verstreken is', function () {
+    $technieker = User::factory()->create(['role_id' => Role::TECHNIEKER]);
+
+    $bestelling = Bestelling::create([
+        'gebruiker_id' => $technieker->id,
+        'status' => 'actief',
+        'gevraagde_datum' => now()->subDay()->toDateString(),
+        'locatie' => 'Test locatie',
+    ]);
+
+    $this->actingAs($technieker)
+        ->get(route('bestellingen'))
         ->assertDontSee('Annuleer bestelling');
 });
