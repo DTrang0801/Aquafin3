@@ -3728,3 +3728,28 @@ body::before {
         display: flex;
     }
 }
+
+/* ==================== DARK MODE - WEATHER ALERTS ==================== */
+.dark .weather-alert--ok,
+.dark .weather-alert--ok.weather-alert--large {
+    background: #052e16;
+    border-color: #166534;
+    color: #86efac;
+}
+
+.dark .weather-alert--ok .alert-icon {
+    background: #14532d;
+    color: #86efac;
+}
+
+.dark .weather-alert--danger,
+.dark .weather-alert--danger.weather-alert--large {
+    background: #450a0a;
+    border-color: #991b1b;
+    color: #fca5a5;
+}
+
+.dark .weather-alert--danger .alert-icon {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
