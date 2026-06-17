@@ -187,6 +187,12 @@ Toont materiaal dat gerelateerd is aan het materiaal dat net is toegevoegd aan h
 <img width="1905" height="879" alt="image" src="https://github.com/user-attachments/assets/4a81c8ae-ff86-4bba-9d1a-3ecd69eb758f" />
 Je kunt via deze pagina een overzicht krijgen van al uw vorige bestellingen. Je kan hier ook in zoeken met de zoekbalk.
 
+### Herbestellen
+**TECNIEKER**
+<img width="920" height="398" alt="image" src="https://github.com/user-attachments/assets/83282bea-2dcd-4b9b-95b2-405894068533" />
+Hier kan je op de button herbestellen drukken om dezelfde bestelling te plaatsen je kan de tijdstip wel kiezen en dan afronden.
+
+
 ### Bestelling bevestigen
 **TECHNIEKER**
 <img width="1916" height="955" alt="image" src="https://github.com/user-attachments/assets/e4cefd58-3c47-4e0a-a142-e19b379b0d55" />
