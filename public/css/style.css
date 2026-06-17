@@ -3313,6 +3313,36 @@ body::before {
     font-weight: 700;
 }
 
+.orders-today-info {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+    border-left: 4px solid var(--primary);
+    border-radius: 8px;
+    margin-bottom: 1.25rem;
+    padding: 1rem 1.25rem;
+}
+
+.orders-today-info p {
+    color: var(--text-dark);
+    font-size: 0.95rem;
+    margin: 0;
+}
+
+.orders-today-info strong {
+    color: var(--primary);
+    font-weight: 700;
+}
+
+.orders-today-info--empty {
+    background: rgba(107, 114, 128, 0.08);
+    border-color: rgba(107, 114, 128, 0.2);
+    border-left-color: var(--text-light);
+}
+
+.orders-today-info--empty p {
+    color: var(--text-light);
+}
+
 .orders-search-wrapper {
     margin-bottom: 1.25rem;
 }

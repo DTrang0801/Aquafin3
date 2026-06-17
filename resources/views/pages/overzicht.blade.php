@@ -11,6 +11,16 @@
             <div class="alert-success">{{ session('success') }}</div>
         @endif
 
+        @if($todayOrderCount > 0)
+            <div class="orders-today-info">
+                <p><strong>{{ $todayOrderCount }}</strong> {{ $todayOrderCount === 1 ? 'bestelling' : 'bestellingen' }} vandaag geplaatst</p>
+            </div>
+        @else
+            <div class="orders-today-info orders-today-info--empty">
+                <p>Geen nieuwe bestellingen vandaag</p>
+            </div>
+        @endif
+
         <div class="orders-search-wrapper">
             <form method="GET" action="{{ route('overzicht') }}" class="orders-search-form">
                 <input type="text" name="zoekterm" class="search-input"

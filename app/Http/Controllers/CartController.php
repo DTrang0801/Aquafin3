@@ -266,7 +266,11 @@ class CartController extends Controller
             })
             ->orderBy('created_at', 'desc')->get();
 
-        return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode'));
+        $todayOrderCount = Bestelling::whereHas('gebruiker', function ($q) {
+            $q->where('role_id', Role::TECHNIEKER);
+        })->whereDate('created_at', today())->count();
+
+        return view('pages.overzicht', compact('bestellingen', 'zoekterm', 'periode', 'todayOrderCount'));
     }
 
     // Annuleer een bestelling als stockbeheerder
