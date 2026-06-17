@@ -83,6 +83,10 @@ body::before {
     z-index: -1;
 }
 
+.dark body::before {
+    background: rgba(15, 23, 42, 0.6);
+}
+
 /* ==================== NAVIGATION ==================== */
 .nav {
     background: var(--primary);
@@ -280,6 +284,19 @@ body::before {
     .nav-logout-form {
         display: none;
     }
+}
+
+.dark .nav {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.dark .nav-links-container {
+    background: #1e293b;
+}
+
+.dark .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
 }
 
 /* ==================== BUTTONS ==================== */
