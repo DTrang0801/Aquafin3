@@ -34,6 +34,26 @@
     --slate-400: #94a3b8;         /* Lighter Slate */
 }
 
+.dark {
+    --text-dark: #f1f5f9;
+    --text-medium: #cbd5e1;
+    --text-light: #94a3b8;
+    --text-lighter: #64748b;
+
+    --border: #334155;
+    --bg-light: #1e293b;
+    --bg-white: #0f172a;
+
+    --danger-light: #450a0a;
+    --success-light: #052e16;
+    --warning-light: #451a03;
+
+    --slate-800: #e2e8f0;
+    --slate-700: #cbd5e1;
+    --slate-600: #94a3b8;
+    --slate-400: #475569;
+}
+
 *, *::before, *::after {
     margin: 0;
     padding: 0;
