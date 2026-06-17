@@ -34,6 +34,26 @@
     --slate-400: #94a3b8;         /* Lighter Slate */
 }
 
+.dark {
+    --text-dark: #f1f5f9;
+    --text-medium: #cbd5e1;
+    --text-light: #94a3b8;
+    --text-lighter: #64748b;
+
+    --border: #334155;
+    --bg-light: #1e293b;
+    --bg-white: #0f172a;
+
+    --danger-light: #450a0a;
+    --success-light: #052e16;
+    --warning-light: #451a03;
+
+    --slate-800: #e2e8f0;
+    --slate-700: #cbd5e1;
+    --slate-600: #94a3b8;
+    --slate-400: #475569;
+}
+
 *, *::before, *::after {
     margin: 0;
     padding: 0;
@@ -50,6 +70,7 @@ body {
     min-height: 100vh;
     position: relative;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 body::before {
@@ -61,6 +82,10 @@ body::before {
     height: 100%;
     background: rgba(255,255,255,0.4);
     z-index: -1;
+}
+
+.dark body::before {
+    background: rgba(15, 23, 42, 0.6);
 }
 
 /* ==================== NAVIGATION ==================== */
@@ -326,6 +351,19 @@ body::before {
     }
 }
 
+.dark .nav {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.dark .nav-links-container {
+    background: #1e293b;
+}
+
+.dark .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
 /* ==================== BUTTONS ==================== */
 .btn {
     display: inline-block;
@@ -365,6 +403,25 @@ body::before {
 .btn-login:hover {
     background: var(--primary-dark);
     transform: translateY(-1px);
+}
+
+.dark .btn-primary,
+.dark .btn-logout,
+.dark .btn-login,
+.dark .btn-add-user,
+.dark .btn-save,
+.dark .search-button,
+.dark .submit-btn,
+.dark .btn-add-material {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.dark .btn-cancel {
+    color: var(--text-light);
+}
+
+.dark .btn-cancel:hover {
+    color: var(--text-dark);
 }
 
 /* ==================== CONTENT & LAYOUT ==================== */
@@ -499,6 +556,28 @@ body::before {
 
 .inline-form {
     display: inline;
+}
+
+.dark .form-input,
+.dark .search-input,
+.dark .user-form input,
+.dark .user-form select {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .form-input:focus,
+.dark .search-input:focus,
+.dark .user-form input:focus,
+.dark .user-form select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .form-input::placeholder,
+.dark .search-input::placeholder {
+    color: var(--text-lighter);
 }
 
 /* ==================== HERO & PAGE TITLES ==================== */
@@ -670,6 +749,30 @@ body::before {
     background: rgba(37, 99, 235, 0.05);
 }
 
+.dark .custom-table,
+.dark .users-table {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.dark .custom-table th,
+.dark .users-table th {
+    background: #0f172a;
+    color: var(--text-dark);
+}
+
+.dark .custom-table td,
+.dark .users-table td {
+    border-bottom-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .custom-table tbody tr:hover,
+.dark .users-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
 /* ==================== ALERTS & BADGES ==================== */
 .alert-box {
     border-left: 4px solid var(--danger);
@@ -760,6 +863,41 @@ body::before {
 .badge--small {
     font-size: 0.75rem;
     padding: 0.25rem 0.5rem;
+}
+
+.dark .alert-box {
+    background: #450a0a;
+    border-color: var(--danger);
+}
+
+.dark .alert-title {
+    color: #fca5a5;
+}
+
+.dark .alert-success {
+    background: #052e16;
+    border-color: var(--success);
+    color: #86efac;
+}
+
+.dark .badge-normal {
+    background: rgba(22, 163, 74, 0.25);
+    color: #86efac;
+}
+
+.dark .badge-important {
+    background: rgba(220, 38, 38, 0.25);
+    color: #fca5a5;
+}
+
+.dark .badge.rain {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+}
+
+.dark .badge.dry {
+    background: rgba(107, 114, 128, 0.25);
+    color: #d1d5db;
 }
 
 /* ==================== SUGGESTIONS POPUP ==================== */
@@ -958,6 +1096,20 @@ body::before {
 .subcategory-block {
     margin-bottom: 1.25rem;
     margin-left: 1rem;
+}
+
+.dark .category-block {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+
+.dark .category-header {
+    background: var(--primary-dark);
+}
+
+.dark .subcategory-title {
+    color: var(--text-dark);
 }
 
 /* ==================== SEARCH & FILTER ==================== */
@@ -3778,6 +3930,490 @@ body::before {
     .home-forecast-item__day {
         flex: 1;
     }
+}
+
+/* ==================== DARK MODE - CARDS & SPECIAL SECTIONS ==================== */
+.dark .login-page {
+    background: var(--bg-white);
+}
+
+.dark .login-card {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.dark .hero-box {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.dark .year-forecast-card {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.dark .year-card--high {
+    background: #450a0a;
+    border-color: #ef4444;
+}
+
+.dark .year-card--medium {
+    background: #451a03;
+    border-color: #f59e0b;
+}
+
+.dark .year-card--low {
+    background: #052e16;
+    border-color: #10b981;
+}
+
+.dark .risk-badge--high {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
+.dark .risk-badge--medium {
+    background: #78350f;
+    color: #fde68a;
+}
+
+.dark .risk-badge--low {
+    background: #14532d;
+    color: #86efac;
+}
+
+.dark .rainfall-bar {
+    background: #334155;
+    border-color: #475569;
+}
+
+.dark .current-year-section {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%);
+    border-color: var(--border);
+}
+
+.dark .simulation-panel {
+    background: #451a03;
+    border-color: #92400e;
+}
+
+.dark .simulation-panel__title {
+    color: #fde68a;
+}
+
+.dark .material-category {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .material-category-header {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+.dark .stock-item-row {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .stock-item-row:hover {
+    background: #1e3a5f;
+    border-color: var(--primary);
+}
+
+.dark .material-item--important {
+    background: #450a0a;
+    border-color: #991b1b;
+}
+
+.dark .material-item--important:hover {
+    background: #7f1d1d;
+}
+
+.dark .checkbox-label {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .checkbox-label:hover {
+    background: #1e3a5f;
+}
+
+.dark .important-items-title {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+.dark .at-risk-label {
+    background: #1e293b;
+    color: var(--text-dark);
+}
+
+/* ==================== DARK MODE TOGGLE ==================== */
+.dark-mode-toggle {
+    background: rgba(255,255,255,0.15);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.dark-mode-toggle:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.1);
+}
+
+.dark-mode-icon-sun,
+.dark-mode-icon-moon {
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.dark-mode-icon-sun {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+.dark-mode-icon-moon {
+    opacity: 0;
+    transform: rotate(-90deg);
+}
+
+.dark .dark-mode-icon-sun {
+    opacity: 0;
+    transform: rotate(90deg);
+}
+
+.dark .dark-mode-icon-moon {
+    opacity: 1;
+    transform: rotate(0deg);
+}
+
+.dark-mode-toggle-mobile {
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+    background: rgba(0,0,0,0.2);
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-align: left;
+    transition: background-color 0.2s;
+}
+
+.dark-mode-toggle-mobile:hover {
+    background-color: rgba(0,0,0,0.3);
+}
+
+.dark-mode-toggle-mobile .dark-mode-icon-sun,
+.dark-mode-toggle-mobile .dark-mode-icon-moon {
+    position: static;
+    width: 16px;
+    height: 16px;
+}
+
+@media (max-width: 768px) {
+    .dark-mode-toggle {
+        display: none;
+    }
+
+    .dark-mode-toggle-mobile {
+        display: flex;
+    }
+}
+
+/* ==================== DARK MODE - WEATHER ALERTS ==================== */
+.dark .weather-alert--ok,
+.dark .weather-alert--ok.weather-alert--large {
+    background: #052e16;
+    border-color: #166534;
+    color: #86efac;
+}
+
+.dark .weather-alert--ok .alert-icon {
+    background: #14532d;
+    color: #86efac;
+}
+
+.dark .weather-alert--danger,
+.dark .weather-alert--danger.weather-alert--large {
+    background: #450a0a;
+    border-color: #991b1b;
+    color: #fca5a5;
+}
+
+.dark .weather-alert--danger .alert-icon {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
+/* ==================== DARK MODE - WEATHER PAGE ==================== */
+.dark .weather-page-container {
+    background: rgba(15, 23, 42, 0.96);
+    border-color: var(--border);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .stat-box {
+    background: linear-gradient(180deg, #1e293b 0%, #1e3a5f 100%);
+    border-color: #334155;
+}
+
+.dark .stat-box.highlighted {
+    background: linear-gradient(180deg, #164e63 0%, #1e3a5f 100%);
+    border-color: #0e7490;
+}
+
+.dark .forecast-container::-webkit-scrollbar-track {
+    background: #334155;
+}
+
+.dark .forecast-container::-webkit-scrollbar-thumb {
+    background: #64748b;
+}
+
+.dark .forecast-item {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .forecast-item:hover {
+    background: #1e3a5f;
+    border-color: var(--primary);
+}
+
+.dark .badge.rain {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+}
+
+.dark .badge.dry {
+    background: rgba(107, 114, 128, 0.25);
+    color: #d1d5db;
+}
+
+.dark .year-summary {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================== DARK MODE - CHECKOUT PAGE ==================== */
+.dark .checkout-card {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+}
+
+.dark .checkout-header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #164e63 100%);
+}
+
+.dark .checkout-errors {
+    background: #450a0a;
+    border-color: #991b1b;
+    color: #fca5a5;
+}
+
+.dark .checkout-page .form-input {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .checkout-items-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.dark .checkout-critical-badge {
+    background: #7f1d1d;
+    border-color: #991b1b;
+    color: #fca5a5;
+}
+
+.dark .btn-secondary {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-medium);
+}
+
+.dark .btn-secondary:hover {
+    background: #334155;
+    color: var(--text-dark);
+}
+
+/* ==================== DARK MODE - ORDERS PAGE ==================== */
+.dark .orders-header {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.dark .orders-empty {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.dark .periode-btn {
+    background: #1e293b;
+    color: var(--text-medium);
+}
+
+.dark .periode-btn:hover {
+    background: #334155;
+    color: var(--text-dark);
+}
+
+.dark .periode-btn--wis:hover {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+.dark .order-card {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 16px 38px rgba(0, 0, 0, 0.4);
+}
+
+.dark .order-card__header {
+    background: linear-gradient(135deg, #1e3a5f 0%, #1e293b 100%);
+}
+
+.dark .order-card__meta-item--number {
+    border-right-color: #334155;
+}
+
+.dark .order-location {
+    background: #1e293b;
+    border-color: #334155;
+    color: #93c5fd;
+}
+
+.dark .order-note {
+    background: #1e293b;
+}
+
+.dark .order-item-row:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+@media (max-width: 800px) {
+    .dark .order-card__meta-item--number {
+        border-bottom-color: #334155;
+    }
+}
+
+/* ==================== DARK MODE - HOME WEATHER CARD ==================== */
+.dark .home-weather-card {
+    background: rgba(15, 23, 42, 0.96);
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.4);
+}
+
+.dark .home-weather-card__link {
+    background: #1e3a5f;
+    border-color: #334155;
+    color: #93c5fd;
+}
+
+.dark .home-weather-card__link:hover {
+    background: #1e40af;
+}
+
+.dark .home-forecast-item {
+    background: #1e293b;
+}
+
+.dark .home-forecast-item__status--rain {
+    background: rgba(59, 130, 246, 0.25);
+    color: #93c5fd;
+}
+
+.dark .home-forecast-item__status--dry {
+    background: rgba(107, 114, 128, 0.25);
+    color: #d1d5db;
+}
+
+/* ==================== DARK MODE - MISC ELEMENTS ==================== */
+.dark .material-picker-panel {
+    background: #1e293b;
+}
+
+.dark .material-picker-panel--active {
+    background: #450a0a;
+    border-color: #991b1b;
+}
+
+.dark .material-search-input {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .weather-simulation-control {
+    background: #451a03;
+    border-color: #92400e;
+}
+
+.dark .weather-simulation-control__title {
+    color: #fde68a;
+}
+
+.dark .row-important:hover {
+    background-color: #78350f !important;
+}
+
+/* ==================== DARK MODE - BORDERS & INPUTS ==================== */
+.dark .forecast-item:hover {
+    border-color: var(--primary);
+}
+
+.dark .checkout-errors {
+    border-color: #991b1b;
+}
+
+.dark .checkout-critical-badge {
+    border-color: #991b1b;
+}
+
+.dark .btn-secondary {
+    border-color: var(--border);
+}
+
+.dark .material-picker-panel--active {
+    border-color: #991b1b;
+}
+
+.dark .material-search-input {
+    border-color: var(--border);
+}
+
+.dark .weather-simulation-control {
+    border-color: #92400e;
+}
+
+.dark .order-card__meta-item--number {
+    border-right-color: #334155;
+}
+
+.dark .order-location {
+    border-color: #334155;
+}
+
+.dark .home-weather-card__link {
+    border-color: #334155;
 }
 
 /* ==================== GO TO ORDER MATERIALS ==================== */
