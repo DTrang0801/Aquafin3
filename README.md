@@ -87,9 +87,9 @@ Hier kan de stockbeheerder alle bestellingen bekijken die de techniekers hebben 
 **TECHNIEKER** + **STOCKBEHEERDER** + **ADMIN**
 - Een **technieker** kan enkel zijn eigen bestellingen annuleren tot 1 dag na het plaatsen.
 - Een **stockbeheerder** of **admin** kan elke bestelling annuleren.
-- Bij annuleren krijg je een bevestigingspop-up en daarna een succesmelding: *"Bestelling #00001 succesvol geannuleerd."*
-- Geannuleerde bestellingen worden **standaard verborgen**.
-- Via een knop met een oogicoon en een **rood cijfer** (`$`) kan je ze **tonen of verbergen**.
+- Bij annuleren krijg je een bevestigingspop-up en daarna een succesmelding.
+- Geannuleerde bestellingen worden standaard verborgen.
+- Via een knop met een oogicoon kan je ze tonen of verbergen.
 - Als je op de knop klikt, worden enkel de geannuleerde bestellingen getoond.
 
 ### Beheer materiaal
