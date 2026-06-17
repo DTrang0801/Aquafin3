@@ -3519,3 +3519,123 @@ body::before {
         flex: 1;
     }
 }
+
+/* ==================== DARK MODE - CARDS & SPECIAL SECTIONS ==================== */
+.dark .login-page {
+    background: var(--bg-white);
+}
+
+.dark .login-card {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+
+.dark .hero-box {
+    background: rgba(30, 41, 59, 0.95);
+    border-color: var(--border);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+}
+
+.dark .year-forecast-card {
+    background: #1e293b;
+    border-color: var(--border);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.dark .year-card--high {
+    background: #450a0a;
+    border-color: #ef4444;
+}
+
+.dark .year-card--medium {
+    background: #451a03;
+    border-color: #f59e0b;
+}
+
+.dark .year-card--low {
+    background: #052e16;
+    border-color: #10b981;
+}
+
+.dark .risk-badge--high {
+    background: #7f1d1d;
+    color: #fca5a5;
+}
+
+.dark .risk-badge--medium {
+    background: #78350f;
+    color: #fde68a;
+}
+
+.dark .risk-badge--low {
+    background: #14532d;
+    color: #86efac;
+}
+
+.dark .rainfall-bar {
+    background: #334155;
+    border-color: #475569;
+}
+
+.dark .current-year-section {
+    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15) 0%, rgba(8, 145, 178, 0.15) 100%);
+    border-color: var(--border);
+}
+
+.dark .simulation-panel {
+    background: #451a03;
+    border-color: #92400e;
+}
+
+.dark .simulation-panel__title {
+    color: #fde68a;
+}
+
+.dark .material-category {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .material-category-header {
+    background: #1e3a5f;
+    color: #93c5fd;
+}
+
+.dark .stock-item-row {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .stock-item-row:hover {
+    background: #1e3a5f;
+    border-color: var(--primary);
+}
+
+.dark .material-item--important {
+    background: #450a0a;
+    border-color: #991b1b;
+}
+
+.dark .material-item--important:hover {
+    background: #7f1d1d;
+}
+
+.dark .checkbox-label {
+    background: #1e293b;
+    border-color: var(--border);
+}
+
+.dark .checkbox-label:hover {
+    background: #1e3a5f;
+}
+
+.dark .important-items-title {
+    background: #450a0a;
+    color: #fca5a5;
+}
+
+.dark .at-risk-label {
+    background: #1e293b;
+    color: var(--text-dark);
+}
