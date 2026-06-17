@@ -229,6 +229,23 @@ class CartController extends Controller
         return view('pages.bestellingen', compact('bestellingen', 'zoekterm', 'periode'));
     }
 
+    // Herbestel een vorige bestelling
+    public function reorder(Bestelling $bestelling)
+    {
+        if ($bestelling->gebruiker_id !== Auth::id()) {
+            abort(403);
+        }
+
+        $cart = $this->getOrCreateCart();
+        $cart->materialen()->detach();
+
+        foreach ($bestelling->materialen as $materiaal) {
+            $cart->materialen()->attach($materiaal->id, ['aantal' => $materiaal->pivot->aantal]);
+        }
+
+        return redirect()->route('winkelmandje.checkout')->with('success', 'Bestelling #'.str_pad($bestelling->id, 5, '0', STR_PAD_LEFT).' in mandje geplaatst. Pas aan indien nodig en bevestig.');
+    }
+
     // Toon het overzicht van de bestellingen voor de stockbeheerder
     public function overzicht(Request $request)
     {
