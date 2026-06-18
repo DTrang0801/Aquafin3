@@ -585,6 +585,39 @@ body::before {
     color: var(--text-dark);
 }
 
+/* ==================== FORM CARD ==================== */
+.form-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 600px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 24px;
+}
+
+.btn-cancel-action {
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    background: var(--slate-700);
+    color: #fff;
+    text-decoration: none;
+    padding: 0 16px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.btn-cancel-action:hover {
+    background: var(--slate-800);
+}
+
 /* ==================== HERO & PAGE TITLES ==================== */
 .hero-title {
     font-size: 3rem;
