@@ -82,7 +82,10 @@
                 </div>
             </div>
 
-            <div class="go-to-order-materials">
+            <div style="display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <a href="{{ route('materialen.beheer') }}" class="go-to-order-material__link">
+                    <span>Beheer materiaal</span>
+                </a>
                 <a href="{{ route('overzicht') }}" class="go-to-order-material__link">
                     <span>Overzicht bestellingen</span>
                 </a>
