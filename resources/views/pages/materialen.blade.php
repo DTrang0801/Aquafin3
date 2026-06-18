@@ -121,10 +121,11 @@
                                     <td class="font-bold text-important" style="padding: 14px 20px; color: #000000; font-weight: 600;">
                                         @if($materiaal->foto)
                                             <img src="{{ asset('storage/' . $materiaal->foto) }}"
-                                                style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;">
+                                                style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;cursor:pointer;"
+                                                onclick="openLightbox('{{ asset('storage/' . $materiaal->foto) }}', '{{ $materiaal->naam }}')">
                                         @endif
 
-                                                        <div>{{ $materiaal->naam }}</div>
+                                        <div>{{ $materiaal->naam }}</div>
                                         @if($materiaal->belangrijk)
                                             @php
                                                 try {
@@ -253,7 +254,8 @@
 
                                                         @if($materiaal->foto)
                                                             <img src="{{ asset('storage/' . $materiaal->foto) }}"
-                                                                style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;">
+                                                                style="width:80px;height:80px;object-fit:cover;border-radius:8px;border:1px solid #e2e8f0;margin-bottom:8px;cursor:pointer;"
+                                                                onclick="openLightbox('{{ asset('storage/' . $materiaal->foto) }}', '{{ $materiaal->naam }}')">
                                                         @endif
 
                                                         <div>{{ $materiaal->naam }}</div>
@@ -710,5 +712,34 @@
         
         // Close popup when clicking on overlay
         document.getElementById('suggestions-overlay').addEventListener('click', closeSuggestionsPopup);
+
+        // Lightbox voor foto's
+        function openLightbox(src, naam) {
+            const overlay = document.getElementById('lightbox-overlay');
+            const img = document.getElementById('lightbox-img');
+            const caption = document.getElementById('lightbox-caption');
+
+            img.src = src;
+            caption.textContent = naam;
+            overlay.style.display = 'flex';
+        }
+
+        function closeLightbox() {
+            document.getElementById('lightbox-overlay').style.display = 'none';
+        }
+
+        // Sluit lightbox bij klikken op overlay of Escape-toets
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeLightbox();
+        });
     </script>
+
+    {{-- Lightbox Modal voor grote foto --}}
+    <div id="lightbox-overlay" style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; justify-content: center; align-items: center; cursor: pointer;" onclick="closeLightbox()">
+        <div style="position: relative; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation()">
+            <img id="lightbox-img" src="" alt="" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
+            <p id="lightbox-caption" style="color: #fff; font-size: 1.1rem; font-weight: 600; margin-top: 12px; text-align: center;"></p>
+            <button onclick="closeLightbox()" style="position: absolute; top: -40px; right: 0; background: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;"></button>
+        </div>
+    </div>
 </x-site-layout>
