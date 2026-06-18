@@ -3962,6 +3962,14 @@ body::before {
     box-shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 
+.dark .login-title {
+    color: var(--primary-light);
+}
+
+.dark .login-subtitle {
+    color: var(--text-light);
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
