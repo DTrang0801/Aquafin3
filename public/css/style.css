@@ -581,6 +581,10 @@ body::before {
     color: var(--text-lighter);
 }
 
+.dark .form-label {
+    color: var(--text-dark);
+}
+
 /* ==================== HERO & PAGE TITLES ==================== */
 .hero-title {
     font-size: 3rem;
