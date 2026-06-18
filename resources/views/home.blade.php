@@ -74,23 +74,6 @@
     @endauth
 
     @auth
-        @if(Auth::user()?->role_id === \App\Models\Role::STOCKBEHEERDER)
-            <div class="home-hero">
-                <div class="home-logo">
-                    <span class="logo-fin">Aquafin</span><br>
-                    <p style="font-size: 2rem; color: #475569; font-weight: 500; letter-spacing: 0.1em; margin-top: 0.5rem; display: inline-block; padding-top: 0.5rem;">Stockbeheer</p> <br>
-                </div>
-            </div>
-
-            <div class="go-to-order-materials">
-                <a href="{{ route('overzicht') }}" class="go-to-order-material__link">
-                    <span>Overzicht bestellingen</span>
-                </a>
-            </div>
-        @endif
-    @endauth
-
-    @auth
         @if(Auth::user()?->role_id === \App\Models\Role::ADMIN)
             <div class="home-hero">
                 <div class="home-logo">
