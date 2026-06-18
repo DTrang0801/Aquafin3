@@ -212,11 +212,30 @@ class MateriaalController extends Controller
     }
 
     // Toon beheerpagina met alle materialen voor de stockbeheerder
-    public function beheer()
+    public function beheer(Request $request)
     {
-        $materialen = Materiaal::with('subcategorie.categorie')->get();
+        // Zoekopdracht ophalen
+        $zoekterm = $request->input('zoekterm');
 
-        return view('pages.materialen-beheer', compact('materialen'));
+        // Materialen ophalen met zoekfilter
+        $query = Materiaal::with('subcategorie.categorie');
+
+        if ($zoekterm) {
+            $query->where(function ($q) use ($zoekterm) {
+                $q->where('naam', 'like', "%$zoekterm%")
+                    ->orWhere('beschrijving', 'like', "%$zoekterm%")
+                    ->orWhereHas('subcategorie', function ($subq) use ($zoekterm) {
+                        $subq->where('naam', 'like', "%$zoekterm%")
+                            ->orWhereHas('categorie', function ($catq) use ($zoekterm) {
+                                $catq->where('naam', 'like', "%$zoekterm%");
+                            });
+                    });
+            });
+        }
+
+        $materialen = $query->get();
+
+        return view('pages.materialen-beheer', compact('materialen', 'zoekterm'));
     }
 
     // Materialen verwijderen
