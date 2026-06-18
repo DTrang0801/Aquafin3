@@ -3980,6 +3980,11 @@ body::before {
     color: var(--text-dark);
 }
 
+.dark .login-card .form-input:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
