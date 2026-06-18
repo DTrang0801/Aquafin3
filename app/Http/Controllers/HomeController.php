@@ -13,8 +13,13 @@ class HomeController extends Controller
 {
     private const FORECAST_CACHE_KEY = 'home.technieker.rain-forecast';
 
-    public function index(OpenMeteoService $openMeteo): View
+    public function index(OpenMeteoService $openMeteo): View|RedirectResponse
     {
+        // Stockbeheerders worden direct doorgestuurd naar materiaal beheer
+        if (auth()->user()?->role_id === Role::STOCKBEHEERDER) {
+            return redirect()->route('materialen.beheer');
+        }
+
         $techniekerRainForecast = [];
         $homeForecastUpdatedAt = null;
         $forecastError = null;
