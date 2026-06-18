@@ -3951,6 +3951,11 @@ body::before {
     }
 }
 
+.login-nav .dark-mode-toggle:hover {
+    background: rgba(255,255,255,0.25);
+    transform: scale(1.1);
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
