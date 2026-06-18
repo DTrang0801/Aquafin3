@@ -465,6 +465,7 @@ body::before {
     margin: 0 auto;
     display: flex;
     align-items: center;
+    justify-content: space-between;
     height: 80px;
 }
 
@@ -4414,6 +4415,49 @@ body::before {
 
 .dark .home-weather-card__link {
     border-color: #334155;
+}
+
+/* ==================== DARK MODE - GUEST LAYOUT FORMS ==================== */
+.dark .login-card label {
+    color: var(--text-dark);
+}
+
+.dark .login-card input:not([type="checkbox"]):not([type="radio"]) {
+    background: #1e293b;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
+.dark .login-card input:not([type="checkbox"]):not([type="radio"]):focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.dark .login-card input::placeholder {
+    color: var(--text-lighter);
+}
+
+.dark .login-card .text-gray-600,
+.dark .login-card .text-sm {
+    color: var(--text-light);
+}
+
+.dark .login-card a {
+    color: var(--primary-light);
+}
+
+.dark .login-card a:hover {
+    color: var(--primary);
+}
+
+.dark .login-card button[type="submit"],
+.dark .login-card .inline-flex.items-center {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.dark .login-card button[type="submit"]:hover {
+    background: var(--primary-dark);
 }
 
 /* ==================== GO TO ORDER MATERIALS ==================== */
