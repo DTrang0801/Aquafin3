@@ -11,7 +11,16 @@ use App\Http\Controllers\WeatherController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return auth()->check() ? redirect()->route('home.page') : redirect()->route('login');
+    if (!auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    // Stockbeheerders gaan direct naar materiaal beheer
+    if (auth()->user()->role_id === \App\Models\Role::STOCKBEHEERDER) {
+        return redirect()->route('materialen.beheer');
+    }
+
+    return redirect()->route('home.page');
 })->name('home');
 
 Route::middleware('auth')->group(function () {
