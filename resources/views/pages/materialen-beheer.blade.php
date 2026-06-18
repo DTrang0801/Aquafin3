@@ -2,11 +2,32 @@
     <div class="container">
         <h1 class="page-title">Materiaal beheren</h1>
 
-        <div style="margin-bottom: 20px; display: flex; justify-content: flex-end;">
+        <div style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap;">
+            {{-- Zoekformulier voor materialen --}}
+            <form method="GET" action="{{ route('materialen.beheer') }}" style="display: flex; gap: 8px; align-items: center; flex: 1; max-width: 400px;">
+                <input type="text" name="zoekterm" value="{{ $zoekterm ?? '' }}"
+                    placeholder="Zoek op naam, beschrijving, categorie..."
+                    style="flex: 1; padding: 10px 14px; border: 1px solid #d1d5db; border-radius: 8px; font-size: 14px;">
+                <button type="submit" style="background: #2563eb; color: #fff; padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer;">
+                    Zoeken
+                </button>
+                @if($zoekterm)
+                    <a href="{{ route('materialen.beheer') }}" style="background: #6b7280; color: #fff; padding: 10px 16px; border-radius: 8px; font-size: 14px; text-decoration: none; font-weight: 600;">
+                        Wis
+                    </a>
+                @endif
+            </form>
+
             <a href="{{ route('materialen.create') }}" style="background:#2563eb;color:#fff;padding:10px 24px;border-radius:8px;font-size:15px;text-decoration:none;font-weight:600;display:inline-flex;align-items:center;gap:6px;">
                 + Nieuw materiaal
             </a>
         </div>
+
+        @if($zoekterm)
+            <p style="margin-bottom: 16px; color: #6b7280; font-size: 14px;">
+                {{ $materialen->count() }} resultaat{{ $materialen->count() !== 1 ? 'en' : '' }} voor "{{ $zoekterm }}"
+            </p>
+        @endif
 
         <table class="custom-table">
             <thead>

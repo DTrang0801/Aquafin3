@@ -147,7 +147,7 @@
                                 @endforeach
                             </div>
 
-                            @if(!$bestelling->isGeannuleerd())
+                            @if(!$bestelling->isGeannuleerd() && Auth::user()?->role_id === \App\Models\Role::TECHNIEKER)
                                 <footer class="order-card__footer">
                                     @can('update', $bestelling)
                                         <a href="{{ route('bestellingen.edit', $bestelling->id) }}" class="btn-action btn-action-edit">Bewerk bestelling</a>
