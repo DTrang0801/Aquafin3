@@ -2,7 +2,7 @@
     <div class="container">
         <h1 class="page-title">Materiaal toevoegen</h1>
 
-        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:24px;max-width:600px;">
+        <div class="form-card">
             <form method="POST" action="{{ route('materialen.store') }}" enctype="multipart/form-data">
                 @csrf
 
@@ -49,9 +49,9 @@
                     </label>
                 </div> -->
 
-                <div style="display:flex;gap:8px;margin-top:24px;">
+                <div class="form-actions">
                     <button type="submit" class="search-button">Opslaan</button>
-                    <a href="{{ route('materialen.beheer') }}" style="height:42px;display:inline-flex;align-items:center;background:#475569;color:#fff;text-decoration:none;padding:0 16px;border-radius:6px;font-weight:600;font-size:13px;">Annuleren</a>
+                    <a href="{{ route('materialen.beheer') }}" class="btn-cancel-action">Annuleren</a>
                 </div>
             </form>
         </div>
