@@ -3934,6 +3934,11 @@ body::before {
 }
 
 /* ==================== DARK MODE - CARDS & SPECIAL SECTIONS ==================== */
+.dark .login-nav {
+    background: #1e293b;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
