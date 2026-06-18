@@ -3941,6 +3941,14 @@ body::before {
 
 .login-nav .dark-mode-toggle {
     margin-left: auto;
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .login-nav .dark-mode-toggle {
+        width: 32px;
+        height: 32px;
+    }
 }
 
 .dark .login-page {
