@@ -3993,6 +3993,10 @@ body::before {
     color: #fca5a5;
 }
 
+.dark .login-nav-brand {
+    color: #fff;
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
