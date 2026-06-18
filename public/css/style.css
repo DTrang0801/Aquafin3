@@ -3985,6 +3985,10 @@ body::before {
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
 }
 
+.dark .login-card .btn-primary {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
