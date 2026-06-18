@@ -618,6 +618,19 @@ body::before {
     background: var(--slate-800);
 }
 
+.dark .form-card {
+    background: var(--bg-white);
+    border-color: var(--border);
+}
+
+.dark .btn-cancel-action {
+    background: var(--slate-700);
+}
+
+.dark .btn-cancel-action:hover {
+    background: var(--slate-600);
+}
+
 /* ==================== HERO & PAGE TITLES ==================== */
 .hero-title {
     font-size: 3rem;
