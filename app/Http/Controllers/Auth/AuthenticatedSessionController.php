@@ -33,6 +33,10 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(route('materialen', absolute: false));
         }
 
+        if (Auth::user()->role_id === Role::STOCKBEHEERDER) {
+            return redirect()->intended(route('materialen.beheer', absolute: false));
+        }
+
         return redirect()->intended(route('home', absolute: false));
     }
 
