@@ -37,6 +37,10 @@ class AuthenticatedSessionController extends Controller
             return redirect()->route('materialen.beheer');
         }
 
+        if (Auth::user()->role_id === Role::ADMIN) {
+            return redirect()->route('gebruikers');
+        }
+
         return redirect()->intended(route('home', absolute: false));
     }
 
