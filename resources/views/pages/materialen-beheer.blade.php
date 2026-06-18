@@ -16,8 +16,7 @@
                     <th>Categorie</th>
                     <th>Subcategorie</th>
                     <th>Beschrijving</th>
-                   <!-- <th>Belangrijk</th> -->
-                    <th style="width: 200px;">Acties</th>
+                    <th style="width: 200px; text-align: right;">Acties</th>
                 </tr>
             </thead>
 
@@ -38,22 +37,6 @@
                             <td>{{ $materiaal->subcategorie?->categorie?->naam ?? 'N/A' }}</td>
                             <td>{{ $materiaal->subcategorie->naam ?? 'N/A' }}</td>
                         <td>{{ Str::limit($materiaal->beschrijving, 60) ?: 'Geen beschrijving' }}</td>
-                        <td>
-                            @if($materiaal->belangrijk && is_string($materiaal->belangrijk))
-                                @php
-                                    try {
-                                        $level = $materiaal->belangrijk instanceof \App\Enums\FloodRiskLevel 
-                                            ? $materiaal->belangrijk 
-                                            : \App\Enums\FloodRiskLevel::from($materiaal->belangrijk);
-                                        echo '<span class="risk-badge risk-badge--' . $level->value . '">' . $level->label() . '</span>';
-                                    } catch (\Exception $e) {
-                                        echo '<span style="color:#999; font-size:13px;">—</span>';
-                                    }
-                                @endphp
-                            @else
-                                <span style="color:#999; font-size:13px;">—</span>
-                            @endif
-                        </td>
                         <td>
                             <div style="display: flex; gap: 6px; justify-content: flex-end;">
                                 <a href="{{ route('materialen.edit', $materiaal) }}"
