@@ -3970,6 +3970,16 @@ body::before {
     color: var(--text-light);
 }
 
+.dark .login-card .form-label {
+    color: var(--text-medium);
+}
+
+.dark .login-card .form-input {
+    background: #0f172a;
+    border-color: var(--border);
+    color: var(--text-dark);
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
