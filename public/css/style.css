@@ -3997,6 +3997,10 @@ body::before {
     color: #fff;
 }
 
+.dark .login-wrapper {
+    background: transparent;
+}
+
 .dark .login-page {
     background: var(--bg-white);
 }
