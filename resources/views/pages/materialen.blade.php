@@ -739,7 +739,7 @@
         <div style="position: relative; max-width: 90vw; max-height: 90vh; display: flex; flex-direction: column; align-items: center;" onclick="event.stopPropagation()">
             <img id="lightbox-img" src="" alt="" style="max-width: 100%; max-height: 85vh; object-fit: contain; border-radius: 12px; box-shadow: 0 8px 32px rgba(0,0,0,0.5);">
             <p id="lightbox-caption" style="color: #fff; font-size: 1.1rem; font-weight: 600; margin-top: 12px; text-align: center;"></p>
-            <button onclick="closeLightbox()" style="position: absolute; top: -40px; right: 0; background: #fff; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 1.2rem; cursor: pointer; font-weight: bold; display: flex; align-items: center; justify-content: center;"></button>
+            <button onclick="closeLightbox()" style="position: absolute; top: -40px; right: 0; background: none; border: none; color: #fff; font-size: 2rem; cursor: pointer; font-weight: bold; line-height: 1;">✕</button>
         </div>
     </div>
 </x-site-layout>
